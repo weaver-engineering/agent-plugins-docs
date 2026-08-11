@@ -4,13 +4,17 @@
 **Scope:** Documentation only. Producing a specification or design from a
 documented concept is out of scope — see §7.
 
-## 1. Goal
+## Context
+* [Agent Plugins index](../../agent-plugins.md) - root index for this repo
+* [The Architect](../user-personas/architect.md) - the actor for this use case
+
+## 1 Goal
 
 Capture a concept that currently exists only in the architect's head as a
 documented artifact in a project's docs repo, correctly linked into that
 project's existing documentation, with a PR raised for review.
 
-## 2. Trigger
+## 2 Trigger
 
 The architect has a concept in mind, scoped to a specific project (e.g.
 MagpieWeaver, TheLoom, AgentPlugins itself), that is undocumented or whose
@@ -21,7 +25,7 @@ location, plus a Linear issue referencing it (see §3) — e.g.
 `workflows/feature-workflow/use-cases.md` in `weaver-engineering/docs`
 currently reads `//TODO - Define what a use case is`.
 
-## 3. Preconditions
+## 3 Preconditions
 
 * Either:
   1. the concept exists only informally (in the architect's head, or
@@ -38,7 +42,7 @@ currently reads `//TODO - Define what a use case is`.
   (at minimum a glossary and an index/overview doc — see `magpieweaver-docs`
   for the reference shape).
 
-## 4. Main Success Scenario
+## 4 Main Success Scenario
 
 1. Architect invokes the concept-capture tool/sub-agent with the Linear
    issue reference for the change (e.g. `WVR-83`).
@@ -66,7 +70,7 @@ currently reads `//TODO - Define what a use case is`.
    in the project's docs repo.
 8. Sub-agent raises a PR against the docs repo for the architect to review.
 
-## 5. Postconditions
+## 5 Postconditions
 
 * The concept exists as a current, standalone documented artifact in the
   target project's docs repo — newly created, or updated in place if one
@@ -80,7 +84,7 @@ currently reads `//TODO - Define what a use case is`.
   action, never automated (see the weaver-engineering workspace rule that
   agents may never approve PRs).
 
-## 6. Extensions
+## 6 Extensions
 
 * **2a.** The architect's description conflicts with an existing glossary
   term or documented concept → sub-agent surfaces the conflict and asks the
@@ -92,7 +96,7 @@ currently reads `//TODO - Define what a use case is`.
   be adequately covered) → sub-agent reports this and exits without
   committing.
 
-## 7. Open Design Questions (not resolved by this use case)
+## 7 Open Design Questions (not resolved by this use case)
 
 * **Cross-project references.** A concept may need to reference a concept
   documented in a *different* project (e.g. an AgentPlugins concept
