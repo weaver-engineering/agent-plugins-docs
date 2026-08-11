@@ -138,9 +138,8 @@ sections:
     understanding: 1
   "4":
     sub-agent: 8
-    artifact: 5
+    artifact: 6
     docs: 5
-    index: 4
     issue: 4
     repo: 4
     architect: 3
@@ -148,20 +147,20 @@ sections:
     exists: 3
     project's: 3
     related: 3
-    uc: 3
     adds: 2
     already: 2
     artifacts: 2
     documented: 2
     existing: 2
+    index: 2
     linear: 2
     links: 2
     location: 2
     slug: 2
     tag: 2
     todo: 2
+    uc: 2
     against: 1
-    artifact's: 1
     back: 1
     belongs: 1
     bidirectional: 1
@@ -190,11 +189,11 @@ sections:
     entry: 1
     evolved: 1
     gap: 1
-    generates: 1
     glossary: 1
     identified: 1
     identifies: 1
     index/overview: 1
+    indexes: 1
     invokes: 1
     link: 1
     near: 1
@@ -217,7 +216,6 @@ sections:
     resolving: 1
     review: 1
     revises: 1
-    section: 1
     sections: 1
     sections.yaml: 1
     specific: 1
@@ -227,7 +225,6 @@ sections:
     updated: 1
     updates: 1
     whether: 1
-    word: 1
     words.yaml: 1
     wvr: 1
   "5":
@@ -301,7 +298,6 @@ sections:
   "6":
     concept: 2
     sub-agent: 2
-    uc: 2
     adequately: 1
     already: 1
     architect: 1
@@ -352,6 +348,7 @@ sections:
     treated: 1
     true: 1
     turns: 1
+    uc: 1
     without: 1
     writing: 1
   "7":

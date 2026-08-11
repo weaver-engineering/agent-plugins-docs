@@ -67,10 +67,8 @@ currently reads `//TODO - Define what a use case is`.
       docs link back);
    3. registers the artifact in the project's index/overview doc, if not
       already registered.
-7. Sub-agent generates the artifact's section index
-   ([UC-003](UC-003-index-document-sections.md)) and word index
-   ([UC-004](UC-004-index-document-words.md)): `.index/<slug>.sections.yaml`
-   and `.index/<slug>.words.yaml`.
+7. Sub-agent indexes the artifact ([UC-003](UC-003-index-a-path.md)):
+   `.index/<slug>.sections.yaml` and `.index/<slug>.words.yaml`.
 8. Sub-agent commits the changes, referencing the Linear issue, on a branch
    in the project's docs repo.
 9. Sub-agent raises a PR against the docs repo for the architect to review.
@@ -102,9 +100,9 @@ currently reads `//TODO - Define what a use case is`.
 * **6a.** Nothing to change after elicitation (concept turns out to already
   be adequately covered) → sub-agent reports this and exits without
   committing.
-* **7a.** [UC-003](UC-003-index-document-sections.md)/[UC-004](UC-004-index-document-words.md)
-  tooling doesn't exist yet (true as of this writing) → `.index/` files are
-  hand-written as a temporary substitute; still required, not skipped.
+* **7a.** [UC-003](UC-003-index-a-path.md) tooling doesn't exist yet (true
+  as of this writing) → `.index/` files are hand-written as a temporary
+  substitute; still required, not skipped.
 
 ## 7 Open Design Questions (not resolved by this use case)
 

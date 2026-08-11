@@ -17,21 +17,24 @@ preamble:
   work: 1
 sections:
   "1":
-    uc: 6
-    document: 5
-    see: 5
-    todo: 5
-    wvr: 5
+    uc: 7
+    document: 4
+    see: 4
+    todo: 4
+    wvr: 4
     index: 2
-    sections: 2
     auto-number: 1
     concept: 1
     content: 1
     discuss: 1
     documentation: 1
     extract: 1
+    merged: 1
+    path: 1
     project: 1
+    retired: 1
     search: 1
+    sections: 1
     words: 1
   "2":
     architect: 1
