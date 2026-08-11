@@ -18,19 +18,19 @@ sections:
     title: "Main Success Scenario"
     type: section
     start_line: 45
-    end_line: 74
+    end_line: 77
   "5":
     title: "Postconditions"
     type: section
-    start_line: 75
-    end_line: 90
+    start_line: 78
+    end_line: 93
   "6":
     title: "Extensions"
     type: section
-    start_line: 91
-    end_line: 105
+    start_line: 94
+    end_line: 108
   "7":
     title: "Open Design Questions (not resolved by this use case)"
     type: section
-    start_line: 106
-    end_line: 124
+    start_line: 109
+    end_line: 127

@@ -148,6 +148,7 @@ sections:
     exists: 3
     project's: 3
     related: 3
+    uc: 3
     adds: 2
     already: 2
     artifacts: 2
@@ -159,7 +160,6 @@ sections:
     slug: 2
     tag: 2
     todo: 2
-    uc: 2
     against: 1
     artifact's: 1
     back: 1
@@ -199,6 +199,7 @@ sections:
     link: 1
     near: 1
     none: 1
+    numbering: 1
     place: 1
     pr: 1
     project: 1
@@ -217,6 +218,7 @@ sections:
     review: 1
     revises: 1
     section: 1
+    sections: 1
     sections.yaml: 1
     specific: 1
     target: 1
