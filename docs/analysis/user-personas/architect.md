@@ -4,6 +4,7 @@ The architect is the human in charge of the agentic software development.
 
 ## Context
 * [Agent Plugins index](../../agent-plugins.md) - root index for this repo
+* [The Architect's Assistant](architects-assistant.md) - who the architect delegates mechanical work to
 
 ## 1 Role
 
