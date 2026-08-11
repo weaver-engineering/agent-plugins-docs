@@ -1,0 +1,18 @@
+preamble:
+  case: 2
+  title: 2
+  assigns: 1
+  code-block: 1
+  document's: 1
+  elicit: 1
+  implicit: 1
+  including: 1
+  numbering: 1
+  sections: 1
+  todo: 1
+  tool: 1
+  unnumbered-section: 1
+  use: 1
+  write: 1
+  wvr: 1
+sections: {}

@@ -1,0 +1,11 @@
+sections:
+  "1":
+    title: "Use Cases"
+    type: section
+    start_line: 10
+    end_line: 18
+  "2":
+    title: "User Personas"
+    type: section
+    start_line: 19
+    end_line: 21

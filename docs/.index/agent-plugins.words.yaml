@@ -1,0 +1,37 @@
+preamble:
+  ai: 1
+  architects: 1
+  automated: 1
+  build: 1
+  cycle: 1
+  help: 1
+  loom: 1
+  outside: 1
+  productively: 1
+  runs: 1
+  skills: 1
+  spec: 1
+  subagents: 1
+  test: 1
+  weaver-engineering: 1
+  work: 1
+sections:
+  "1":
+    uc: 6
+    document: 5
+    see: 5
+    todo: 5
+    wvr: 5
+    index: 2
+    sections: 2
+    auto-number: 1
+    concept: 1
+    content: 1
+    discuss: 1
+    documentation: 1
+    extract: 1
+    project: 1
+    search: 1
+    words: 1
+  "2":
+    architect: 1

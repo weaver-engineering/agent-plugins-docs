@@ -1,0 +1,21 @@
+preamble:
+  words: 2
+  case: 1
+  counts: 1
+  document: 1
+  elicit: 1
+  exclusion: 1
+  index: 1
+  occurrence: 1
+  per-section: 1
+  produces: 1
+  significant: 1
+  slug: 1
+  stopword: 1
+  todo: 1
+  tool: 1
+  use: 1
+  write: 1
+  wvr: 1
+  yaml: 1
+sections: {}

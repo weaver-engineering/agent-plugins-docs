@@ -1,0 +1,28 @@
+preamble:
+  case: 1
+  code-block: 1
+  content: 1
+  document: 1
+  elicit: 1
+  extracts: 1
+  full-document: 1
+  given: 1
+  id: 1
+  index: 1
+  line: 1
+  ranges: 1
+  rather: 1
+  read: 1
+  requiring: 1
+  section: 1
+  sections: 1
+  slug: 1
+  specific: 1
+  todo: 1
+  tool: 1
+  use: 1
+  using: 1
+  write: 1
+  wvr: 1
+  yaml: 1
+sections: {}

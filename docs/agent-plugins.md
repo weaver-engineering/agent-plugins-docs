@@ -2,9 +2,12 @@
 
 Skills and subagents that help weaver-engineering architects work
 productively with AI, outside the automated spec/test/build cycle that
-The Loom runs. See the [README](../README.md) for the full description.
+The Loom runs.
 
-## Use Cases
+## Context
+* [README](../README.md) - full project description
+
+## 1 Use Cases
 
 * [UC-001 — Discuss A Project Concept And Document It](analysis/use-cases/UC-001-discuss-concept-and-document.md)
 * [UC-002 — Auto-Number Document Sections](analysis/use-cases/UC-002-auto-number-document-sections.md) — //TODO, see WVR-88
@@ -13,8 +16,6 @@ The Loom runs. See the [README](../README.md) for the full description.
 * [UC-005 — Search Documentation](analysis/use-cases/UC-005-search-documentation.md) — //TODO, see WVR-91
 * [UC-006 — Extract Document Content](analysis/use-cases/UC-006-extract-document-content.md) — //TODO, see WVR-92
 
-## User Personas
+## 2 User Personas
 
 * [The Architect](analysis/user-personas/architect.md)
-
-Full index reorganisation (Context sections, numbering, `.index/`) is tracked separately under WVR-86.

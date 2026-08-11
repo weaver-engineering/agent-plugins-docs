@@ -1,0 +1,23 @@
+preamble:
+  line: 2
+  case: 1
+  code-block: 1
+  document: 1
+  elicit: 1
+  end: 1
+  id: 1
+  index: 1
+  produces: 1
+  section: 1
+  sections: 1
+  slug: 1
+  start: 1
+  title: 1
+  todo: 1
+  tool: 1
+  type: 1
+  use: 1
+  write: 1
+  wvr: 1
+  yaml: 1
+sections: {}
