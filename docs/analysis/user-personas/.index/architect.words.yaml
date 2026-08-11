@@ -1,0 +1,66 @@
+preamble:
+  agentic: 1
+  architect: 1
+  charge: 1
+  development: 1
+  human: 1
+  software: 1
+sections:
+  "1":
+    architect: 2
+    feature: 2
+    analyse: 1
+    benefits: 1
+    changes: 1
+    code: 1
+    delivers: 1
+    delivery: 1
+    design: 1
+    features: 1
+    responsible: 1
+    role: 1
+    solution: 1
+    specifics: 1
+    understand: 1
+  "2":
+    behaviors: 2
+    accurate: 1
+    analysis: 1
+    architect's: 1
+    design: 1
+    exposes: 1
+    feature: 1
+    features: 1
+    goals: 1
+    implements: 1
+    nfrs: 1
+    project: 1
+    provide: 1
+    required: 1
+    satisfy: 1
+    solution: 1
+    useful: 1
+  "3":
+    coding: 2
+    agent: 1
+    agents: 1
+    architect: 1
+    changes: 1
+    designs: 1
+    documentation: 1
+    endlessly: 1
+    frustrated: 1
+    implementing: 1
+    maintaining: 1
+    making: 1
+    manual: 1
+    missteps: 1
+    processes: 1
+    repetitive: 1
+    review: 1
+    system: 1
+  "4":
+    architect: 1
+    capable: 1
+    highly: 1
+    technically: 1
