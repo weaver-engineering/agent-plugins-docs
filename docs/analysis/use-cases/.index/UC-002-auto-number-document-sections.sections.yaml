@@ -1,1 +1,36 @@
-sections: {}
+sections:
+  "1":
+    title: "Goal"
+    type: section
+    start_line: 14
+    end_line: 18
+  "2":
+    title: "Trigger"
+    type: section
+    start_line: 19
+    end_line: 23
+  "3":
+    title: "Preconditions"
+    type: section
+    start_line: 24
+    end_line: 33
+  "4":
+    title: "Main Success Scenario"
+    type: section
+    start_line: 34
+    end_line: 57
+  "5":
+    title: "Postconditions"
+    type: section
+    start_line: 58
+    end_line: 65
+  "6":
+    title: "Extensions"
+    type: section
+    start_line: 66
+    end_line: 74
+  "7":
+    title: "Open Design Questions"
+    type: section
+    start_line: 75
+    end_line: 78
