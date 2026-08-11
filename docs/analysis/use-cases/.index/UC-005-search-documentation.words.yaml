@@ -1,0 +1,25 @@
+preamble:
+  doc: 2
+  section: 2
+  across: 1
+  case: 1
+  data: 1
+  directory: 1
+  docs: 1
+  elicit: 1
+  index: 1
+  query: 1
+  ranked: 1
+  repo: 1
+  results: 1
+  returns: 1
+  searches: 1
+  string: 1
+  todo: 1
+  tool: 1
+  use: 1
+  whole: 1
+  word: 1
+  write: 1
+  wvr: 1
+sections: {}

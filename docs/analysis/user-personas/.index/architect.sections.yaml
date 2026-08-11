@@ -1,0 +1,21 @@
+sections:
+  "1":
+    title: "Role"
+    type: section
+    start_line: 8
+    end_line: 11
+  "2":
+    title: "Goals"
+    type: section
+    start_line: 12
+    end_line: 18
+  "3":
+    title: "Frustrations"
+    type: section
+    start_line: 19
+    end_line: 26
+  "4":
+    title: "Technical Proficiency"
+    type: section
+    start_line: 27
+    end_line: 29
