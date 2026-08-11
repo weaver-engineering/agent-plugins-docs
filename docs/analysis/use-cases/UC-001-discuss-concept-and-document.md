@@ -57,7 +57,8 @@ currently reads `//TODO - Define what a use case is`.
    out the concept's current, evolved definition, boundaries, and
    relationships to existing documented terms and concepts.
 5. Sub-agent drafts (or revises) the concept documentation artifact,
-   resolving and removing the `//TODO` tag that identified the gap.
+   numbering its sections ([UC-002](UC-002-auto-number-document-sections.md)),
+   and resolving and removing the `//TODO` tag that identified the gap.
 6. Sub-agent identifies related existing artifacts in the project's docs
    repo and:
    1. adds or updates the relevant Glossary entry;
@@ -66,9 +67,13 @@ currently reads `//TODO - Define what a use case is`.
       docs link back);
    3. registers the artifact in the project's index/overview doc, if not
       already registered.
-7. Sub-agent commits the changes, referencing the Linear issue, on a branch
+7. Sub-agent generates the artifact's section index
+   ([UC-003](UC-003-index-document-sections.md)) and word index
+   ([UC-004](UC-004-index-document-words.md)): `.index/<slug>.sections.yaml`
+   and `.index/<slug>.words.yaml`.
+8. Sub-agent commits the changes, referencing the Linear issue, on a branch
    in the project's docs repo.
-8. Sub-agent raises a PR against the docs repo for the architect to review.
+9. Sub-agent raises a PR against the docs repo for the architect to review.
 
 ## 5 Postconditions
 
@@ -83,6 +88,8 @@ currently reads `//TODO - Define what a use case is`.
   Linear issue, awaiting human review. PR approval is always a human
   action, never automated (see the weaver-engineering workspace rule that
   agents may never approve PRs).
+* The artifact's `.index/<slug>.sections.yaml` and `.index/<slug>.words.yaml`
+  exist (see step 7).
 
 ## 6 Extensions
 
@@ -95,6 +102,9 @@ currently reads `//TODO - Define what a use case is`.
 * **6a.** Nothing to change after elicitation (concept turns out to already
   be adequately covered) → sub-agent reports this and exits without
   committing.
+* **7a.** [UC-003](UC-003-index-document-sections.md)/[UC-004](UC-004-index-document-words.md)
+  tooling doesn't exist yet (true as of this writing) → `.index/` files are
+  hand-written as a temporary substitute; still required, not skipped.
 
 ## 7 Open Design Questions (not resolved by this use case)
 
@@ -112,6 +122,6 @@ currently reads `//TODO - Define what a use case is`.
   here.
 * **Producing specs/designs from a documented concept** is a separate,
   downstream use case; this one stops at "documented and linked."
-* **Responding to PR review comments** on the PR raised in §4 step 8 is a
+* **Responding to PR review comments** on the PR raised in §4 step 9 is a
   distinct use case in its own right — this one's postcondition is "a PR is
   open," not "the PR is merged," and it ends there.

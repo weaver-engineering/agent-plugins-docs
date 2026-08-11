@@ -10,7 +10,6 @@ preamble:
   producing: 1
   see: 1
   specification: 1
-  user-personas/architect.md: 1
 sections:
   "1":
     project's: 2
@@ -138,9 +137,10 @@ sections:
     typically: 1
     understanding: 1
   "4":
-    sub-agent: 7
+    sub-agent: 8
     artifact: 5
     docs: 5
+    index: 4
     issue: 4
     repo: 4
     architect: 3
@@ -148,6 +148,7 @@ sections:
     exists: 3
     project's: 3
     related: 3
+    uc: 3
     adds: 2
     already: 2
     artifacts: 2
@@ -156,9 +157,11 @@ sections:
     linear: 2
     links: 2
     location: 2
+    slug: 2
     tag: 2
     todo: 2
     against: 1
+    artifact's: 1
     back: 1
     belongs: 1
     bidirectional: 1
@@ -187,6 +190,7 @@ sections:
     entry: 1
     evolved: 1
     gap: 1
+    generates: 1
     glossary: 1
     identified: 1
     identifies: 1
@@ -195,6 +199,7 @@ sections:
     link: 1
     near: 1
     none: 1
+    numbering: 1
     place: 1
     pr: 1
     project: 1
@@ -212,6 +217,9 @@ sections:
     resolving: 1
     review: 1
     revises: 1
+    section: 1
+    sections: 1
+    sections.yaml: 1
     specific: 1
     target: 1
     terms: 1
@@ -219,15 +227,20 @@ sections:
     updated: 1
     updates: 1
     whether: 1
+    word: 1
+    words.yaml: 1
     wvr: 1
   "5":
     docs: 4
     artifact: 2
     concept: 2
     human: 2
+    index: 2
     never: 2
     pr: 2
     repo: 2
+    see: 2
+    slug: 2
     action: 1
     adrs: 1
     against: 1
@@ -237,6 +250,7 @@ sections:
     applicable: 1
     approval: 1
     approve: 1
+    artifact's: 1
     automated: 1
     awaiting: 1
     change: 1
@@ -246,6 +260,7 @@ sections:
     doc: 1
     documentation: 1
     documented: 1
+    exist: 1
     existed: 1
     existing: 1
     exists: 1
@@ -273,17 +288,20 @@ sections:
     resolved: 1
     review: 1
     rule: 1
-    see: 1
+    sections.yaml: 1
     standalone: 1
+    step: 1
     tag: 1
     target: 1
     todo: 1
     updated: 1
     weaver-engineering: 1
+    words.yaml: 1
     workspace: 1
   "6":
     concept: 2
     sub-agent: 2
+    uc: 2
     adequately: 1
     already: 1
     architect: 1
@@ -300,15 +318,20 @@ sections:
     description: 1
     doc: 1
     documented: 1
+    doesn't: 1
     drafting: 1
     elicitation: 1
+    exist: 1
     existing: 1
     exists: 1
     exits: 1
     explicitly: 1
+    files: 1
     fill: 1
     gap: 1
     glossary: 1
+    hand-written: 1
+    index: 1
     index/overview: 1
     merge: 1
     nothing: 1
@@ -316,14 +339,21 @@ sections:
     project: 1
     rename: 1
     reports: 1
+    required: 1
     resolve: 1
     run: 1
+    skipped: 1
+    substitute: 1
     supersede: 1
     surfaces: 1
+    temporary: 1
     term: 1
+    tooling: 1
     treated: 1
+    true: 1
     turns: 1
     without: 1
+    writing: 1
   "7":
     concept: 5
     pr: 4
