@@ -19,3 +19,4 @@ The Loom runs.
 ## 2 User Personas
 
 * [The Architect](analysis/user-personas/architect.md)
+* [The Architect's Assistant](analysis/user-personas/architects-assistant.md)

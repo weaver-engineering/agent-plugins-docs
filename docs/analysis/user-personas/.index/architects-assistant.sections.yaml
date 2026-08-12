@@ -3,19 +3,19 @@ sections:
     title: "Role"
     type: section
     start_line: 9
-    end_line: 12
+    end_line: 16
   "2":
     title: "Goals"
     type: section
-    start_line: 13
-    end_line: 19
+    start_line: 17
+    end_line: 23
   "3":
     title: "Frustrations"
     type: section
-    start_line: 20
-    end_line: 27
+    start_line: 24
+    end_line: 36
   "4":
     title: "Technical Proficiency"
     type: section
-    start_line: 28
-    end_line: 30
+    start_line: 37
+    end_line: 41
