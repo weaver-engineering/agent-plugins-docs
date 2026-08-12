@@ -118,11 +118,11 @@ sections:
     artifact: 8
     concept: 5
     exist: 5
-    index: 4
     issue: 4
     project: 4
     repo: 4
     architect: 3
+    index: 3
     link: 3
     reference: 3
     related: 3
@@ -134,7 +134,6 @@ sections:
     location: 2
     register: 2
     resolve: 2
-    section: 2
     slug: 2
     tag: 2
     todo: 2
@@ -161,7 +160,6 @@ sections:
     entry: 1
     evolve: 1
     gap: 1
-    generate: 1
     glossary: 1
     index/overview: 1
     invoke: 1
@@ -177,15 +175,14 @@ sections:
     remove: 1
     review: 1
     revise: 1
+    section: 1
     sections.yaml: 1
     specific: 1
     target: 1
     term: 1
     uc-002-auto-number-document-sections.md: 1
-    uc-003-index-document-sections.md: 1
-    uc-004-index-document-words.md: 1
+    uc-003-index-a-path.md: 1
     whether: 1
-    word: 1
     words.yaml: 1
     wvr-83: 1
   "Postconditions":
@@ -290,8 +287,7 @@ sections:
     treat: 1
     true: 1
     turn: 1
-    uc-003-index-document-sections.md: 1
-    uc-004-index-document-words.md: 1
+    uc-003-index-a-path.md: 1
     without: 1
     writing: 1
   "Open Design Questions (not resolved by this use case)":
