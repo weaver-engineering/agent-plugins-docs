@@ -1,36 +1,36 @@
 sections:
-  "1":
-    title: "Goal"
+  "Goal":
+    number: "1"
     type: section
-    start_line: 11
-    end_line: 16
-  "2":
-    title: "Trigger"
+    start_line: 12
+    end_line: 17
+  "Trigger":
+    number: "2"
     type: section
-    start_line: 17
-    end_line: 27
-  "3":
-    title: "Preconditions"
+    start_line: 18
+    end_line: 28
+  "Preconditions":
+    number: "3"
     type: section
-    start_line: 28
-    end_line: 44
-  "4":
-    title: "Main Success Scenario"
+    start_line: 29
+    end_line: 45
+  "Main Success Scenario":
+    number: "4"
     type: section
-    start_line: 45
-    end_line: 77
-  "5":
-    title: "Postconditions"
+    start_line: 46
+    end_line: 79
+  "Postconditions":
+    number: "5"
     type: section
-    start_line: 78
-    end_line: 93
-  "6":
-    title: "Extensions"
+    start_line: 80
+    end_line: 95
+  "Extensions":
+    number: "6"
     type: section
-    start_line: 94
-    end_line: 108
-  "7":
-    title: "Open Design Questions (not resolved by this use case)"
+    start_line: 96
+    end_line: 110
+  "Open Design Questions (not resolved by this use case)":
+    number: "7"
     type: section
-    start_line: 109
-    end_line: 127
+    start_line: 111
+    end_line: 129
