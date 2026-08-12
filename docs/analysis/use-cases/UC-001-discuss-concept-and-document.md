@@ -7,6 +7,7 @@ documented concept is out of scope — see §7.
 ## Context
 * [Agent Plugins index](../../agent-plugins.md) - root index for this repo
 * [The Architect](../user-personas/architect.md) - the actor for this use case
+* [The Architect's Assistant](../user-personas/architects-assistant.md) - performs the steps below on the Architect's behalf
 
 ## 1 Goal
 
@@ -44,36 +45,37 @@ currently reads `//TODO - Define what a use case is`.
 
 ## 4 Main Success Scenario
 
-1. Architect invokes the concept-capture tool/sub-agent with the Linear
-   issue reference for the change (e.g. `WVR-83`).
-2. Sub-agent resolves the issue to a target project and, where the issue
-   references a `//TODO` tag, the specific location in the docs repo the
-   concept belongs.
-3. Sub-agent checks whether a documented artifact for the concept already
-   exists at or near that location.
+1. Architect invokes The Assistant with the Linear issue reference for the
+   change (e.g. `WVR-83`).
+2. The Assistant resolves the issue to a target project and, where the
+   issue references a `//TODO` tag, the specific location in the docs repo
+   the concept belongs.
+3. The Assistant checks whether a documented artifact for the concept
+   already exists at or near that location.
    1. If none exists, one will be created.
    2. If one exists, it will be updated in place rather than duplicated.
-4. Sub-agent conducts an elicitation dialogue with the architect, drawing
-   out the concept's current, evolved definition, boundaries, and
+4. The Assistant conducts an elicitation dialogue with the architect,
+   drawing out the concept's current, evolved definition, boundaries, and
    relationships to existing documented terms and concepts.
-5. Sub-agent drafts (or revises) the concept documentation artifact,
+5. The Assistant drafts (or revises) the concept documentation artifact,
    numbering its sections ([UC-002](UC-002-auto-number-document-sections.md)),
    and resolving and removing the `//TODO` tag that identified the gap.
-6. Sub-agent identifies related existing artifacts in the project's docs
-   repo and:
+6. The Assistant identifies related existing artifacts in the project's
+   docs repo and:
    1. adds or updates the relevant Glossary entry;
    2. adds cross-reference links between the artifact and related
       artifacts (bidirectional — the artifact links out, and the related
       docs link back);
    3. registers the artifact in the project's index/overview doc, if not
       already registered.
-7. Sub-agent generates the artifact's section index
+7. The Assistant generates the artifact's section index
    ([UC-003](UC-003-index-document-sections.md)) and word index
    ([UC-004](UC-004-index-document-words.md)): `.index/<slug>.sections.yaml`
    and `.index/<slug>.words.yaml`.
-8. Sub-agent commits the changes, referencing the Linear issue, on a branch
-   in the project's docs repo.
-9. Sub-agent raises a PR against the docs repo for the architect to review.
+8. The Assistant commits the changes, referencing the Linear issue, on a
+   branch in the project's docs repo.
+9. The Assistant raises a PR against the docs repo for the architect to
+   review.
 
 ## 5 Postconditions
 
@@ -94,13 +96,13 @@ currently reads `//TODO - Define what a use case is`.
 ## 6 Extensions
 
 * **2a.** The architect's description conflicts with an existing glossary
-  term or documented concept → sub-agent surfaces the conflict and asks the
-  architect to resolve it (rename, merge, or explicitly supersede) before
-  drafting continues.
+  term or documented concept → The Assistant surfaces the conflict and asks
+  the architect to resolve it (rename, merge, or explicitly supersede)
+  before drafting continues.
 * **4c.** No index/overview doc exists yet for the project → treated as a
   gap to fill as part of this run, not a blocker.
 * **6a.** Nothing to change after elicitation (concept turns out to already
-  be adequately covered) → sub-agent reports this and exits without
+  be adequately covered) → The Assistant reports this and exits without
   committing.
 * **7a.** [UC-003](UC-003-index-document-sections.md)/[UC-004](UC-004-index-document-words.md)
   tooling doesn't exist yet (true as of this writing) → `.index/` files are
