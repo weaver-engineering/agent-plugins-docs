@@ -55,9 +55,9 @@ covers it.
 
 ## 6 Extensions
 
-* Query matches nothing in scope → empty result set, not an error.
-* `@all` or a multi-project `@{slug}@{slug}` spans repos with no shared relevance baseline (e.g. very different
-  doc sizes/densities) → cross-repo score comparability isn't addressed here.
+* **3a.** Query matches nothing in scope → empty result set, not an error.
+* **3b.** `@all` or a multi-project `@{slug}@{slug}` spans repos with no shared relevance baseline (e.g. very
+  different doc sizes/densities) → cross-repo score comparability isn't addressed here.
 
 ## 7 Open Design Questions
 
