@@ -14,7 +14,7 @@ The Loom runs.
 * [UC-003 — Index Document Sections](analysis/use-cases/UC-003-index-document-sections.md) — //TODO, see WVR-89
 * [UC-004 — Index Document Words](analysis/use-cases/UC-004-index-document-words.md) — //TODO, see WVR-90
 * [UC-005 — Search Documentation](analysis/use-cases/UC-005-search-documentation.md) — //TODO, see WVR-91
-* [UC-006 — Extract Document Content](analysis/use-cases/UC-006-extract-document-content.md) — //TODO, see WVR-92
+* [UC-006 — Extract Document Content](analysis/use-cases/UC-006-extract-document-content.md)
 
 ## 2 User Personas
 
