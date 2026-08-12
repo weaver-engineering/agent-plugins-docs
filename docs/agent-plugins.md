@@ -20,3 +20,13 @@ The Loom runs.
 
 * [The Architect](analysis/user-personas/architect.md)
 * [The Architect's Assistant](analysis/user-personas/architects-assistant.md)
+
+## 3 Design
+
+* [Cross-Platform Capability Parity](design/cross-platform-capability-parity.md) — how capability parity between Claude Code and OpenCode is achieved (placeholder, WVR-94)
+* [CI/CD Pipeline & Branch Protection](design/ci-cd-pipeline.md) — the existing GitHub Actions workflows and rulesets for both repos
+
+## 4 Architecture
+
+* [Architecture Definition Document](architecture/architecture-definition-document.md) — what AgentPlugins delivers, for whom, and how it's built and deployed
+* [Capability Catalog](architecture/capability-catalog.md) — living registry of AgentPlugins' sub-agents, tools, and MCP servers

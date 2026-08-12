@@ -1,0 +1,16 @@
+sections:
+  "Sub-Agents":
+    number: "1"
+    type: section
+    start_line: 13
+    end_line: 22
+  "Tools":
+    number: "2"
+    type: section
+    start_line: 23
+    end_line: 26
+  "MCP Servers":
+    number: "3"
+    type: section
+    start_line: 27
+    end_line: 35

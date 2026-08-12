@@ -26,3 +26,34 @@ sections:
   "User Personas":
     analysis/user-personas/architect.md: 1
     analysis/user-personas/architects-assistant.md: 1
+  "Design":
+    design/cross-platform-capability-parity.md: 1
+    capability: 1
+    parity: 1
+    claude: 1
+    code: 1
+    opencode: 1
+    achieved: 1
+    placeholder: 1
+    wvr-94: 1
+    design/ci-cd-pipeline.md: 1
+    existing: 1
+    github: 1
+    actions: 1
+    workflows: 1
+    rulesets: 1
+    repos: 1
+  "Architecture":
+    architecture/architecture-definition-document.md: 1
+    agentplugins: 1
+    delivers: 1
+    built: 1
+    deployed: 1
+    architecture/capability-catalog.md: 1
+    living: 1
+    registry: 1
+    agentplugins: 1
+    sub-agents: 1
+    tools: 1
+    mcp: 1
+    servers: 1
