@@ -1,39 +1,28 @@
-preamble:
-  ai: 1
-  architects: 1
-  automated: 1
-  build: 1
-  cycle: 1
+"Agent Plugins":
+  skill: 1
+  subagent: 1
   help: 1
-  loom: 1
-  outside: 1
-  productively: 1
-  runs: 1
-  skills: 1
-  spec: 1
-  subagents: 1
-  test: 1
   weaver-engineering: 1
+  architect: 1
   work: 1
+  productively: 1
+  ai: 1
+  outside: 1
+  automated: 1
+  spec/test/build: 1
+  cycle: 1
+  loom: 1
+  run: 1
 sections:
-  "1":
-    uc: 6
-    document: 5
-    see: 4
-    todo: 4
-    wvr: 4
-    index: 2
-    sections: 2
-    auto-number: 1
-    concept: 1
-    content: 1
-    discuss: 1
-    documentation: 1
-    extract: 1
-    project: 1
-    search: 1
-    words: 1
-  "2":
-    architect: 1
-    architect's: 1
-    assistant: 1
+  "Use Cases":
+    analysis/use-cases/uc-001-discuss-concept-and-document.md: 1
+    analysis/use-cases/uc-002-auto-number-document-sections.md: 1
+    analysis/use-cases/uc-003-index-a-path.md: 1
+    analysis/use-cases/uc-004-index-document-words.md: 1
+    analysis/use-cases/uc-005-search-documentation.md: 1
+    analysis/use-cases/uc-006-extract-document-content.md: 1
+    merged: 1
+    uc-003: 1
+  "User Personas":
+    analysis/user-personas/architect.md: 1
+    analysis/user-personas/architects-assistant.md: 1

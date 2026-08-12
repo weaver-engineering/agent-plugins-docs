@@ -1,21 +1,35 @@
 preamble:
-  words: 2
-  case: 1
-  counts: 1
+  indexing: 2
+  rather: 2
+  uc: 2
+  added: 1
+  artificial: 1
+  broken: 1
+  cases: 1
+  changed: 1
+  content: 1
+  deleted: 1
   document: 1
-  elicit: 1
-  exclusion: 1
+  driven: 1
+  existing: 1
+  explanation: 1
   index: 1
-  occurrence: 1
-  per-section: 1
-  produces: 1
-  significant: 1
-  slug: 1
-  stopword: 1
-  todo: 1
-  tool: 1
+  left: 1
+  link: 1
+  merged: 1
+  new: 1
+  output: 1
+  path: 1
+  placeholder: 1
+  produce: 1
+  references: 1
+  resolve: 1
+  section-structure: 1
+  separation: 1
+  splitting: 1
+  subject: 1
+  together: 1
+  trigger: 1
   use: 1
-  write: 1
-  wvr: 1
-  yaml: 1
+  word: 1
 sections: {}

@@ -11,10 +11,10 @@ The Loom runs.
 
 * [UC-001 — Discuss A Project Concept And Document It](analysis/use-cases/UC-001-discuss-concept-and-document.md)
 * [UC-002 — Auto-Number Document Sections](analysis/use-cases/UC-002-auto-number-document-sections.md)
-* [UC-003 — Index Document Sections](analysis/use-cases/UC-003-index-document-sections.md) — //TODO, see WVR-89
-* [UC-004 — Index Document Words](analysis/use-cases/UC-004-index-document-words.md) — //TODO, see WVR-90
-* [UC-005 — Search Documentation](analysis/use-cases/UC-005-search-documentation.md) — //TODO, see WVR-91
-* [UC-006 — Extract Document Content](analysis/use-cases/UC-006-extract-document-content.md) — //TODO, see WVR-92
+* [UC-003 — Index A Path](analysis/use-cases/UC-003-index-a-path.md)
+* [UC-004 — Index Document Words (Retired)](analysis/use-cases/UC-004-index-document-words.md) — merged into UC-003
+* [UC-005 — Search Documentation](analysis/use-cases/UC-005-search-documentation.md)
+* [UC-006 — Extract Document Content](analysis/use-cases/UC-006-extract-document-content.md)
 
 ## 2 User Personas
 
