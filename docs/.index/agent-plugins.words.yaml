@@ -19,9 +19,9 @@ sections:
   "1":
     uc: 6
     document: 5
-    see: 5
-    todo: 5
-    wvr: 5
+    see: 4
+    todo: 4
+    wvr: 4
     index: 2
     sections: 2
     auto-number: 1
