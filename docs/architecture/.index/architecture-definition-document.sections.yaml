@@ -1,0 +1,31 @@
+sections:
+  "Capability Model":
+    number: "1"
+    type: section
+    start_line: 7
+    end_line: 32
+  "Platform Targets":
+    number: "2"
+    type: section
+    start_line: 33
+    end_line: 63
+  "Publishing Model":
+    number: "3"
+    type: section
+    start_line: 64
+    end_line: 74
+  "Scope & Document Boundaries":
+    number: "4"
+    type: section
+    start_line: 75
+    end_line: 106
+  "Security Overview":
+    number: "5"
+    type: section
+    start_line: 107
+    end_line: 131
+  "Codebase & Delivery Reference":
+    number: "6"
+    type: section
+    start_line: 132
+    end_line: 149

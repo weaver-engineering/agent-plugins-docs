@@ -8,4 +8,14 @@ sections:
     number: "2"
     type: section
     start_line: 19
-    end_line: 22
+    end_line: 23
+  "Design":
+    number: "3"
+    type: section
+    start_line: 24
+    end_line: 28
+  "Architecture":
+    number: "4"
+    type: section
+    start_line: 29
+    end_line: 32
