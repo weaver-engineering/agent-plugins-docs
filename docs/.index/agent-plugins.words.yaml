@@ -1,4 +1,4 @@
-"Agent Plugins":
+Agent Plugins:
   skill: 1
   subagent: 1
   help: 1
@@ -12,21 +12,21 @@
   spec/test/build: 1
   cycle: 1
   loom: 1
-  run: 1
+  runs.: 1
 sections:
-  "Use Cases":
+  Use Cases:
     analysis/use-cases/uc-001-discuss-concept-and-document.md: 1
     analysis/use-cases/uc-002-auto-number-document-sections.md: 1
     analysis/use-cases/uc-003-index-a-path.md: 1
     analysis/use-cases/uc-004-index-document-words.md: 1
-    analysis/use-cases/uc-005-search-documentation.md: 1
-    analysis/use-cases/uc-006-extract-document-content.md: 1
     merged: 1
     uc-003: 1
-  "User Personas":
+    analysis/use-cases/uc-005-search-documentation.md: 1
+    analysis/use-cases/uc-006-extract-document-content.md: 1
+  User Personas:
     analysis/user-personas/architect.md: 1
     analysis/user-personas/architects-assistant.md: 1
-  "Design":
+  Design:
     design/cross-platform-capability-parity.md: 1
     capability: 1
     parity: 1
@@ -39,21 +39,105 @@ sections:
     design/ci-cd-pipeline.md: 1
     existing: 1
     github: 1
-    actions: 1
-    workflows: 1
-    rulesets: 1
-    repos: 1
-  "Architecture":
+    action: 1
+    workflow: 1
+    ruleset: 1
+    repo: 1
+  Architecture:
     architecture/architecture-definition-document.md: 1
-    agentplugins: 1
-    delivers: 1
+    agentplugin: 2
+    deliver: 1
+    s: 1
     built: 1
     deployed: 1
     architecture/capability-catalog.md: 1
     living: 1
     registry: 1
-    agentplugins: 1
-    sub-agents: 1
-    tools: 1
+    sub-agent: 1
+    tool: 1
     mcp: 1
-    servers: 1
+    server: 1
+  Claude Skills:
+    design: 5
+    proposal: 1
+    candidate: 1
+    claude: 1
+    code: 1
+    skill: 1
+    supporting: 1
+    weaver-engineering: 1
+    s: 2
+    feature: 1
+    process: 1
+    wvr-107: 1
+    '115': 1
+    '117': 1
+    '118': 1
+    architect: 1
+    review: 2
+    implementation.: 1
+    claude-skills/next-unit-of-work-detector/next-unit-of-work-detector-design.md: 1
+    resumability: 1
+    router: 1
+    session: 1
+    start: 1
+    claude-skills/call-tree-reconciler/call-tree-reconciler-design.md: 1
+    forward: 1
+    reverse: 1
+    'calls:': 1
+    /: 3
+    'called_from:': 1
+    consistency: 1
+    claude-skills/pseudocode-subset-checker/pseudocode-subset-checker-design.md: 1
+    cover: 1
+    requirement: 1
+    claude-skills/pseudocode-substitution-checker/pseudocode-substitution-checker-design.md: 1
+    shared: 3
+    stand: 1
+    primitive: 1
+    gap-classifier: 1
+    pseudocode-subset-checker: 1
+    call: 1
+    claude-skills/unexpected-side-effect-scanner/unexpected-side-effect-scanner-design.md: 1
+    anything: 1
+    shouldn: 1
+    t: 1
+    claude-skills/thin-shim-consistency-checker/thin-shim-consistency-checker-design.md: 1
+    catche: 1
+    shim: 1
+    stopped: 1
+    thin: 1
+    claude-skills/unhandled-undeclared-exception-sweep/unhandled-undeclared-exception-sweep-design.md: 1
+    exception: 1
+    caught: 1
+    declared: 1
+    claude-skills/reconciliation-checksum-utility/reconciliation-checksum-utility-design.md: 1
+    falsifiability: 1
+    mechanism: 1
+    four: 1
+    check: 1
+    record: 1
+    through: 1
+    claude-skills/called-from-backward-walker/called-from-backward-walker-design.md: 1
+    find: 1
+    use: 1
+    case: 1
+    affected: 1
+    function: 1
+    change: 1
+    claude-skills/gap-classifier/gap-classifier-design.md: 1
+    as-is: 1
+    extended: 1
+    new: 1
+    scaffolded: 1
+    bound: 1
+    pseudocode: 1
+    recorded: 1
+    gap: 1
+    close: 1
+    claude-skills/specific-behavior-presenter/specific-behavior-presenter-design.md: 1
+    standardised: 1
+    provenance-rich: 1
+    presentation: 1
+    final: 1
+    human: 1
