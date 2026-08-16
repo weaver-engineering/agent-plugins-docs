@@ -58,9 +58,10 @@ which not-yet-built skill (§4) would ordinarily help at each point:
    piece without changing what it describes). *(gap-classifier, itself calling pseudocode-substitution-checker)*
 4. **Ideation & Solution Shape** (§4) — per gap, propose genuinely more than one candidate where plausible, score
    them against the project's NFRs, and **present the choice to the Architect rather than making it** (§5,
-   Constraints). Once every gap in scope is closed: run the merge pass (§4.2), then record each `SB-NNN`'s bound
-   pseudocode (§4.3). *(called-from-backward-walker for cascading-invalidation lookups before an extension is
-   made)*
+   Constraints). Once every gap in scope is closed: run the merge pass (§4.2) — creating and numbering every
+   component's standing document, populating Data Types — then **stop and let the Architect look before
+   continuing** (§5, Constraints); only once they've responded, record each `SB-NNN`'s bound pseudocode (§4.3).
+   *(called-from-backward-walker for cascading-invalidation lookups before an extension is made)*
 5. **Deriving Specific Behaviors** (§5) — establish entry states (eliciting missing detail from the Architect
    directly rather than inventing it), trace each through the bound pseudocode to derive its Then, and present
    the result for the process's own quick sanity check before moving on.
@@ -108,6 +109,11 @@ needed to fall back to manually never gets that evidence.
   content is synced from them by request.
 * **Never edit a use case's Technical Interpretation to reflect a chosen solution** — it is immutable once
   written (Specific Behaviors §2.1); editing it is editing the use case itself, not part of Design.
+* **Always stop once §4.2 finishes**, before starting §4.3 — Solution Shape is fully settled at that point
+  (every component's interface decided, standing document created, Data Types populated) and everything
+  downstream builds directly on it. Commit, push, and wait for the Architect to respond; no separate recorded
+  marker for this, unlike `reconciliation:` — the same session simply doesn't continue unprompted (Design
+  Feature Instructions §4.2's own Rationale explains why no marker is needed here).
 
 ## 6 Cost/Benefit
 

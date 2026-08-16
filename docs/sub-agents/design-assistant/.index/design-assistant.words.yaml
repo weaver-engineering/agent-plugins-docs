@@ -230,7 +230,7 @@ sections:
     substitution: 2
     judgement: 2
     candidate: 2
-    s: 11
+    s: 12
     pseudocode/prose: 1
     stand: 1
     without: 1
@@ -254,17 +254,30 @@ sections:
     nfrs: 1
     present: 3
     choice: 2
-    architect: 3
+    architect: 4
     rather: 2
     making: 1
-    '5': 4
-    constraint: 2
+    '5': 5
+    constraint: 3
     scope: 1
     'closed:': 1
     run: 1
     merge: 1
     pass: 1
     '4.2': 1
+    creating: 1
+    numbering: 1
+    component: 1
+    standing: 1
+    populating: 1
+    data: 1
+    type: 1
+    stop: 1
+    let: 1
+    look: 1
+    continuing: 1
+    ve: 1
+    responded: 1
     record: 1
     bound: 2
     '4.3': 1
@@ -447,26 +460,26 @@ sections:
     never: 5
     work: 1
     project: 1
-    s: 4
+    s: 6
     main/dev: 1
     worktree: 2
-    alway: 2
+    alway: 3
     operate: 1
-    architect: 3
+    architect: 4
     creating: 1
     none: 1
     exist: 1
     per: 1
     global: 1
     rule: 1
-    session: 1
+    session: 2
     workspace: 1
     already: 1
     follows.: 1
     resolve: 1
     named: 1
     human-judgement: 1
-    point: 1
+    point: 2
     unsupervised: 1
     ideation: 1
     choice: 1
@@ -487,7 +500,7 @@ sections:
     review: 1
     '7.2': 1
     presented: 1
-    decided: 1
+    decided: 2
     alone: 1
     regardless: 1
     confident: 1
@@ -521,7 +534,7 @@ sections:
     interpretation: 1
     reflect: 1
     chosen: 1
-    solution: 1
+    solution: 2
     immutable: 1
     written: 1
     specific: 1
@@ -531,6 +544,47 @@ sections:
     itself: 1
     part: 1
     design.: 1
+    stop: 1
+    '4.2': 2
+    finishe: 1
+    starting: 1
+    '4.3': 1
+    shape: 1
+    fully: 1
+    settled: 1
+    component: 1
+    interface: 1
+    standing: 1
+    created: 1
+    data: 1
+    type: 1
+    populated: 1
+    everything: 1
+    downstream: 1
+    build: 1
+    directly: 1
+    it.: 1
+    commit: 1
+    push: 1
+    wait: 1
+    respond: 1
+    separate: 1
+    recorded: 1
+    marker: 2
+    unlike: 1
+    'reconciliation:': 1
+    simply: 1
+    doesn: 1
+    t: 1
+    continue: 1
+    unprompted: 1
+    design: 1
+    feature: 1
+    instruction: 1
+    rationale: 1
+    explain: 1
+    needed: 1
+    .: 1
   Cost/Benefit:
     one-time: 1
     'cost:': 1

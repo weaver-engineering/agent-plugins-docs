@@ -13,24 +13,24 @@ sections:
     number: '3'
     type: section
     start_line: 46
-    end_line: 81
+    end_line: 82
   Skills Are Designed, Not Yet Built:
     number: '4'
     type: section
-    start_line: 82
-    end_line: 98
+    start_line: 83
+    end_line: 99
   Constraints:
     number: '5'
     type: section
-    start_line: 99
-    end_line: 111
+    start_line: 100
+    end_line: 117
   Cost/Benefit:
     number: '6'
     type: section
-    start_line: 112
-    end_line: 126
+    start_line: 118
+    end_line: 132
   Open Questions:
     number: '7'
     type: section
-    start_line: 127
-    end_line: 137
+    start_line: 133
+    end_line: 143
