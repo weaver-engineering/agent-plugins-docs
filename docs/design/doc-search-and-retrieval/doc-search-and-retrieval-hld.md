@@ -29,9 +29,32 @@ not resolve).
 
 ## 2 Solution Overview
 
-*(Not yet populated — depends on Solution Shape (Design Feature Instructions §2.3 / §4), which decides which of
-§5's new candidates actually earn a standing Internal Component document versus staying Chunk-private, per
-Design Directory And HLD §4.3. Gap Analysis (§3, below) is done; this section fills in once Ideation has run.)*
+* `IC-000` — the CLI entry point — four commands, one per use case. Talks to every other component below;
+  nothing else does.
+* `MarkdownParser` — parses a document's headings/figures into pseudo-numbers, references, and start/end lines
+  in one call. Talks to: nothing (pure function over document text).
+* `ScopeResolver` — resolves an `@{scope}` specifier, single or chained. Talks to: nothing (pure function over
+  a specifier string).
+* `AutoNumberer` — computes fresh numbering, maps old→new ids, rewrites headings/references, formats the
+  change report. Talks to: `MarkdownParser`'s output (consumes it, doesn't call it directly — `IC-000` sequences
+  the two).
+* `PathIndexer` — walks a path into independent per-directory units, extracts words/TODOs from each unit's
+  documents. Talks to: `MarkdownParser`'s output, same relationship as `AutoNumberer`.
+* `IndexStore` — reads and writes the persisted `.index/` file format: writes `PathIndexer`'s extracted content,
+  lists/finds-stale/removes entries, and reads matching sections back out for `Searcher`. Talks to: the
+  filesystem directly (§6 — in-process I/O, not an External Dependency).
+  * Data at rest (§4): each of `.sections.yaml`/`.words.yaml`/`.todo.yaml` follows the shape already fixed by
+    the documentation standard (§4) — this design doesn't redefine that shape, only produces and consumes it.
+* `Searcher` — reduces a query, scores `IndexStore`'s matching sections, selects the top N, previews content.
+  Talks to: `IndexStore` (`load_word_index`).
+* `ContentExtractor` — resolves a document and target range, reads verbatim source text. Talks to: the
+  filesystem directly (§6), and `IndexStore`'s persisted `sections.yaml` (to resolve a `§section` reference to a
+  line range) — the one place a component outside `IndexStore` reads its data directly rather than through
+  `IC-000` sequencing two calls.
+
+Not a restatement of the specific behaviors (Design Directory And HLD's own Rationale on why not) — this is the
+map a reader orients from before going anywhere else in this document; §5 carries each component's own function
+list and per-function notes, §7 carries the behaviors themselves once derived.
 
 ## 3 Key Decisions
 
@@ -103,6 +126,18 @@ This resolves the last Open Design Question in scope — every use case's `## 7 
 own requirement) is now either resolved (§3.1-§3.8) or, where genuinely out of this Feature's scope (UC-005's
 cross-repo score comparability, Extension 3b), explicitly left alone rather than silently ignored.
 
+### 3.9 `IC-000`, `AutoNumberer`, `PathIndexer`, `IndexStore`, `Searcher`, `ContentExtractor` Interfaces
+
+Unlike `MarkdownParser` (§3.1) and `ScopeResolver` (§3.3), none of these six components had a genuinely
+competing shape to weigh — each one's functions, and the grouping itself, follow directly from its owning use
+case's own Technical Interpretation (already immutable, already reviewed) plus the review-driven corrections
+already recorded (UC-003's per-unit restructuring, UC-005's query-narrowing). `IC-000`'s own shape is fixed by
+Design Directory And HLD §4.4 (one function per operation, per use case) — not a design choice this Feature
+makes. No separate multi-candidate ideation was run for any of the six; each function/component's own one-line
+note in §5 *is* its justification, not a placeholder pending a fuller writeup. The one real judgement call among
+this group — `IndexStore` vs. `PathIndexer` as two components rather than one — already has its own Rationale
+entry, immediately below.
+
 ## 4 Data Types
 
 *(Not yet populated — depends on the Internal Component interfaces §3/§5 decide.)*
@@ -118,6 +153,14 @@ component two use cases both rely on appears once, both functions nested beneath
 actually earn a standing `IC-NNN` document versus staying Chunk-private (Design Directory And HLD §4.3) is
 still Solution Shape's decision (§2.3/§4), not made here.
 
+* `IC-000` — new — defined in this design — the system's own entry point (Design Directory And HLD §4.4): the
+  CLI's four top-level commands, one per use case in scope. Each is the one operation its own use case performs
+  (§7) and the root of that operation's own call tree.
+  * `auto_number_document` — **new** — CLI entry for UC-002. Calls `MarkdownParser`, `AutoNumberer`.
+  * `index_path` — **new** — CLI entry for UC-003. Calls `MarkdownParser`, `PathIndexer`, `IndexStore`.
+  * `search_documentation` — **new** — CLI entry for UC-005. Calls `ScopeResolver`, `Searcher`, `IndexStore`
+    (`load_word_index`).
+  * `extract_content` — **new** — CLI entry for UC-006. Calls `ScopeResolver`, `ContentExtractor`.
 * `MarkdownParser` — new — defined in this design
   * `parse_markdown_structure` — **new** — decided (§3.1) as one shared component satisfying both UC-002's and
     UC-003's parsing needs, superseding the separately-named `parse_document`/`parse_structure` candidates Gap

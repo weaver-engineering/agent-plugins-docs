@@ -64,33 +64,132 @@ sections:
     placeholder: 1
     resolve: 1
   "Solution Overview":
-    populated: 1
-    depends: 1
-    solution: 1
-    shape: 1
-    design: 1
-    feature: 1
-    instructions: 1
-    decides: 1
+    ic-000: 3
+    cli: 1
+    entry: 1
+    point: 1
+    four: 1
+    commands: 1
+    per: 4
+    use: 1
+    case: 1
+    talks: 7
+    component: 2
+    below: 1
+    nothing: 3
+    else: 1
+    markdownparser: 3
+    parses: 1
+    headings/figures: 1
+    pseudo-numbers: 1
+    references: 1
+    start/end: 1
+    lines: 1
+    call: 2
+    pure: 2
+    function: 2
+    text: 1
+    scoperesolver: 1
+    resolves: 2
+    scope: 1
+    specifier: 2
+    single: 1
+    chained: 1
+    string: 1
+    autonumberer: 2
+    computes: 1
+    fresh: 1
+    numbering: 1
+    maps: 1
+    old: 1
     new: 1
-    candidates: 1
-    actually: 1
-    earn: 1
-    standing: 1
-    internal: 1
-    component: 1
-    versus: 1
-    staying: 1
-    chunk-private: 1
-    per: 1
-    directory: 1
-    gap: 1
-    analysis: 1
-    done: 1
+    ids: 1
+    rewrites: 1
+    headings/references: 1
+    formats: 1
+    change: 1
+    report: 1
+    output: 1
+    consumes: 1
+    directly: 2
+    sequences: 1
+    pathindexer: 3
+    walks: 1
+    path: 1
+    independent: 1
+    per-directory: 1
+    units: 1
+    extracts: 1
+    words/todos: 1
+    unit: 1
+    documents: 1
+    relationship: 1
+    indexstore: 5
+    reads: 4
+    writes: 2
+    persisted: 2
+    file: 1
+    format: 1
+    extracted: 1
+    content: 2
+    lists/finds-stale/removes: 1
+    entries: 1
+    matching: 2
+    sections: 2
+    back: 1
+    searcher: 2
+    filesystem: 2
+    external: 1
+    dependency: 1
+    data: 2
+    rest: 1
+    sections.yaml/words.yaml/todo.yaml: 1
+    follows: 1
+    shape: 2
+    already: 1
+    fixed: 1
+    standard: 1
+    redefine: 1
+    produces: 1
+    reduces: 1
+    query: 1
+    scores: 1
+    selects: 1
+    top: 1
+    n: 1
+    previews: 1
+    load_word_index: 1
+    contentextractor: 2
+    target: 1
+    range: 2
+    verbatim: 1
+    source: 1
+    resolve: 1
     section: 1
-    fills: 1
-    ideation: 1
-    run: 1
+    reference: 1
+    line: 1
+    place: 1
+    outside: 1
+    rather: 1
+    through: 1
+    sequencing: 1
+    calls: 1
+    restatement: 1
+    specific: 1
+    behaviors: 2
+    design: 1
+    rationale: 1
+    why: 1
+    map: 1
+    reader: 1
+    orients: 1
+    going: 1
+    anywhere: 1
+    carries: 2
+    list: 1
+    per-function: 1
+    notes: 1
+    derived: 1
   "Key Decisions": {}
   "`parse_markdown_structure` Interface":
     uc-002: 2
@@ -425,6 +524,72 @@ sections:
     behavior: 1
     none: 1
     decided: 1
+  "`IC-000`, `AutoNumberer`, `PathIndexer`, `IndexStore`, `Searcher`, `ContentExtractor` Interfaces":
+    unlike: 1
+    markdownparser: 1
+    scoperesolver: 1
+    six: 2
+    components: 2
+    genuinely: 1
+    competing: 1
+    shape: 2
+    weigh: 1
+    functions: 1
+    grouping: 1
+    follow: 1
+    directly: 1
+    owning: 1
+    use: 1
+    case: 1
+    technical: 1
+    interpretation: 1
+    already: 3
+    immutable: 1
+    reviewed: 1
+    review-driven: 1
+    corrections: 1
+    recorded: 1
+    uc-003: 1
+    per-unit: 1
+    restructuring: 1
+    uc-005: 1
+    query-narrowing: 1
+    ic-000: 1
+    fixed: 1
+    design: 2
+    directory: 1
+    hld: 1
+    function: 2
+    per: 2
+    operation: 1
+    choice: 1
+    feature: 1
+    makes: 1
+    separate: 1
+    multi-candidate: 1
+    ideation: 1
+    run: 1
+    component: 1
+    one-line: 1
+    note: 1
+    justification: 1
+    placeholder: 1
+    pending: 1
+    fuller: 1
+    writeup: 1
+    real: 1
+    judgement: 1
+    call: 1
+    among: 1
+    group: 1
+    indexstore: 1
+    vs: 1
+    pathindexer: 1
+    rather: 1
+    rationale: 1
+    entry: 1
+    immediately: 1
+    below: 1
   "Data Types":
     populated: 1
     depends: 1
@@ -433,9 +598,23 @@ sections:
     interfaces: 1
     decide: 1
   "Internal Components":
+    ic-000: 1
+    entry: 5
+    point: 1
+    system: 1
+    cli: 5
+    top-level: 1
+    commands: 1
+    performs: 1
+    root: 1
+    tree: 1
+    auto_number_document: 1
+    index_path: 1
+    search_documentation: 1
+    extract_content: 1
     gap: 1
     analysis: 1
-    design: 3
+    design: 8
     feature: 1
     instructions: 1
     result: 1
@@ -486,13 +665,13 @@ sections:
     shape: 1
     decision: 1
     made: 1
-    markdownparser: 1
+    markdownparser: 3
     parse_markdown_structure: 1
     decided: 3
     shared: 2
     satisfying: 1
-    uc-002: 8
-    uc-003: 6
+    uc-002: 9
+    uc-003: 7
     parsing: 1
     needs: 1
     superseding: 1
@@ -500,14 +679,14 @@ sections:
     parse_document/parse_structure: 1
     originally: 2
     surfaced: 2
-    scoperesolver: 1
+    scoperesolver: 2
     resolve_scope_single: 2
     split: 1
     interface: 1
-    uc-005: 9
-    uc-006: 2
+    uc-005: 10
+    uc-006: 3
     resolve_chained_scope: 2
-    calls: 2
+    calls: 6
     specifier: 1
     combines: 1
     results: 1
@@ -515,7 +694,7 @@ sections:
     supersedes: 1
     single: 1
     resolve_scope: 1
-    autonumberer: 1
+    autonumberer: 2
     compute_numbering: 1
     fresh: 1
     numbering: 1
@@ -562,7 +741,7 @@ sections:
     report: 1
     emerges: 1
     built: 2
-    pathindexer: 1
+    pathindexer: 2
     resolve_index_units: 1
     resolves: 1
     recursive/depth: 1
@@ -586,7 +765,7 @@ sections:
     extract_todos: 1
     markers: 1
     text/section/line/ref: 1
-    indexstore: 1
+    indexstore: 3
     write_index_files: 1
     persists: 1
     sections: 1
@@ -602,7 +781,7 @@ sections:
     remove_index_entries: 1
     deletes: 1
     stale: 1
-    load_word_index: 2
+    load_word_index: 3
     reads: 2
     words.yaml: 1
     resolved: 1
@@ -630,7 +809,7 @@ sections:
     persisted: 1
     walking/extracting: 1
     source: 1
-    searcher: 1
+    searcher: 2
     reduce_query: 1
     tokenization/stemming/stopword: 1
     reduction: 1
@@ -650,7 +829,7 @@ sections:
     result: 1
     details: 1
     mode: 1
-    contentextractor: 1
+    contentextractor: 2
     resolve_document: 1
     exact: 1
     slug: 1
