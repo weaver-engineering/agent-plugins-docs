@@ -908,31 +908,61 @@ sections:
     behaviors: 4
     derived: 4
     four: 1
-    use: 1
+    use: 2
     cases: 1
     scope: 1
-    technical: 1
-    interpretation: 1
+    technical: 2
+    interpretation: 2
     identified: 1
     operation: 1
     gap: 1
     analysis: 1
     done: 1
+    individual: 1
     phase: 1
     ideation: 2
-    under: 1
-    way: 1
-    gaps: 1
-    resolved: 1
-    remains: 1
-    named: 1
-    human-judgement: 1
-    point: 1
-    remaining: 1
-    presented: 1
-    architect: 1
-    turn: 1
-    unilaterally: 1
+    resolved: 2
+    case: 2
+    open: 1
+    design: 2
+    question: 1
+    directory: 1
+    hld: 1
+    requirement: 1
+    merge: 2
+    pass: 2
+    run: 1
+    reading: 1
+    nine: 1
+    key: 1
+    decisions: 1
+    together: 1
+    found: 1
+    describing: 1
+    functions: 1
+    real: 1
+    candidate: 1
+    indexstore: 1
+    vs: 1
+    pathindexer: 1
+    already: 1
+    deliberate: 1
+    split: 1
+    entry: 1
+    re-litigating: 1
+    per: 1
+    feature: 1
+    instructions: 1
+    next: 1
+    unit: 1
+    work: 1
+    recording: 1
+    sb-nnn: 1
+    bound: 1
+    pseudocode: 1
+    substituting: 1
+    components: 1
+    relying: 1
   "Technology Stack":
     populated: 1
     inherits: 1

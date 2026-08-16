@@ -232,12 +232,13 @@ exercise these against a temp directory without needing anything external.
 * [SB-004 — Extract Document Content](specific-behaviors/SB-004-extract-document-content.md) - realizes [UC-006](../../analysis/use-cases/UC-006-extract-document-content.md) (stub — behaviors not yet derived)
 
 *(All four use cases in scope now have a Technical Interpretation and an identified operation, Gap Analysis is
-done, and every individual gap from Phase 3 Ideation (§3.1-§3.8) is resolved — including every use case's own
-§7 Open Design Question (Design Directory And HLD §2.1's own requirement). Per Design Feature Instructions §1,
-the next unit of work is §4.2's Merge Pass (checking whether any of §5's still-separately-listed new candidates
-actually turned out to want the same function once visible side by side), followed by deciding which of them
-earn a standing `IC-NNN` document (Design Directory And HLD §4.3) versus staying Chunk-private — populating §2's
-Solution Overview is what that produces.)*
+done, every individual gap from Phase 3 Ideation (§3.1-§3.9) is resolved — including every use case's own §7
+Open Design Question (Design Directory And HLD §2.1's own requirement) — and the Merge Pass (§4.2) has run:
+reading all nine Key Decisions together found no two describing functions that should have been the same one
+(the one real candidate, `IndexStore` vs. `PathIndexer`, was already resolved as a deliberate split at Ideation
+time, in §3.9's own Rationale entry — not something the Merge Pass is re-litigating). Per Design Feature
+Instructions §1, the next unit of work is §4.3: recording each `SB-NNN`'s own bound pseudocode, substituting
+§5's real components into each relying use case's Technical Interpretation.)*
 
 ## 8 Technology Stack
 
