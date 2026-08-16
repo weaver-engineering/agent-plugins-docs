@@ -1,0 +1,26 @@
+sections:
+  "Purpose":
+    number: "0"
+    type: section
+    start_line: 8
+    end_line: 13
+  "`resolve_index_units`":
+    number: "1"
+    type: section
+    start_line: 14
+    end_line: 26
+  "`resolve_documents_in_unit`":
+    number: "2"
+    type: section
+    start_line: 27
+    end_line: 38
+  "`extract_words`":
+    number: "3"
+    type: section
+    start_line: 39
+    end_line: 54
+  "`extract_todos`":
+    number: "4"
+    type: section
+    start_line: 55
+    end_line: 67

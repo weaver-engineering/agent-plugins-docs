@@ -18,19 +18,19 @@ sections:
     number: "4"
     type: section
     start_line: 32
-    end_line: 45
+    end_line: 46
   "Postconditions":
     number: "5"
     type: section
-    start_line: 46
-    end_line: 54
+    start_line: 47
+    end_line: 55
   "Extensions":
     number: "6"
     type: section
-    start_line: 55
-    end_line: 61
+    start_line: 56
+    end_line: 62
   "Open Design Questions":
     number: "7"
     type: section
-    start_line: 62
-    end_line: 65
+    start_line: 63
+    end_line: 66

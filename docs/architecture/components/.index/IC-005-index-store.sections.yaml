@@ -1,0 +1,36 @@
+sections:
+  "Purpose":
+    number: "0"
+    type: section
+    start_line: 8
+    end_line: 13
+  "`write_index_files`":
+    number: "1"
+    type: section
+    start_line: 14
+    end_line: 26
+  "`list_index_entries`":
+    number: "2"
+    type: section
+    start_line: 27
+    end_line: 38
+  "`find_stale_entries`":
+    number: "3"
+    type: section
+    start_line: 39
+    end_line: 50
+  "`remove_index_entries`":
+    number: "4"
+    type: section
+    start_line: 51
+    end_line: 62
+  "`load_word_index`":
+    number: "5"
+    type: section
+    start_line: 63
+    end_line: 76
+  "`read_section_index`":
+    number: "6"
+    type: section
+    start_line: 77
+    end_line: 92

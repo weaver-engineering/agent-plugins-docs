@@ -1,41 +1,291 @@
 sections:
-  "Scope":
-    number: "1"
+  Scope:
+    number: '1'
     type: section
     start_line: 12
     end_line: 29
-  "Solution Overview":
-    number: "2"
+  Solution Overview:
+    number: '2'
     type: section
     start_line: 30
-    end_line: 36
-  "Key Decisions":
-    number: "3"
+    end_line: 62
+  Key Decisions:
+    number: '3'
     type: section
-    start_line: 37
-    end_line: 44
-  "Data Types":
-    number: "4"
+    start_line: 63
+    end_line: 64
+  '`parse_markdown_structure` Interface':
+    number: '3.1'
     type: section
-    start_line: 45
-    end_line: 48
-  "Internal Components":
-    number: "5"
+    start_line: 65
+    end_line: 72
+  'Delivery Surface: CLI Now, MCP Later':
+    number: '3.2'
     type: section
-    start_line: 49
-    end_line: 54
-  "External Dependencies":
-    number: "6"
+    start_line: 73
+    end_line: 83
+  '`resolve_scope` Interface':
+    number: '3.3'
     type: section
-    start_line: 55
-    end_line: 60
-  "Specific Behaviors":
-    number: "7"
+    start_line: 84
+    end_line: 91
+  Filesystem Is Not An External Dependency:
+    number: '3.4'
     type: section
-    start_line: 61
-    end_line: 67
-  "Technology Stack":
-    number: "8"
+    start_line: 92
+    end_line: 98
+  UC-002 Report Format And Exit Codes:
+    number: '3.5'
     type: section
-    start_line: 68
-    end_line: 74
+    start_line: 99
+    end_line: 106
+  UC-003 Recurse/Depth Flags:
+    number: '3.6'
+    type: section
+    start_line: 107
+    end_line: 112
+  UC-006 Out-Of-Bounds Line Range:
+    number: '3.7'
+    type: section
+    start_line: 113
+    end_line: 120
+  UC-005 Algorithm Selection And Details-Mode Defaults:
+    number: '3.8'
+    type: section
+    start_line: 121
+    end_line: 132
+  '`IC-000`, `AutoNumberer`, `PathIndexer`, `IndexStore`, `Searcher`, `ContentExtractor` Interfaces':
+    number: '3.9'
+    type: section
+    start_line: 133
+    end_line: 149
+  '`WordReducer` As Its Own Component':
+    number: '3.10'
+    type: section
+    start_line: 150
+    end_line: 159
+  Data Types:
+    number: '4'
+    type: section
+    start_line: 160
+    end_line: 173
+  '`Heading` (§3.1)':
+    number: '4.1'
+    type: section
+    start_line: 174
+    end_line: 191
+  '`Figure` (§3.1)':
+    number: '4.2'
+    type: section
+    start_line: 192
+    end_line: 204
+  '`PseudoNumberEntry` (§3.1)':
+    number: '4.3'
+    type: section
+    start_line: 205
+    end_line: 217
+  '`ReferenceToken` (§3.1)':
+    number: '4.4'
+    type: section
+    start_line: 218
+    end_line: 230
+  '`LineRange` (§3.1)':
+    number: '4.5'
+    type: section
+    start_line: 231
+    end_line: 241
+  '`ParsedStructure` (§3.1)':
+    number: '4.6'
+    type: section
+    start_line: 242
+    end_line: 256
+  '`Scope` (§3.3)':
+    number: '4.7'
+    type: section
+    start_line: 257
+    end_line: 271
+  '`Unit` (§3.9)':
+    number: '4.8'
+    type: section
+    start_line: 272
+    end_line: 282
+  '`Units` (§3.9)':
+    number: '4.9'
+    type: section
+    start_line: 283
+    end_line: 290
+  '`Documents` (§3.9)':
+    number: '4.10'
+    type: section
+    start_line: 291
+    end_line: 299
+  '`Entry` (§3.9)':
+    number: '4.11'
+    type: section
+    start_line: 300
+    end_line: 313
+  '`Entries` (§3.9)':
+    number: '4.12'
+    type: section
+    start_line: 314
+    end_line: 321
+  '`TodoEntry` (§3.9)':
+    number: '4.13'
+    type: section
+    start_line: 322
+    end_line: 334
+  '`Todos` (§3.9)':
+    number: '4.14'
+    type: section
+    start_line: 335
+    end_line: 342
+  '`WordCounts` (§3.9, §3.10)':
+    number: '4.15'
+    type: section
+    start_line: 343
+    end_line: 351
+  '`WordIndex` (§3.9, §3.10)':
+    number: '4.16'
+    type: section
+    start_line: 352
+    end_line: 365
+  '`Words` (§3.10)':
+    number: '4.17'
+    type: section
+    start_line: 366
+    end_line: 377
+  '`Numbering` (§3.9)':
+    number: '4.18'
+    type: section
+    start_line: 378
+    end_line: 387
+  '`IdMapEntry` (§3.9)':
+    number: '4.19'
+    type: section
+    start_line: 388
+    end_line: 398
+  '`IdMap` (§3.9)':
+    number: '4.20'
+    type: section
+    start_line: 399
+    end_line: 406
+  '`SurvivingReference` (§3.9)':
+    number: '4.21'
+    type: section
+    start_line: 407
+    end_line: 419
+  '`SurvivingReferences` (§3.9)':
+    number: '4.22'
+    type: section
+    start_line: 420
+    end_line: 428
+  '`RenumberedEntry` (§3.9)':
+    number: '4.23'
+    type: section
+    start_line: 429
+    end_line: 440
+  '`RewrittenReference` (§3.9)':
+    number: '4.24'
+    type: section
+    start_line: 441
+    end_line: 452
+  '`RemovedReference` (§3.9)':
+    number: '4.25'
+    type: section
+    start_line: 453
+    end_line: 463
+  '`NumberingReport` (§3.9)':
+    number: '4.26'
+    type: section
+    start_line: 464
+    end_line: 477
+  '`IndexedDocument` (§3.9)':
+    number: '4.27'
+    type: section
+    start_line: 478
+    end_line: 490
+  '`RemovedDocument` (§3.9)':
+    number: '4.28'
+    type: section
+    start_line: 491
+    end_line: 500
+  '`IndexReport` (§3.9)':
+    number: '4.29'
+    type: section
+    start_line: 501
+    end_line: 514
+  '`Reference` (§3.7, §3.9)':
+    number: '4.30'
+    type: section
+    start_line: 515
+    end_line: 527
+  '`TargetRange` (§3.7, §3.9)':
+    number: '4.31'
+    type: section
+    start_line: 528
+    end_line: 539
+  '`DocumentMatches` (§3.9)':
+    number: '4.32'
+    type: section
+    start_line: 540
+    end_line: 548
+  '`SectionIndex` (§3.9)':
+    number: '4.33'
+    type: section
+    start_line: 549
+    end_line: 557
+  '`MatchingSection` (§3.8, §3.9)':
+    number: '4.34'
+    type: section
+    start_line: 558
+    end_line: 570
+  '`MatchingIndex` (§3.8, §3.9)':
+    number: '4.35'
+    type: section
+    start_line: 571
+    end_line: 579
+  '`ScoredNode` (§3.8, §3.9)':
+    number: '4.36'
+    type: section
+    start_line: 580
+    end_line: 593
+  '`Scores` (§3.8, §3.9)':
+    number: '4.37'
+    type: section
+    start_line: 594
+    end_line: 601
+  '`TopResults` (§3.8)':
+    number: '4.38'
+    type: section
+    start_line: 602
+    end_line: 609
+  '`PreviewedResult` (§3.8, §3.9)':
+    number: '4.39'
+    type: section
+    start_line: 610
+    end_line: 621
+  '`Previews` (§3.8, §3.9)':
+    number: '4.40'
+    type: section
+    start_line: 622
+    end_line: 639
+  Internal Components:
+    number: '5'
+    type: section
+    start_line: 640
+    end_line: 722
+  External Dependencies:
+    number: '6'
+    type: section
+    start_line: 723
+    end_line: 730
+  Specific Behaviors:
+    number: '7'
+    type: section
+    start_line: 731
+    end_line: 754
+  Technology Stack:
+    number: '8'
+    type: section
+    start_line: 755
+    end_line: 829

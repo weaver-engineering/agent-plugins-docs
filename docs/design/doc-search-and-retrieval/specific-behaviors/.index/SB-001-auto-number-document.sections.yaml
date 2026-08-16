@@ -1,1 +1,6 @@
-sections: {}
+sections:
+  "Happy Path":
+    number: "1"
+    type: section
+    start_line: 37
+    end_line: 97

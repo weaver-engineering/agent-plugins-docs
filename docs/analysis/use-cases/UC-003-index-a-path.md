@@ -67,3 +67,47 @@ including documents with no numbering at all.
 
 * Exact CLI flags (path vs. recurse vs. depth syntax) are a design-phase concern, deliberately out of scope
   here.
+
+# Appendix
+
+## Technical Interpretation
+
+```
+FUNCTION index_path(path, recursive, depth):
+  units <-- [resolve_index_units - path, recursive, depth]
+  FOR EACH unit IN units:
+    documents <-- [resolve_documents_in_unit - unit]
+    FOR EACH document IN documents:
+      structure <-- [parse_structure - document]
+      words <-- [extract_words - structure]
+      todos <-- [extract_todos - document]
+      [write_index_files - document, structure, words, todos]
+    existing_entries <-- [list_index_entries - unit]
+    stale_entries <-- [find_stale_entries - existing_entries, documents]
+    FOR EACH entry IN stale_entries:
+      [remove_index_entries - entry]
+  RETURN report
+```
+
+One operation: the actor crosses the system boundary once per invocation, regardless of how many units the
+resolved path expands to. Each `unit` is one directory's own immediate `.md` files (or, when `path` names a
+single file directly, that one file) — `[resolve_index_units]` is where MSS step 1's non-recursive-by-default/
+opt-in-recurse rule lives, expanding to many units only when `recursive` is set. Critically, everything inside
+the `FOR EACH unit` loop — resolving that unit's own documents, writing their index files, and cleaning up
+*that unit's own* stale entries — is scoped to one unit at a time, never to the whole recursed `path` at once.
+This is what makes indexing a single file or directory, and indexing a whole recursed tree, the same operation
+repeated rather than two different code paths: each directory's `.index/` stays independently complete and
+correct on its own, matching the documentation standard's own no-aggregation rule (a word/section count is
+never rolled up into an ancestor — §4) applied here to the indexing *process* itself, not just the counts it
+produces. Search (UC-005) can rely on this: indexing one file never requires rebuilding anything beyond that
+file's own directory for the update to be findable.
+
+`[write_index_files]` only ever produces a `sections`/`words`/`todo` file when there's content to hold (MSS
+step 5, Extension 5a) — an empty result is the *absence* of a file, not an empty one, so no separate branch is
+needed here for that case. Each unit's own `existing_entries`/`stale_entries`/removal is MSS step 6, scoped to
+that unit: a document that used to exist in this unit but doesn't anymore leaves an index entry nothing in this
+unit's current `documents` set justifies, and that's what `[find_stale_entries]` identifies for removal within
+this unit only — independent of the per-document loop above it, since it's about documents no longer found in
+*this* unit, not documents that were, and never about any other unit's own entries.
+
+[SB-002 — Index A Path](../../design/doc-search-and-retrieval/specific-behaviors/SB-002-index-a-path.md) - the operation above

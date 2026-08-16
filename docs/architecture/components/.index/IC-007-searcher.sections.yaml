@@ -1,0 +1,26 @@
+sections:
+  "Purpose":
+    number: "0"
+    type: section
+    start_line: 8
+    end_line: 13
+  "`reduce_query`":
+    number: "1"
+    type: section
+    start_line: 14
+    end_line: 27
+  "`score_nodes`":
+    number: "2"
+    type: section
+    start_line: 28
+    end_line: 40
+  "`select_top_n`":
+    number: "3"
+    type: section
+    start_line: 41
+    end_line: 52
+  "`preview_content`":
+    number: "4"
+    type: section
+    start_line: 53
+    end_line: 64

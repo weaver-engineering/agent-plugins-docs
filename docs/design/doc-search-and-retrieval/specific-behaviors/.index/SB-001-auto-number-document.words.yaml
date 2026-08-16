@@ -1,6 +1,26 @@
 "SB-001 — Auto-Number A Document":
   realizes: 1
-  uc-002: 1
+  uc-002: 2
   steps: 1
   "1-8": 1
-sections: {}
+  bound: 1
+  pseudocode: 1
+sections:
+  "Happy Path":
+    assistant: 1
+    auto_number_document: 1
+    call: 1
+    docs/example/sample.md: 2
+    given: 1
+    happy: 2
+    hld: 1
+    ic-000: 1
+    invoked: 1
+    invoked_by: 1
+    numberingreport: 1
+    path: 2
+    realizes: 1
+    report: 1
+    returned: 1
+    rewritten: 1
+    tree: 1
