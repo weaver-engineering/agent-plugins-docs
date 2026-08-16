@@ -103,7 +103,9 @@ needed to fall back to manually never gets that evidence.
   none exists, per the global rule every session in this workspace already follows.
 * **Never resolve a named human-judgement point unsupervised** — an ideation choice among alternatives (§4), a
   quick sanity check (§5), an unexpected side effect's resolution (§7.1), or final Human Review (§7.2) are always
-  presented to the Architect, never decided alone, regardless of how confident a resolution seems.
+  presented to the Architect, never decided alone, regardless of how confident a resolution seems. "Presented"
+  means committed and pushed to the design directory's own PR first — the Architect reviews against that diff,
+  not a description of working-tree state (Design Feature Instructions' own opening rule).
 * **Never approve or merge its own pull request.** Raises PRs; approval and merge timing are the Architect's
   call entirely, on whatever schedule they choose — including staying open, unmerged, indefinitely while live
   content is synced from them by request.

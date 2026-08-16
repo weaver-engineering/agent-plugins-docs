@@ -460,18 +460,18 @@ sections:
     never: 5
     work: 1
     project: 1
-    s: 6
+    s: 7
     main/dev: 1
     worktree: 2
     alway: 3
     operate: 1
-    architect: 4
+    architect: 5
     creating: 1
     none: 1
     exist: 1
     per: 1
     global: 1
-    rule: 1
+    rule: 2
     session: 2
     workspace: 1
     already: 1
@@ -497,14 +497,30 @@ sections:
     '7.1': 1
     final: 1
     human: 1
-    review: 1
+    review: 2
     '7.2': 1
-    presented: 1
+    presented: 2
     decided: 2
     alone: 1
     regardless: 1
     confident: 1
     seems.: 1
+    mean: 1
+    committed: 1
+    pushed: 1
+    design: 3
+    directory: 1
+    pr: 1
+    first: 1
+    against: 1
+    diff: 1
+    description: 1
+    working-tree: 1
+    state: 1
+    feature: 2
+    instruction: 2
+    opening: 1
+    .: 2
     approve: 1
     merge: 2
     pull: 1
@@ -578,13 +594,9 @@ sections:
     t: 1
     continue: 1
     unprompted: 1
-    design: 1
-    feature: 1
-    instruction: 1
     rationale: 1
     explain: 1
     needed: 1
-    .: 1
   Cost/Benefit:
     one-time: 1
     'cost:': 1

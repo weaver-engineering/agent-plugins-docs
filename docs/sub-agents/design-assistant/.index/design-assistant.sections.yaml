@@ -23,14 +23,14 @@ sections:
     number: '5'
     type: section
     start_line: 100
-    end_line: 117
+    end_line: 119
   Cost/Benefit:
     number: '6'
     type: section
-    start_line: 118
-    end_line: 132
+    start_line: 120
+    end_line: 134
   Open Questions:
     number: '7'
     type: section
-    start_line: 133
-    end_line: 143
+    start_line: 135
+    end_line: 145
