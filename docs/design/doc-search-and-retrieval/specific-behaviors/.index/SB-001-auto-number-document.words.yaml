@@ -1,6 +1,8 @@
 "SB-001 — Auto-Number A Document":
   realizes: 1
-  uc-002: 1
+  uc-002: 2
   steps: 1
   "1-8": 1
+  bound: 1
+  pseudocode: 1
 sections: {}

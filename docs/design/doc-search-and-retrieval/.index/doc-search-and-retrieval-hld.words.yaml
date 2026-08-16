@@ -1,6 +1,6 @@
-"Doc Search & Retrieval — High-Level Design": {}
+Doc Search & Retrieval — High-Level Design: {}
 sections:
-  "Scope":
+  Scope:
     design: 3
     covers: 1
     search: 2
@@ -63,7 +63,7 @@ sections:
     separate: 1
     placeholder: 1
     resolve: 1
-  "Solution Overview":
+  Solution Overview:
     ic-000: 3
     cli: 1
     entry: 1
@@ -124,7 +124,7 @@ sections:
     unit: 1
     documents: 1
     relationship: 1
-    calls: 3
+    calls: 1
     word-extraction: 1
     step: 1
     wordreducer: 3
@@ -158,7 +158,6 @@ sections:
     shape: 2
     already: 1
     fixed: 1
-    standard: 1
     redefine: 1
     produces: 1
     reduces: 1
@@ -183,7 +182,6 @@ sections:
     rather: 1
     through: 1
     sequencing: 1
-    calls: 1
     restatement: 1
     specific: 1
     behaviors: 2
@@ -200,8 +198,8 @@ sections:
     per-function: 1
     notes: 1
     derived: 1
-  "Key Decisions": {}
-  "`parse_markdown_structure` Interface":
+  Key Decisions: {}
+  '`parse_markdown_structure` Interface':
     uc-002: 2
     uc-003: 2
     parsing: 1
@@ -232,7 +230,7 @@ sections:
     narrows: 1
     interface: 1
     fields: 1
-  "Delivery Surface: CLI Now, MCP Later":
+  'Delivery Surface: CLI Now, MCP Later':
     feature: 1
     ships: 1
     command-line: 1
@@ -286,7 +284,7 @@ sections:
     flag/format: 1
     subsection: 1
     decided: 1
-  "`resolve_scope` Interface":
+  '`resolve_scope` Interface':
     split: 1
     functions: 1
     rather: 1
@@ -312,7 +310,7 @@ sections:
     left: 1
     caller: 1
     discipline: 1
-  "UC-002 Report Format And Exit Codes":
+  UC-002 Report Format And Exit Codes:
     bare: 1
     invocation: 1
     prints: 1
@@ -357,7 +355,7 @@ sections:
     real: 1
     error: 1
     duplicate_identity: 1
-  "UC-003 Recurse/Depth Flags":
+  UC-003 Recurse/Depth Flags:
     recursive: 3
     opts: 1
     walking: 1
@@ -382,7 +380,7 @@ sections:
     means: 1
     something: 1
     recursion: 1
-  "UC-006 Out-Of-Bounds Line Range":
+  UC-006 Out-Of-Bounds Line Range:
     clamped: 1
     error: 1
     requested: 1
@@ -391,11 +389,11 @@ sections:
     capped: 1
     actually: 1
     exists: 1
-    "40-200": 1
+    40-200: 1
     50-line: 1
     returns: 1
     lines: 1
-    "40-50": 1
+    40-50: 1
     consistent: 1
     use: 1
     case: 2
@@ -420,7 +418,7 @@ sections:
     reference: 1
     entirely: 1
     partially-satisfiable: 1
-  "UC-005 Algorithm Selection And Details-Mode Defaults":
+  UC-005 Algorithm Selection And Details-Mode Defaults:
     three: 2
     independent: 1
     flags: 1
@@ -483,7 +481,7 @@ sections:
     alone: 1
     silently: 1
     ignored: 1
-  "Filesystem Is Not An External Dependency":
+  Filesystem Is Not An External Dependency:
     confirmed: 1
     reasoned: 1
     file-touching: 1
@@ -534,7 +532,7 @@ sections:
     behavior: 1
     none: 1
     decided: 1
-  "`IC-000`, `AutoNumberer`, `PathIndexer`, `IndexStore`, `Searcher`, `ContentExtractor` Interfaces":
+  '`IC-000`, `AutoNumberer`, `PathIndexer`, `IndexStore`, `Searcher`, `ContentExtractor` Interfaces':
     unlike: 1
     markdownparser: 1
     scoperesolver: 1
@@ -600,7 +598,7 @@ sections:
     entry: 1
     immediately: 1
     below: 1
-  "`WordReducer` As Its Own Component":
+  '`WordReducer` As Its Own Component':
     extract_words: 2
     pathindexer: 1
     reduce_query: 2
@@ -650,19 +648,19 @@ sections:
     structural: 1
     maintained-by-hand: 1
     invariant: 1
-  "Data Types":
+  Data Types:
     populated: 1
     depends: 1
     internal: 1
     component: 1
     interfaces: 1
     decide: 1
-  "Internal Components":
-    ic-000: 1
+  Internal Components:
+    ic-000: 2
     entry: 5
     point: 1
     system: 1
-    cli: 5
+    cli: 6
     top-level: 1
     commands: 1
     performs: 1
@@ -674,29 +672,16 @@ sections:
     extract_content: 1
     gap: 1
     analysis: 1
-    design: 8
-    feature: 1
+    feature: 2
     instructions: 1
-    result: 1
     docs/architecture/components/: 1
-    existing: 1
     entries: 3
     project: 1
     confirmed: 1
     directly: 1
-    assumed: 1
-    candidate: 3
-    function: 4
-    four: 1
-    technical: 1
-    interpretations: 1
-    collectively: 1
-    name: 1
-    classifies: 1
+    candidate: 2
+    function: 5
     new: 31
-    nothing: 1
-    compare: 1
-    against: 2
     grouped: 1
     component: 5
     belongs: 1
@@ -704,27 +689,12 @@ sections:
     per: 1
     weaver-engineering/docs: 1
     surface: 1
-    first: 1
-    use: 4
-    cases: 1
-    rely: 1
-    appears: 1
-    once: 1
-    nested: 1
-    beneath: 1
-    components: 2
-    actually: 1
-    earn: 1
+    first: 2
+    use: 3
+    components: 1
     standing: 1
     ic-nnn: 1
-    versus: 1
-    staying: 1
-    chunk-private: 1
-    still: 1
-    solution: 1
     shape: 1
-    decision: 1
-    made: 1
     markdownparser: 3
     parse_markdown_structure: 1
     decided: 3
@@ -744,9 +714,9 @@ sections:
     split: 1
     interface: 1
     uc-005: 10
-    uc-006: 3
+    uc-006: 4
     resolve_chained_scope: 2
-    calls: 6
+    calls: 3
     specifier: 1
     combines: 1
     results: 1
@@ -800,8 +770,8 @@ sections:
     common: 1
     report: 1
     emerges: 1
-    built: 2
-    pathindexer: 2
+    built: 1
+    pathindexer: 3
     resolve_index_units: 1
     resolves: 1
     recursive/depth: 1
@@ -820,18 +790,15 @@ sections:
     significant: 1
     words: 1
     node: 2
-    calls: 1
     wordreducer.reduce_words: 1
     text: 1
     records: 1
-    result: 1
-    against: 1
     standard: 1
-    rules: 1
+    rules: 2
     extract_todos: 1
     markers: 1
     text/section/line/ref: 1
-    indexstore: 3
+    indexstore: 5
     write_index_files: 1
     persists: 1
     sections: 1
@@ -847,14 +814,14 @@ sections:
     remove_index_entries: 1
     deletes: 1
     stale: 1
-    load_word_index: 3
-    reads: 2
+    load_word_index: 4
+    reads: 3
     words.yaml: 1
     resolved: 1
     scope: 2
     filtered: 1
     reduced: 1
-    query: 1
+    query: 3
     precursor: 1
     returns: 1
     matching: 2
@@ -863,8 +830,7 @@ sections:
     word: 1
     count: 1
     whole: 1
-    scoped: 1
-    tree: 1
+    scoped: 2
     read: 1
     side: 1
     index: 1
@@ -878,7 +844,6 @@ sections:
     wordreducer: 1
     reduce_words: 1
     tokenization/stemming/stopword: 2
-    rules: 2
     applied: 1
     given: 1
     case-fold: 1
@@ -889,24 +854,19 @@ sections:
     inside: 1
     token: 1
     plurals/possessives: 1
-    root: 1
     drop: 1
     stopwords: 1
     reducing: 2
     full: 1
     implementation: 1
-    independently: 1
     claiming: 1
     apply: 1
     searcher: 3
     reduce_query: 2
     reduction: 1
-    query: 2
     string: 1
     call: 1
-    directly: 1
     mechanically: 1
-    built: 1
     equivalent: 1
     reimplemented: 1
     score_nodes: 1
@@ -922,21 +882,19 @@ sections:
     max-results: 1
     preview_content: 1
     lines: 1
-    result: 1
     details: 1
     mode: 1
-    contentextractor: 2
+    contentextractor: 3
     resolve_document: 1
     exact: 1
     slug: 1
     wildcard: 1
-    match: 1
+    match: 2
     cardinality: 1
     covers: 1
     resolve_target_range: 1
     line: 1
     range: 1
-    both: 1
     section_not_found: 1
     find_closest_section: 1
     nearest: 1
@@ -947,7 +905,38 @@ sections:
     actual: 1
     bounds: 1
     reconstructed: 1
-  "External Dependencies":
+    ../../architecture/components/ic-005-index-store.md: 1
+    ../../architecture/components/ic-008-content-extractor.md: 1
+    document's: 1
+    classified: 1
+    ../../architecture/components/ic-002-scope-resolver.md: 1
+    ../../architecture/components/ic-000-docs-tooling-cli.md: 1
+    exposes: 1
+    created: 1
+    binding: 1
+    also: 1
+    tooling: 1
+    ../../architecture/components/ic-006-word-reducer.md: 1
+    added: 1
+    had: 1
+    pass: 1
+    ../../architecture/components/ic-007-searcher.md: 1
+    docs: 1
+    ../../architecture/components/ic-004-path-indexer.md: 1
+    section: 1
+    boundaries: 1
+    addition: 1
+    ../../architecture/components/ic-001-markdown-parser.md: 1
+    while: 1
+    ../../architecture/components/ic-003-auto-numberer.md: 1
+    nor: 1
+    read_section_index: 3
+    merge: 1
+    project's: 1
+    neither: 1
+    18's: 1
+    numbered: 1
+  External Dependencies:
     none: 1
     identified: 1
     confirmed: 1
@@ -990,7 +979,7 @@ sections:
     needing: 1
     anything: 1
     external: 1
-  "Specific Behaviors":
+  Specific Behaviors:
     specific-behaviors/sb-001-auto-number-document.md: 1
     ../../analysis/use-cases/uc-002-auto-number-document-sections.md: 1
     specific-behaviors/sb-002-index-a-path.md: 1
@@ -1001,32 +990,32 @@ sections:
     ../../analysis/use-cases/uc-006-extract-document-content.md: 1
     realizes: 4
     stub: 4
-    behaviors: 4
+    behaviors: 5
     derived: 4
     four: 1
-    use: 2
+    use: 1
     cases: 1
     scope: 1
-    technical: 2
-    interpretation: 2
+    technical: 1
+    interpretation: 1
     identified: 1
     operation: 1
     gap: 1
     analysis: 1
-    done: 1
+    done: 3
     individual: 1
     phase: 1
     ideation: 2
     resolved: 2
     case: 2
     open: 1
-    design: 2
+    design: 3
     question: 1
     directory: 1
     hld: 1
     requirement: 1
-    merge: 2
-    pass: 2
+    merge: 1
+    pass: 1
     run: 1
     reading: 1
     ten: 1
@@ -1054,30 +1043,67 @@ sections:
     caught: 1
     review: 1
     rather: 1
-    merge: 1
-    pass: 1
     itself: 1
     second: 1
     decision: 1
     compare: 1
     against: 1
     anything: 1
-    first: 1
+    first: 3
     drafted: 1
-    per: 1
-    feature: 1
-    instructions: 1
+    per: 3
+    feature: 4
+    instructions: 2
     next: 1
     unit: 1
     work: 1
-    recording: 1
-    sb-nnn: 1
+    sb-nnn: 2
     bound: 1
     pseudocode: 1
-    substituting: 1
-    components: 1
-    relying: 1
-  "Technology Stack":
+    internal: 1
+    presented: 1
+    onward: 1
+    deriving: 1
+    project: 1
+    sb-nnn`'s: 1
+    citing: 1
+    includes: 1
+    standing: 1
+    external: 1
+    addresses: 1
+    behavior: 1
+    check: 1
+    had: 1
+    pr: 1
+    architect: 1
+    test: 1
+    weaver-engineering/docs: 1
+    ic-000: 2
+    block: 1
+    half: 1
+    component: 2
+    unconditional: 1
+    quick: 1
+    too: 1
+    qualify: 1
+    self-approved: 1
+    sanity: 1
+    actual: 1
+    project's: 1
+    recorded: 1
+    needs: 1
+    human-judgement: 1
+    ic-nnn: 1
+    point: 1
+    dependency: 1
+    freshly-derived: 1
+    named: 2
+    specific: 1
+    included: 1
+    also: 1
+    docs/architecture/components/: 1
+    remaining: 1
+  Technology Stack:
     populated: 1
     inherits: 1
     workspace: 2

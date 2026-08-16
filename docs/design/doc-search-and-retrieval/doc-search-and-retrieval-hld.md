@@ -158,33 +158,31 @@ rule now lives in exactly one place, and staying consistent is structural, not a
 
 ## 5 Internal Components
 
-Gap Analysis (Design Feature Instructions §3) result: `docs/architecture/components/` has no existing entries
-for this project (confirmed directly, not assumed), so every candidate function the four Technical
-Interpretations collectively name classifies **new** — there is nothing existing to compare any of them
-against. Grouped below by which component each function actually belongs to (Design Directory And HLD §5
-template, per `weaver-engineering/docs` PR #17), not by which use case happened to surface it first — a
-component two use cases both rely on appears once, both functions nested beneath it. Which of these components
-actually earn a standing `IC-NNN` document versus staying Chunk-private (Design Directory And HLD §4.3) is
-still Solution Shape's decision (§2.3/§4), not made here.
+Gap Analysis (Design Feature Instructions §3) confirmed `docs/architecture/components/` had no existing entries
+for this project, so every function classified **new**. Grouped by which component each function actually
+belongs to (Design Directory And HLD §5 template), not by which use case happened to surface it first. Every
+component below now has its own standing `IC-NNN` document, created and numbered per `weaver-engineering/docs`
+PR #18's own addition to §4.2 (the Merge Pass) — including `IC-000` itself, since this is the project's first
+Feature.
 
-* `IC-000` — new — defined in this design — the system's own entry point (Design Directory And HLD §4.4): the
-  CLI's four top-level commands, one per use case in scope. Each is the one operation its own use case performs
-  (§7) and the root of that operation's own call tree.
+* [`IC-000` — Docs Tooling CLI](../../architecture/components/IC-000-docs-tooling-cli.md) — the system's own
+  entry point (Design Directory And HLD §4.4): the CLI's four top-level commands, one per use case in scope.
+  Each is the one operation its own use case performs (§7) and the root of that operation's own call tree.
   * `auto_number_document` — **new** — CLI entry for UC-002. Calls `MarkdownParser`, `AutoNumberer`.
   * `index_path` — **new** — CLI entry for UC-003. Calls `MarkdownParser`, `PathIndexer`, `IndexStore`.
   * `search_documentation` — **new** — CLI entry for UC-005. Calls `ScopeResolver`, `Searcher`, `IndexStore`
     (`load_word_index`).
   * `extract_content` — **new** — CLI entry for UC-006. Calls `ScopeResolver`, `ContentExtractor`.
-* `MarkdownParser` — new — defined in this design
+* [`MarkdownParser`](../../architecture/components/IC-001-markdown-parser.md) — new
   * `parse_markdown_structure` — **new** — decided (§3.1) as one shared component satisfying both UC-002's and
     UC-003's parsing needs, superseding the separately-named `parse_document`/`parse_structure` candidates Gap
     Analysis originally surfaced. Used by UC-002, UC-003.
-* `ScopeResolver` — new — defined in this design
+* [`ScopeResolver`](../../architecture/components/IC-002-scope-resolver.md) — new
   * `resolve_scope_single` — **new** — decided (§3.3) as a split interface. Used by UC-005, UC-006.
   * `resolve_chained_scope` — **new** — calls `resolve_scope_single` once per specifier and combines results.
     Used by UC-005 only — UC-006 has no path to it at all (§3.3). Supersedes the single `resolve_scope`
     candidate Gap Analysis originally surfaced.
-* `AutoNumberer` — new — defined in this design
+* [`AutoNumberer`](../../architecture/components/IC-003-auto-numberer.md) — new
   * `compute_numbering` — **new** — fresh numbering by document position and heading depth. Used by UC-002.
   * `build_id_map` — **new** — old→new id map keyed by pseudo-number and title; raises `duplicate_identity`
     (Extension 3b). Used by UC-002.
@@ -195,14 +193,14 @@ still Solution Shape's decision (§2.3/§4), not made here.
   * `format_report` — **new** — human-readable or machine-consumable per `invoked_by`/`--json` (§3.5). Used by
     UC-002. Not (yet) shared with the other three use cases' own output — each currently formats its own
     result independently; revisit if a common report shape emerges once all four are actually built.
-* `PathIndexer` — new — defined in this design
+* [`PathIndexer`](../../architecture/components/IC-004-path-indexer.md) — new
   * `resolve_index_units` — **new** — resolves `path`/`recursive`/`depth` to independent per-directory units
     (§5's own note below on why this isn't one flat document list). Used by UC-003.
   * `resolve_documents_in_unit` — **new** — one unit's own immediate `.md` documents. Used by UC-003.
   * `extract_words` — **new** — significant words per node: calls `WordReducer.reduce_words` per node's own
     text, then records the result against that node (documentation standard §4 rules). Used by UC-003.
   * `extract_todos` — **new** — `//TODO`-style markers with text/section/line/ref. Used by UC-003.
-* `IndexStore` — new — defined in this design
+* [`IndexStore`](../../architecture/components/IC-005-index-store.md) — new
   * `write_index_files` — **new** — persists `sections`/`words`/`todo` `.index/` files for one document; omits
     a file with no content to hold (Extension 5a). Used by UC-003.
   * `list_index_entries` — **new** — existing `.index/` entries for one unit. Used by UC-003.
@@ -213,13 +211,16 @@ still Solution Shape's decision (§2.3/§4), not made here.
     plus each one's total word count, not the whole scoped tree. Used by UC-005. Read side of the same `.index/`
     file format `PathIndexer`'s functions write — grouped here with the other file-level operations rather than
     with `PathIndexer`, since it's about the persisted format, not about walking/extracting from source `.md`.
-* `WordReducer` — new — defined in this design
+  * `read_section_index` — **new** — added while binding `ContentExtractor` (§4.3): reads one document's own
+    section boundaries directly, which neither `load_word_index` (scoped to a query match) nor any
+    `PathIndexer` function exposes. Used by UC-006.
+* [`WordReducer`](../../architecture/components/IC-006-word-reducer.md) — new
   * `reduce_words` — **new** — the documentation standard's own §4 tokenization/stemming/stopword rules,
     applied to any given text: case-fold, strip punctuation except the characters that stay inside a token,
     reduce plurals/possessives to their root, drop stopwords. Used by `PathIndexer` (`extract_words`, reducing a
     node's full text) and `Searcher` (`reduce_query`, reducing a query string) — the one place both actually
     call the same implementation, rather than each independently claiming to apply "the same rules."
-* `Searcher` — new — defined in this design
+* [`Searcher`](../../architecture/components/IC-007-searcher.md) — new
   * `reduce_query` — **new** — calls `WordReducer.reduce_words` on the query string, so it's mechanically the
     same reduction the index itself was built with, not just an equivalent one reimplemented independently.
     Used by UC-005.
@@ -228,13 +229,13 @@ still Solution Shape's decision (§2.3/§4), not made here.
   * `select_top_n` — **new** — top `--max-results` results (§3.8). Used by UC-005.
   * `preview_content` — **new** — first `--preview-lines` lines per result in details mode (§3.8). Used by
     UC-005.
-* `ContentExtractor` — new — defined in this design
+* [`ContentExtractor`](../../architecture/components/IC-008-content-extractor.md) — new
   * `resolve_document` — **new** — exact path or `**{slug}` wildcard match; cardinality covers Extensions
     2a/2b. Used by UC-006.
   * `resolve_target_range` — **new** — whole document, `§section`, line range, or both; raises
-    `section_not_found` (Extension 3a). Used by UC-006.
-  * `find_closest_section` — **new** — nearest matching section on a `section_not_found` failure. Used by
-    UC-006.
+    `section_not_found` (Extension 3a); calls `IndexStore` (`read_section_index`). Used by UC-006.
+  * `find_closest_section` — **new** — nearest matching section on a `section_not_found` failure; also calls
+    `IndexStore` (`read_section_index`). Used by UC-006.
   * `read_source_text` — **new** — reads verbatim source text at a resolved range, clamped to actual bounds
     (§3.7), never reconstructed from index data. Used by UC-006.
 
@@ -261,9 +262,14 @@ reading all ten Key Decisions together found no two describing functions that sh
 time, in §3.9's own Rationale entry — not something the Merge Pass is re-litigating; `WordReducer`, §3.10, was
 the opposite finding — two independent implementations that should have been one — caught by review rather than
 by the Merge Pass itself, since it wasn't yet a second Key Decision to compare against anything when first
-drafted). Per Design Feature Instructions §1, the next unit of work is §4.3: recording each `SB-NNN`'s own bound
-pseudocode, substituting
-§5's real components into each relying use case's Technical Interpretation.)*
+drafted). §4.2's remaining half is also done: every Internal Component or External Dependency named in §5/§6
+now has its own standing `IC-NNN` document under `docs/architecture/components/` — unconditional per Design
+Feature Instructions §4.2 (`weaver-engineering/docs` PR #18), not a test any of them had to qualify for —
+`IC-000` included, since this was the project's first Feature and `IC-000` is the one component every project
+needs from its own first Feature onward (§4.2). §4.3 is done too: each `SB-NNN`'s own Bound Pseudocode block is
+recorded, citing real addresses. Per Design Feature Instructions §1, the next unit of work is §5 — deriving each `SB-NNN`'s
+actual specific behaviors, one `SB-NNN` at a time — which includes its own named human-judgement point (a quick
+sanity check per freshly-derived behavior, presented to the architect, never self-approved).)*
 
 ## 8 Technology Stack
 

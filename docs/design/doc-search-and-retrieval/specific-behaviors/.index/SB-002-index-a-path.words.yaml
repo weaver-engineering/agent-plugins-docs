@@ -1,6 +1,8 @@
 "SB-002 — Index A Path":
   realizes: 1
-  uc-003: 1
+  uc-003: 2
   steps: 1
   "1-6": 1
+  bound: 1
+  pseudocode: 1
 sections: {}

@@ -1,5 +1,5 @@
 todos:
-  - text: "Derive this operation's specific behaviors (Design Feature Instructions §5), once Gap Analysis (§3) and Ideation (§4.1-§4.3) have produced bound pseudocode for it. Given/When/Then and Call Tree aren't known yet."
+  - text: "Derive this operation's specific behaviors (Design Feature Instructions §5): establish every valid entry state (Given) from UC-002's own Preconditions/Extensions, trace each through the bound pseudocode above, and present each resulting behavior for a quick sanity check. Given/When/Then and Call Tree aren't recorded yet."
     section: "SB-001 — Auto-Number A Document"
-    line: 9
+    line: 37
     ref: null

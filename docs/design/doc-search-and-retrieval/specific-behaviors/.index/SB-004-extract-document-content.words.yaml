@@ -1,6 +1,8 @@
 "SB-004 — Extract Document Content":
   realizes: 1
-  uc-006: 1
+  uc-006: 2
   steps: 1
   "1-4": 1
+  bound: 1
+  pseudocode: 1
 sections: {}

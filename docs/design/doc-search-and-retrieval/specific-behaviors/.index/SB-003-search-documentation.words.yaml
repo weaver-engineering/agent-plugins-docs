@@ -1,6 +1,8 @@
 "SB-003 — Search Documentation":
   realizes: 1
-  uc-005: 1
+  uc-005: 2
   steps: 1
   "1-5": 1
+  bound: 1
+  pseudocode: 1
 sections: {}

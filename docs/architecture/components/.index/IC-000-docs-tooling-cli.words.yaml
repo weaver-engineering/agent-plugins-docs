@@ -1,0 +1,74 @@
+"IC-000 — Docs Tooling CLI":
+  system: 1
+  interface: 1
+  entry: 1
+  point: 1
+sections:
+  "Purpose":
+    system: 1
+    entry: 1
+    point: 1
+    design: 2
+    directory: 2
+    hld: 2
+    function: 2
+    cli: 1
+    command: 3
+    use: 1
+    case: 1
+    scope: 1
+    project: 1
+    first: 1
+    feature: 2
+    document: 2
+    exist: 1
+    later: 1
+    adding: 1
+    new: 2
+    extends: 1
+    numbered: 1
+    creating: 1
+    competing: 1
+    ownership: 1
+    rule: 1
+  "`auto_number_document`":
+    cli: 1
+    entry: 1
+    uc-002: 1
+    auto-number: 1
+    document: 2
+    sections: 1
+    auto_number_document: 1
+    invoked_by: 1
+    report: 1
+  "`index_path`":
+    cli: 1
+    entry: 1
+    uc-003: 1
+    index: 1
+    path: 2
+    index_path: 1
+    recursive: 1
+    depth: 1
+    report: 1
+  "`search_documentation`":
+    cli: 1
+    entry: 1
+    uc-005: 1
+    search: 1
+    documentation: 1
+    search_documentation: 1
+    query: 1
+    scope: 1
+    mode: 1
+    results: 1
+  "`extract_content`":
+    cli: 1
+    entry: 1
+    uc-006: 1
+    extract: 1
+    document: 1
+    content: 2
+    extract_content: 1
+    reference: 1
+    scope_hint: 1

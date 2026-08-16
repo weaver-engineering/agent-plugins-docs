@@ -1,0 +1,11 @@
+sections:
+  "Purpose":
+    number: "0"
+    type: section
+    start_line: 8
+    end_line: 12
+  "`parse_markdown_structure`":
+    number: "1"
+    type: section
+    start_line: 13
+    end_line: 29
