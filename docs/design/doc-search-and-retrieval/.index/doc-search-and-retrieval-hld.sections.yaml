@@ -63,19 +63,19 @@ sections:
     number: "5"
     type: section
     start_line: 110
-    end_line: 138
+    end_line: 175
   "External Dependencies":
     number: "6"
     type: section
-    start_line: 139
-    end_line: 147
+    start_line: 176
+    end_line: 183
   "Specific Behaviors":
     number: "7"
     type: section
-    start_line: 148
-    end_line: 162
+    start_line: 184
+    end_line: 198
   "Technology Stack":
     number: "8"
     type: section
-    start_line: 163
-    end_line: 169
+    start_line: 199
+    end_line: 205

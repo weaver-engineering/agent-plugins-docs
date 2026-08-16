@@ -112,38 +112,74 @@ cross-repo score comparability, Extension 3b), explicitly left alone rather than
 Gap Analysis (Design Feature Instructions §3) result: `docs/architecture/components/` has no existing entries
 for this project (confirmed directly, not assumed), so every candidate function the four Technical
 Interpretations collectively name classifies **new** — there is nothing existing to compare any of them
-against. This is the inventory Gap Analysis produces; which of these actually earn a standing `IC-NNN` document
-versus staying Chunk-private (Design Directory And HLD §4.3) is Solution Shape's decision (§2.3/§4), not yet
-made here.
+against. Grouped below by which component each function actually belongs to (Design Directory And HLD §5
+template, per `weaver-engineering/docs` PR #17), not by which use case happened to surface it first — a
+component two use cases both rely on appears once, both functions nested beneath it. Which of these components
+actually earn a standing `IC-NNN` document versus staying Chunk-private (Design Directory And HLD §4.3) is
+still Solution Shape's decision (§2.3/§4), not made here.
 
-* `resolve_scope_single`, `resolve_chained_scope` — **new** — decided (§3.3) as a split interface: both UC-005
-  and UC-006 call `resolve_scope_single`; only UC-005 also calls `resolve_chained_scope`, which itself calls
-  `resolve_scope_single` per specifier. Supersedes the single `resolve_scope` candidate Gap Analysis originally
-  surfaced.
-* `parse_markdown_structure` — **new** — decided (§3.1) as one shared component satisfying both UC-002's and
-  UC-003's parsing needs, superseding the separately-named `parse_document`/`parse_structure` candidates Gap
-  Analysis originally surfaced.
-* `compute_numbering`, `build_id_map`, `find_surviving_references`, `rewrite_headings`, `rewrite_references`,
-  `format_report` — **new** (UC-002).
-* `resolve_index_units`, `resolve_documents_in_unit`, `extract_words`, `extract_todos`, `write_index_files`,
-  `list_index_entries`, `find_stale_entries`, `remove_index_entries` — **new** (UC-003). Revised from an
-  earlier single `resolve_documents` after review: recursion has to resolve to independent per-directory
-  *units*, each with its own document set, not one flat list spanning the whole recursed tree — see UC-003's
-  own Technical Interpretation for why.
-* `reduce_query`, `load_word_index`, `score_nodes`, `select_top_n`, `preview_content` — **new** (UC-005).
-  `reduce_query` and `load_word_index`'s own signature (taking the reduced query, not just scope) are additions
-  after review: search needs to load only the index sections the reduced query actually matches, not the whole
-  scoped tree.
-* `resolve_document`, `resolve_target_range`, `find_closest_section`, `read_source_text` — **new** (UC-006).
+* `MarkdownParser` — new — defined in this design
+  * `parse_markdown_structure` — **new** — decided (§3.1) as one shared component satisfying both UC-002's and
+    UC-003's parsing needs, superseding the separately-named `parse_document`/`parse_structure` candidates Gap
+    Analysis originally surfaced. Used by UC-002, UC-003.
+* `ScopeResolver` — new — defined in this design
+  * `resolve_scope_single` — **new** — decided (§3.3) as a split interface. Used by UC-005, UC-006.
+  * `resolve_chained_scope` — **new** — calls `resolve_scope_single` once per specifier and combines results.
+    Used by UC-005 only — UC-006 has no path to it at all (§3.3). Supersedes the single `resolve_scope`
+    candidate Gap Analysis originally surfaced.
+* `AutoNumberer` — new — defined in this design
+  * `compute_numbering` — **new** — fresh numbering by document position and heading depth. Used by UC-002.
+  * `build_id_map` — **new** — old→new id map keyed by pseudo-number and title; raises `duplicate_identity`
+    (Extension 3b). Used by UC-002.
+  * `find_surviving_references` — **new** — same-document references whose old id survives into the map,
+    evaluated against the original document (MSS step 4). Used by UC-002.
+  * `rewrite_headings` — **new** — applies computed numbering to headings/figures. Used by UC-002.
+  * `rewrite_references` — **new** — rewrites the surviving reference set. Used by UC-002.
+  * `format_report` — **new** — human-readable or machine-consumable per `invoked_by`/`--json` (§3.5). Used by
+    UC-002. Not (yet) shared with the other three use cases' own output — each currently formats its own
+    result independently; revisit if a common report shape emerges once all four are actually built.
+* `PathIndexer` — new — defined in this design
+  * `resolve_index_units` — **new** — resolves `path`/`recursive`/`depth` to independent per-directory units
+    (§5's own note below on why this isn't one flat document list). Used by UC-003.
+  * `resolve_documents_in_unit` — **new** — one unit's own immediate `.md` documents. Used by UC-003.
+  * `extract_words` — **new** — significant words per node, documentation standard §4 rules. Used by UC-003.
+  * `extract_todos` — **new** — `//TODO`-style markers with text/section/line/ref. Used by UC-003.
+* `IndexStore` — new — defined in this design
+  * `write_index_files` — **new** — persists `sections`/`words`/`todo` `.index/` files for one document; omits
+    a file with no content to hold (Extension 5a). Used by UC-003.
+  * `list_index_entries` — **new** — existing `.index/` entries for one unit. Used by UC-003.
+  * `find_stale_entries` — **new** — entries in a unit with no corresponding current document. Used by UC-003.
+  * `remove_index_entries` — **new** — deletes stale entries. Used by UC-003.
+  * `load_word_index` — **new** — reads `.words.yaml` content under a resolved scope, filtered to a reduced
+    query (§3.8's precursor decision in UC-005's own Technical Interpretation): returns only matching sections
+    plus each one's total word count, not the whole scoped tree. Used by UC-005. Read side of the same `.index/`
+    file format `PathIndexer`'s functions write — grouped here with the other file-level operations rather than
+    with `PathIndexer`, since it's about the persisted format, not about walking/extracting from source `.md`.
+* `Searcher` — new — defined in this design
+  * `reduce_query` — **new** — same tokenization/stemming/stopword reduction the index itself was built with.
+    Used by UC-005.
+  * `score_nodes` — **new** — document- and section-level relevance scores together (§3.8, §7's own open
+    question about algorithm selection). Used by UC-005.
+  * `select_top_n` — **new** — top `--max-results` results (§3.8). Used by UC-005.
+  * `preview_content` — **new** — first `--preview-lines` lines per result in details mode (§3.8). Used by
+    UC-005.
+* `ContentExtractor` — new — defined in this design
+  * `resolve_document` — **new** — exact path or `**{slug}` wildcard match; cardinality covers Extensions
+    2a/2b. Used by UC-006.
+  * `resolve_target_range` — **new** — whole document, `§section`, line range, or both; raises
+    `section_not_found` (Extension 3a). Used by UC-006.
+  * `find_closest_section` — **new** — nearest matching section on a `section_not_found` failure. Used by
+    UC-006.
+  * `read_source_text` — **new** — reads verbatim source text at a resolved range, clamped to actual bounds
+    (§3.7), never reconstructed from index data. Used by UC-006.
 
 ## 6 External Dependencies
 
-None identified — confirmed as Key Decision §3.4. Every candidate in §5 that touches the filesystem
-(`read_source_text`, `write_index_files`, `parse_markdown_structure`, `list_index_entries`,
-`remove_index_entries`) does so against files this same project owns and manages, in-process — not a separate
-real system whose behavior can only be observed by calling it (Design Directory And HLD §3's own bar: "a
-network boundary, real time, real randomness, another team's own data"). A unit test can exercise these against
-a temp directory without needing anything external.
+None identified — confirmed as Key Decision §3.4. Every component in §5 that touches the filesystem
+(`ContentExtractor`, `IndexStore`, `MarkdownParser`) does so against files this same project owns and manages,
+in-process — not a separate real system whose behavior can only be observed by calling it (Design Directory And
+HLD §3's own bar: "a network boundary, real time, real randomness, another team's own data"). A unit test can
+exercise these against a temp directory without needing anything external.
 
 ## 7 Specific Behaviors
 
@@ -221,3 +257,17 @@ wildcard match (a valid request, an incomplete answer) than to 3a's bad referenc
 separate flags — the architect corrected an initial framing that bundled them with `--calc` as if related, on
 the basis that algorithm choice and result-volume are genuinely independent questions. `20`/`5` are the
 architect's own stated defaults, not derived from any stated NFR.
+
+**§5 component grouping.** An earlier version of this section listed functions in one flat bullet per use
+case — corrected after the architect flagged it, and after `weaver-engineering/docs` PR #17 fixed the HLD
+template itself to require nesting by component. The one genuinely non-obvious call is `IndexStore` versus
+`PathIndexer`: `load_word_index` (UC-005, reads `.words.yaml`) could have been grouped with `PathIndexer`
+(UC-003's own walking/extraction functions) since both are "the indexing domain." Split instead along a
+different seam — persisted-file operations (`write_index_files`, `list_index_entries`, `find_stale_entries`,
+`remove_index_entries`, `load_word_index`) versus source-walking/extraction operations
+(`resolve_index_units`, `resolve_documents_in_unit`, `extract_words`, `extract_todos`) — because the former
+group is defined by the `.index/` file format itself (what UC-003 writes is exactly what UC-005 reads), while
+the latter is defined by walking real `.md` source, a different concern `IndexStore` has no reason to know
+about. This is a judgement call, not a mechanical one, since Chunking (which would observe actual cross-Chunk
+calls) hasn't happened yet — flagged here rather than left implicit, per Design Directory And HLD §4.3, and
+open to revision once Chunking either confirms or contradicts it.
