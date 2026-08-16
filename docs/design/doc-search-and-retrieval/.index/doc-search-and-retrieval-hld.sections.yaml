@@ -8,79 +8,84 @@ sections:
     number: "2"
     type: section
     start_line: 30
-    end_line: 58
+    end_line: 62
   "Key Decisions":
     number: "3"
     type: section
-    start_line: 59
-    end_line: 60
+    start_line: 63
+    end_line: 64
   "`parse_markdown_structure` Interface":
     number: "3.1"
     type: section
-    start_line: 61
-    end_line: 68
+    start_line: 65
+    end_line: 72
   "Delivery Surface: CLI Now, MCP Later":
     number: "3.2"
     type: section
-    start_line: 69
-    end_line: 79
+    start_line: 73
+    end_line: 83
   "`resolve_scope` Interface":
     number: "3.3"
     type: section
-    start_line: 80
-    end_line: 87
+    start_line: 84
+    end_line: 91
   "Filesystem Is Not An External Dependency":
     number: "3.4"
     type: section
-    start_line: 88
-    end_line: 94
+    start_line: 92
+    end_line: 98
   "UC-002 Report Format And Exit Codes":
     number: "3.5"
     type: section
-    start_line: 95
-    end_line: 102
+    start_line: 99
+    end_line: 106
   "UC-003 Recurse/Depth Flags":
     number: "3.6"
     type: section
-    start_line: 103
-    end_line: 108
+    start_line: 107
+    end_line: 112
   "UC-006 Out-Of-Bounds Line Range":
     number: "3.7"
     type: section
-    start_line: 109
-    end_line: 116
+    start_line: 113
+    end_line: 120
   "UC-005 Algorithm Selection And Details-Mode Defaults":
     number: "3.8"
     type: section
-    start_line: 117
-    end_line: 128
+    start_line: 121
+    end_line: 132
   "`IC-000`, `AutoNumberer`, `PathIndexer`, `IndexStore`, `Searcher`, `ContentExtractor` Interfaces":
     number: "3.9"
     type: section
-    start_line: 129
-    end_line: 140
+    start_line: 133
+    end_line: 144
+  "`WordReducer` As Its Own Component":
+    number: "3.10"
+    type: section
+    start_line: 145
+    end_line: 154
   "Data Types":
     number: "4"
     type: section
-    start_line: 141
-    end_line: 144
+    start_line: 155
+    end_line: 158
   "Internal Components":
     number: "5"
     type: section
-    start_line: 145
-    end_line: 218
+    start_line: 159
+    end_line: 240
   "External Dependencies":
     number: "6"
     type: section
-    start_line: 219
-    end_line: 226
+    start_line: 241
+    end_line: 248
   "Specific Behaviors":
     number: "7"
     type: section
-    start_line: 227
-    end_line: 242
+    start_line: 249
+    end_line: 267
   "Technology Stack":
     number: "8"
     type: section
-    start_line: 243
-    end_line: 249
+    start_line: 268
+    end_line: 274

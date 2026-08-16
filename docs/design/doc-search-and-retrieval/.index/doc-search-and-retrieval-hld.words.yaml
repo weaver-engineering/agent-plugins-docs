@@ -73,10 +73,10 @@ sections:
     per: 4
     use: 1
     case: 1
-    talks: 7
+    talks: 8
     component: 2
     below: 1
-    nothing: 3
+    nothing: 5
     else: 1
     markdownparser: 3
     parses: 1
@@ -86,16 +86,16 @@ sections:
     start/end: 1
     lines: 1
     call: 2
-    pure: 2
-    function: 2
-    text: 1
+    pure: 3
+    function: 3
+    text: 2
     scoperesolver: 1
     resolves: 2
     scope: 1
     specifier: 2
     single: 1
     chained: 1
-    string: 1
+    string: 2
     autonumberer: 2
     computes: 1
     fresh: 1
@@ -111,9 +111,9 @@ sections:
     report: 1
     output: 1
     consumes: 1
-    directly: 2
+    directly: 4
     sequences: 1
-    pathindexer: 3
+    pathindexer: 4
     walks: 1
     path: 1
     independent: 1
@@ -124,6 +124,16 @@ sections:
     unit: 1
     documents: 1
     relationship: 1
+    calls: 3
+    word-extraction: 1
+    step: 1
+    wordreducer: 3
+    standard: 1
+    tokenization/stemming/stopword: 1
+    rules: 1
+    applied: 1
+    called: 1
+    itself: 1
     indexstore: 5
     reads: 4
     writes: 2
@@ -590,6 +600,56 @@ sections:
     entry: 1
     immediately: 1
     below: 1
+  "`WordReducer` As Its Own Component":
+    extract_words: 2
+    pathindexer: 1
+    reduce_query: 2
+    searcher: 1
+    need: 1
+    standard: 1
+    tokenization/stemming/stopword: 1
+    rules: 1
+    index: 2
+    built: 2
+    queried: 1
+    identical: 1
+    reduction: 2
+    matching: 1
+    breaks: 1
+    original: 1
+    draft: 1
+    asserted: 1
+    prose: 1
+    itself: 1
+    anything: 1
+    actually: 1
+    enforcing: 1
+    independent: 1
+    implementations: 1
+    happen: 1
+    claim: 1
+    equivalence: 1
+    mechanically: 1
+    guaranteed: 1
+    stay: 1
+    equivalent: 1
+    changes: 1
+    extracted: 1
+    component: 1
+    wordreducer: 1
+    function: 1
+    reduce_words: 1
+    call: 1
+    directly: 1
+    rule: 1
+    lives: 1
+    exactly: 1
+    place: 1
+    staying: 1
+    consistent: 1
+    structural: 1
+    maintained-by-hand: 1
+    invariant: 1
   "Data Types":
     populated: 1
     depends: 1
@@ -759,7 +819,13 @@ sections:
     extract_words: 1
     significant: 1
     words: 1
-    node: 1
+    node: 2
+    calls: 1
+    wordreducer.reduce_words: 1
+    text: 1
+    records: 1
+    result: 1
+    against: 1
     standard: 1
     rules: 1
     extract_todos: 1
@@ -809,10 +875,40 @@ sections:
     persisted: 1
     walking/extracting: 1
     source: 1
-    searcher: 2
-    reduce_query: 1
-    tokenization/stemming/stopword: 1
+    wordreducer: 1
+    reduce_words: 1
+    tokenization/stemming/stopword: 2
+    rules: 2
+    applied: 1
+    given: 1
+    case-fold: 1
+    strip: 1
+    punctuation: 1
+    characters: 1
+    stay: 1
+    inside: 1
+    token: 1
+    plurals/possessives: 1
+    root: 1
+    drop: 1
+    stopwords: 1
+    reducing: 2
+    full: 1
+    implementation: 1
+    independently: 1
+    claiming: 1
+    apply: 1
+    searcher: 3
+    reduce_query: 2
     reduction: 1
+    query: 2
+    string: 1
+    call: 1
+    directly: 1
+    mechanically: 1
+    built: 1
+    equivalent: 1
+    reimplemented: 1
     score_nodes: 1
     relevance: 1
     scores: 1
@@ -933,8 +1029,8 @@ sections:
     pass: 2
     run: 1
     reading: 1
-    nine: 1
-    key: 1
+    ten: 1
+    key: 2
     decisions: 1
     together: 1
     found: 1
@@ -950,6 +1046,24 @@ sections:
     split: 1
     entry: 1
     re-litigating: 1
+    wordreducer: 1
+    opposite: 1
+    finding: 1
+    independent: 1
+    implementations: 1
+    caught: 1
+    review: 1
+    rather: 1
+    merge: 1
+    pass: 1
+    itself: 1
+    second: 1
+    decision: 1
+    compare: 1
+    against: 1
+    anything: 1
+    first: 1
+    drafted: 1
     per: 1
     feature: 1
     instructions: 1

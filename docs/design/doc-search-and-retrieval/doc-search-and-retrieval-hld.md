@@ -39,14 +39,18 @@ not resolve).
   change report. Talks to: `MarkdownParser`'s output (consumes it, doesn't call it directly — `IC-000` sequences
   the two).
 * `PathIndexer` — walks a path into independent per-directory units, extracts words/TODOs from each unit's
-  documents. Talks to: `MarkdownParser`'s output, same relationship as `AutoNumberer`.
+  documents. Talks to: `MarkdownParser`'s output (same relationship as `AutoNumberer`), and calls `WordReducer`
+  directly for the word-extraction step.
+* `WordReducer` — the documentation standard's own §4 tokenization/stemming/stopword rules, applied to any
+  text. Talks to: nothing (pure function over a text string) — called *by* `PathIndexer` and `Searcher`, calls
+  nothing itself.
 * `IndexStore` — reads and writes the persisted `.index/` file format: writes `PathIndexer`'s extracted content,
   lists/finds-stale/removes entries, and reads matching sections back out for `Searcher`. Talks to: the
   filesystem directly (§6 — in-process I/O, not an External Dependency).
   * Data at rest (§4): each of `.sections.yaml`/`.words.yaml`/`.todo.yaml` follows the shape already fixed by
     the documentation standard (§4) — this design doesn't redefine that shape, only produces and consumes it.
-* `Searcher` — reduces a query, scores `IndexStore`'s matching sections, selects the top N, previews content.
-  Talks to: `IndexStore` (`load_word_index`).
+* `Searcher` — reduces a query via `WordReducer`, scores `IndexStore`'s matching sections, selects the top N,
+  previews content. Talks to: `WordReducer` directly, `IndexStore` (`load_word_index`).
 * `ContentExtractor` — resolves a document and target range, reads verbatim source text. Talks to: the
   filesystem directly (§6), and `IndexStore`'s persisted `sections.yaml` (to resolve a `§section` reference to a
   line range) — the one place a component outside `IndexStore` reads its data directly rather than through
@@ -138,6 +142,16 @@ note in §5 *is* its justification, not a placeholder pending a fuller writeup. 
 this group — `IndexStore` vs. `PathIndexer` as two components rather than one — already has its own Rationale
 entry, immediately below.
 
+### 3.10 `WordReducer` As Its Own Component
+
+`extract_words` (`PathIndexer`) and `reduce_query` (`Searcher`) both need the documentation standard's own §4
+tokenization/stemming/stopword rules — the index has to be built and queried against the identical reduction,
+or matching breaks. The original §5 draft asserted this in prose ("same reduction the index itself was built
+with") without anything actually enforcing it: two independent implementations that happen to claim equivalence
+aren't mechanically guaranteed to stay equivalent as either one changes. Extracted into its own component,
+`WordReducer`, with one function (`reduce_words`) both `extract_words` and `reduce_query` call directly — the
+rule now lives in exactly one place, and staying consistent is structural, not a maintained-by-hand invariant.
+
 ## 4 Data Types
 
 *(Not yet populated — depends on the Internal Component interfaces §3/§5 decide.)*
@@ -185,7 +199,8 @@ still Solution Shape's decision (§2.3/§4), not made here.
   * `resolve_index_units` — **new** — resolves `path`/`recursive`/`depth` to independent per-directory units
     (§5's own note below on why this isn't one flat document list). Used by UC-003.
   * `resolve_documents_in_unit` — **new** — one unit's own immediate `.md` documents. Used by UC-003.
-  * `extract_words` — **new** — significant words per node, documentation standard §4 rules. Used by UC-003.
+  * `extract_words` — **new** — significant words per node: calls `WordReducer.reduce_words` per node's own
+    text, then records the result against that node (documentation standard §4 rules). Used by UC-003.
   * `extract_todos` — **new** — `//TODO`-style markers with text/section/line/ref. Used by UC-003.
 * `IndexStore` — new — defined in this design
   * `write_index_files` — **new** — persists `sections`/`words`/`todo` `.index/` files for one document; omits
@@ -198,8 +213,15 @@ still Solution Shape's decision (§2.3/§4), not made here.
     plus each one's total word count, not the whole scoped tree. Used by UC-005. Read side of the same `.index/`
     file format `PathIndexer`'s functions write — grouped here with the other file-level operations rather than
     with `PathIndexer`, since it's about the persisted format, not about walking/extracting from source `.md`.
+* `WordReducer` — new — defined in this design
+  * `reduce_words` — **new** — the documentation standard's own §4 tokenization/stemming/stopword rules,
+    applied to any given text: case-fold, strip punctuation except the characters that stay inside a token,
+    reduce plurals/possessives to their root, drop stopwords. Used by `PathIndexer` (`extract_words`, reducing a
+    node's full text) and `Searcher` (`reduce_query`, reducing a query string) — the one place both actually
+    call the same implementation, rather than each independently claiming to apply "the same rules."
 * `Searcher` — new — defined in this design
-  * `reduce_query` — **new** — same tokenization/stemming/stopword reduction the index itself was built with.
+  * `reduce_query` — **new** — calls `WordReducer.reduce_words` on the query string, so it's mechanically the
+    same reduction the index itself was built with, not just an equivalent one reimplemented independently.
     Used by UC-005.
   * `score_nodes` — **new** — document- and section-level relevance scores together (§3.8, §7's own open
     question about algorithm selection). Used by UC-005.
@@ -232,12 +254,15 @@ exercise these against a temp directory without needing anything external.
 * [SB-004 — Extract Document Content](specific-behaviors/SB-004-extract-document-content.md) - realizes [UC-006](../../analysis/use-cases/UC-006-extract-document-content.md) (stub — behaviors not yet derived)
 
 *(All four use cases in scope now have a Technical Interpretation and an identified operation, Gap Analysis is
-done, every individual gap from Phase 3 Ideation (§3.1-§3.9) is resolved — including every use case's own §7
+done, every individual gap from Phase 3 Ideation (§3.1-§3.10) is resolved — including every use case's own §7
 Open Design Question (Design Directory And HLD §2.1's own requirement) — and the Merge Pass (§4.2) has run:
-reading all nine Key Decisions together found no two describing functions that should have been the same one
+reading all ten Key Decisions together found no two describing functions that should have been the same one
 (the one real candidate, `IndexStore` vs. `PathIndexer`, was already resolved as a deliberate split at Ideation
-time, in §3.9's own Rationale entry — not something the Merge Pass is re-litigating). Per Design Feature
-Instructions §1, the next unit of work is §4.3: recording each `SB-NNN`'s own bound pseudocode, substituting
+time, in §3.9's own Rationale entry — not something the Merge Pass is re-litigating; `WordReducer`, §3.10, was
+the opposite finding — two independent implementations that should have been one — caught by review rather than
+by the Merge Pass itself, since it wasn't yet a second Key Decision to compare against anything when first
+drafted). Per Design Feature Instructions §1, the next unit of work is §4.3: recording each `SB-NNN`'s own bound
+pseudocode, substituting
 §5's real components into each relying use case's Technical Interpretation.)*
 
 ## 8 Technology Stack
