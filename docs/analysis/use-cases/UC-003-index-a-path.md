@@ -67,3 +67,33 @@ including documents with no numbering at all.
 
 * Exact CLI flags (path vs. recurse vs. depth syntax) are a design-phase concern, deliberately out of scope
   here.
+
+# Appendix
+
+## Technical Interpretation
+
+```
+FUNCTION index_path(path, recursive, depth):
+  documents <-- [resolve_documents - path, recursive, depth]
+  FOR EACH document IN documents:
+    structure <-- [parse_structure - document]
+    words <-- [extract_words - structure]
+    todos <-- [extract_todos - document]
+    [write_index_files - document, structure, words, todos]
+  existing_entries <-- [list_index_entries - path]
+  stale_entries <-- [find_stale_entries - existing_entries, documents]
+  FOR EACH entry IN stale_entries:
+    [remove_index_entries - entry]
+  RETURN report
+```
+
+One operation: the actor crosses the system boundary once per invocation, regardless of how many documents the
+resolved path expands to — `[resolve_documents]` is where MSS step 1's non-recursive-by-default/opt-in-recurse
+rule lives. `[write_index_files]` only ever produces a `sections`/`words`/`todo` file when there's content to
+hold (MSS step 5, Extension 5a) — an empty result is the *absence* of a file, not an empty one, so no separate
+branch is needed here for that case. The second half (`existing_entries`/`stale_entries`/removal) is MSS step
+6: a document that used to exist under `path` but doesn't anymore leaves an index entry nothing in the current
+`documents` set justifies, and that's what `[find_stale_entries]` identifies for removal — independent of the
+per-document loop above it, since it's about documents no longer found, not documents that were.
+
+[SB-002 — Index A Path](../../design/doc-search-and-retrieval/specific-behaviors/SB-002-index-a-path.md) - the operation above

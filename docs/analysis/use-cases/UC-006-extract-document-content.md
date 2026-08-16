@@ -63,3 +63,36 @@ actual content at a known or approximately-known location.
 
 * A line range (`[{start}-{end}]`, alone or combined with `§{section}`) that extends beyond the document's or
   section's actual bounds — not yet specified.
+
+# Appendix
+
+## Technical Interpretation
+
+```
+FUNCTION extract_content(reference, scope_hint):
+  resolved_scope <-- [resolve_scope - scope_hint]
+  matches <-- [resolve_document - reference, resolved_scope]
+  IF matches IS empty:
+    RETURN empty_result
+  IF matches HAS more than one:
+    RETURN candidate_list: matches
+  document = matches[0]
+  target_range <-- [resolve_target_range - reference, document]
+    ON FAILURE (section_not_found):
+      closest <-- [find_closest_section - reference, document]
+      RETURN failure, closest
+  content <-- [read_source_text - document, target_range]
+  RETURN content
+```
+
+One operation: the actor crosses the system boundary once per invocation, regardless of which of the four
+reference shapes (whole document, `§section`, line range, or `§section` plus range) it resolves to.
+`[resolve_document]`'s cardinality naturally covers Extensions 2a (empty → `matches IS empty`) and 2b (multiple
+→ `matches HAS more than one`) as its own two outcomes, not additional branches layered on top.
+`[resolve_target_range]` is deliberately a separate call from `[read_source_text]` — MSS step 4's own
+constraint ("never reconstructed from index data") is a property of `[read_source_text]` specifically: it reads
+the *source* file at a range something else already resolved, rather than being asked to derive content from
+index data itself. Extension 3a (`§section` not found) is `[resolve_target_range]`'s one exceptional condition,
+caught here to look up the closest match rather than left to propagate as a bare failure.
+
+[SB-004 — Extract Document Content](../../design/doc-search-and-retrieval/specific-behaviors/SB-004-extract-document-content.md) - the operation above

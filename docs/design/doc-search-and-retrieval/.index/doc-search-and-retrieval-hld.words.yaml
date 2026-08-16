@@ -65,36 +65,32 @@ sections:
     resolve: 1
   "Solution Overview":
     populated: 1
-    phase: 1
+    depends: 1
+    solution: 1
+    shape: 1
+    design: 1
+    feature: 1
+    instructions: 1
+    decides: 1
+    new: 1
+    candidates: 1
+    actually: 1
+    earn: 1
+    standing: 1
+    internal: 1
+    component: 1
+    versus: 1
+    staying: 1
+    chunk-private: 1
+    per: 1
+    directory: 1
     gap: 1
     analysis: 1
-    design: 1
-    feature: 3
-    instructions: 1
-    hasn't: 1
-    run: 1
+    done: 1
     section: 1
     fills: 1
-    use: 1
-    case: 1
-    technical: 1
-    interpretation: 1
-    written: 1
-    combined: 1
-    pseudocode: 1
-    read: 1
-    against: 1
-    project: 1
-    existing: 1
-    internal: 1
-    components: 1
-    external: 1
-    dependencies: 1
-    currently: 1
-    none: 1
-    since: 1
-    first: 1
-    domain: 1
+    ideation: 1
+    run: 1
   "Key Decisions":
     populated: 1
     phase: 1
@@ -147,73 +143,205 @@ sections:
     interfaces: 1
     decide: 1
   "Internal Components":
-    populated: 1
-    phase: 1
     gap: 1
     analysis: 1
-    hasn't: 1
-    classified: 1
-    candidate: 1
-    functions: 1
-    expect: 1
-    everything: 1
-    classify: 1
-    new: 1
-    greenfield: 1
-    domain: 1
-    existing: 1
-    internal: 1
-    components: 1
-    external: 1
-    dependencies: 1
-    reuse: 1
-  "External Dependencies":
-    populated: 1
-    filesystem: 1
-    itself: 1
-    reading/writing: 1
-    .md: 1
-    .index/: 1
-    files: 1
-    candidate: 1
-    dependency: 2
-    visible: 1
+    design: 1
+    feature: 1
+    instructions: 1
+    result: 1
+    docs/architecture/components/: 1
+    existing: 2
+    entries: 1
+    project: 1
+    confirmed: 1
+    directly: 1
+    assumed: 1
+    candidate: 3
+    function: 1
+    four: 1
+    technical: 1
+    interpretation: 3
+    collectively: 1
+    name: 1
+    classifies: 1
+    new: 7
+    nothing: 1
+    compare: 1
+    against: 1
+    inventory: 1
+    produces: 1
+    actually: 1
+    earn: 1
+    standing: 1
+    ic-nnn: 1
+    versus: 1
+    staying: 1
+    chunk-private: 1
+    decision: 1
+    made: 1
+    resolve_scope: 1
+    named: 1
+    identically: 1
+    uc-005: 2
+    uc-006: 3
+    scope: 1
+    resolution: 1
+    rules: 1
+    differ: 1
+    slightly: 1
+    allows: 1
+    chained: 1
+    slug: 1
+    doesn't: 1
+    need: 1
+    relying: 1
     use: 1
     cases: 1
-    far: 1
-    whether: 1
-    modeled: 1
-    external: 1
-    proper: 1
-    ordinary: 1
+    parse_document: 1
+    uc-002: 2
+    parse_structure: 1
+    uc-003: 2
+    listed: 1
+    separately: 2
+    since: 1
+    read: 1
+    underlying: 1
+    capability: 1
+    parse: 1
+    markdown: 1
+    headings/figures: 1
+    requested: 1
+    different: 1
+    purposes: 1
+    renumbering: 1
+    indexing: 1
+    metadata: 1
+    flagged: 1
+    ideation: 1
+    decide: 1
+    shared: 1
+    component: 1
+    broader: 1
+    contract: 1
+    genuinely: 1
+    distinct: 1
+    ones: 1
+    compute_numbering: 1
+    build_id_map: 1
+    find_surviving_references: 1
+    rewrite_headings: 1
+    rewrite_references: 1
+    format_report: 1
+    resolve_documents: 1
+    extract_words: 1
+    extract_todos: 1
+    write_index_files: 1
+    list_index_entries: 1
+    find_stale_entries: 1
+    remove_index_entries: 1
+    load_word_index: 1
+    score_nodes: 1
+    select_top_n: 1
+    preview_content: 1
+    resolve_document: 1
+    resolve_target_range: 1
+    find_closest_section: 1
+    read_source_text: 1
+  "External Dependencies":
+    none: 1
+    identified: 1
+    candidate: 1
+    touches: 1
+    filesystem: 1
+    read_source_text: 1
+    write_index_files: 1
+    parse_document/parse_structure: 1
+    list_index_entries: 1
+    remove_index_entries: 1
+    files: 1
+    project: 1
+    owns: 1
+    manages: 1
     in-process: 1
-    i/o: 1
+    separate: 1
+    real: 3
+    system: 1
+    whose: 1
+    behavior: 1
+    observed: 1
+    calling: 1
+    design: 1
+    directory: 2
+    hld: 1
+    bar: 1
+    network: 1
+    boundary: 1
+    time: 1
+    randomness: 1
+    another: 1
+    team: 1
+    data: 1
+    unit: 1
+    test: 1
+    exercise: 1
+    against: 1
+    temp: 1
+    needing: 1
+    anything: 1
+    external: 1
+    reasoning: 1
+    conclusion: 1
+    belongs: 1
+    key: 1
+    decisions: 1
+    ideation: 1
+    confirms: 1
+    recorded: 1
     gap: 1
     analysis: 1
-    ideation: 1
+    surfaced: 1
     question: 1
-    decided: 1
   "Specific Behaviors":
     specific-behaviors/sb-001-auto-number-document.md: 1
     ../../analysis/use-cases/uc-002-auto-number-document-sections.md: 1
-    realizes: 1
-    stub: 1
-    behaviors: 1
-    derived: 1
-    uc-003: 1
-    uc-005: 1
-    uc-006: 1
-    need: 1
+    specific-behaviors/sb-002-index-a-path.md: 1
+    ../../analysis/use-cases/uc-003-index-a-path.md: 1
+    specific-behaviors/sb-003-search-documentation.md: 1
+    ../../analysis/use-cases/uc-005-search-documentation.md: 1
+    specific-behaviors/sb-004-extract-document-content.md: 1
+    ../../analysis/use-cases/uc-006-extract-document-content.md: 1
+    realizes: 4
+    stub: 4
+    behaviors: 4
+    derived: 4
+    four: 1
+    use: 1
+    cases: 1
+    scope: 1
+    now: 1
     technical: 1
     interpretation: 1
-    operations: 1
     identified: 1
-    sb-nnn: 1
-    stubs: 1
-    exist: 1
-    hld: 1
-    state: 1
+    operation: 1
+    gap: 2
+    analysis: 1
+    done: 1
+    per: 1
+    design: 1
+    feature: 1
+    instructions: 1
     next: 1
+    unit: 1
+    work: 1
+    step: 1
+    phase: 1
+    ideation: 1
+    time: 1
+    named: 1
+    human-judgement: 1
+    point: 1
+    something: 1
+    resolves: 1
   "Technology Stack":
     populated: 1
     inherits: 1

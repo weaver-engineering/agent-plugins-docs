@@ -8,34 +8,34 @@ sections:
     number: "2"
     type: section
     start_line: 30
-    end_line: 36
+    end_line: 35
   "Key Decisions":
     number: "3"
     type: section
-    start_line: 37
-    end_line: 44
+    start_line: 36
+    end_line: 43
   "Data Types":
     number: "4"
     type: section
-    start_line: 45
-    end_line: 48
+    start_line: 44
+    end_line: 47
   "Internal Components":
     number: "5"
     type: section
-    start_line: 49
-    end_line: 54
+    start_line: 48
+    end_line: 70
   "External Dependencies":
     number: "6"
     type: section
-    start_line: 55
-    end_line: 60
+    start_line: 71
+    end_line: 80
   "Specific Behaviors":
     number: "7"
     type: section
-    start_line: 61
-    end_line: 67
+    start_line: 81
+    end_line: 92
   "Technology Stack":
     number: "8"
     type: section
-    start_line: 68
-    end_line: 74
+    start_line: 93
+    end_line: 99

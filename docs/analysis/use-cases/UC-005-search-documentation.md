@@ -65,3 +65,32 @@ covers it.
   concerns.
 * That document-level rollup is computed by the same component as section-level scoring (not a separate fixed
   mechanism) is a deliberate allocation, worth carrying into design.
+
+# Appendix
+
+## Technical Interpretation
+
+```
+FUNCTION search_documentation(query, scope, mode):
+  resolved_scope <-- [resolve_scope - scope]
+  word_tree <-- [load_word_index - resolved_scope]
+  scores <-- [score_nodes - word_tree, query]
+  IF mode IS details:
+    top_results <-- [select_top_n - scores]
+    previews <-- [preview_content - top_results]
+    RETURN top_results, previews
+  ELSE:
+    RETURN scores
+```
+
+One operation: the actor crosses the system boundary once per invocation, whether the result is the full
+ranked list or a details-mode preview. `[score_nodes]` is a single call producing both document- and
+section-level scores together — MSS steps 3 and 4 collapse into one capability here rather than two, since the
+use case itself states they share the same algorithm and swapping it "affects both levels together" (§7's own
+open design question about this allocation is about *how* `[score_nodes]` is realized, not whether it's one
+call or two — that's already settled by the use case). Extension 3a (no matches) needs no separate branch:
+`[score_nodes]` naturally returns an empty/zero-scored result when nothing matches, the same as any other
+query. Extension 3b (cross-repo score comparability) is explicitly out of scope per the use case itself, so
+there's nothing to crystallize here — it stays an open question for `[score_nodes]`'s own eventual design.
+
+[SB-003 — Search Documentation](../../design/doc-search-and-retrieval/specific-behaviors/SB-003-search-documentation.md) - the operation above
