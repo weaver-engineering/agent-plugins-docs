@@ -4,11 +4,9 @@
 * [Architecture Definition Document](../../architecture/architecture-definition-document.md) - §4 Scope & Document Boundaries names this server as the worked exemplar
 * [Capability Catalog](../../architecture/capability-catalog.md) - lists this server under MCP Servers
 
-//TODO - Elicit and write this document (WVR-95): the design of the MCP
-server bundling UC-002 (Auto-Number Document Sections), UC-003 (Index A
-Path), UC-005 (Search Documentation), and UC-006 (Extract Document Content)
-— these tools are MCP-hosted because that's the default (per the
-Architecture Definition Document's §1), so this document needs no cost/
-benefit justification for choosing MCP, only its credential and hosting
-concerns. Individual tool design docs live alongside this one in this
-folder as they're written.
+Design work on this MCP server is under way, per the Design The Feature process
+(@docs/workflows/feature-workflow/design-feature-instructions.md). The design directory's actual entry point,
+per that process's own convention, is the HLD:
+[Doc Search & Retrieval — High-Level Design](doc-search-and-retrieval-hld.md). This file stays in place as a
+stable landing page since the capability catalog and the Architecture Definition Document already link here —
+see the HLD for the design's current state, including which specific behaviors it's produced so far.

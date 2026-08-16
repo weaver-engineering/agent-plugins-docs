@@ -78,3 +78,35 @@ restructuring (sections added, removed, or reordered).
 
 * Exact CLI flags, exit codes, and report format(s) — including whether/how JSON is used — are a design-phase
   concern, deliberately out of scope here.
+
+# Appendix
+
+## Technical Interpretation
+
+```
+FUNCTION auto_number_document(document, invoked_by):
+  parsed <-- [parse_document - document]
+  numbering <-- [compute_numbering - parsed]
+  id_map <-- [build_id_map - parsed, numbering]
+    ON FAILURE (duplicate_identity): RAISE duplicate_identity
+  surviving_refs <-- [find_surviving_references - parsed, id_map]
+  numbered_doc <-- [rewrite_headings - parsed, numbering]
+  rewritten_doc <-- [rewrite_references - numbered_doc, surviving_refs, id_map]
+  IF invoked_by IS architect:
+    report <-- [format_report - rewritten_doc, human_readable]
+  ELSE:
+    report <-- [format_report - rewritten_doc, machine_consumable]
+  RETURN rewritten_doc, report
+```
+
+One operation: the actor crosses the system boundary once per invocation, regardless of who invoked it or how
+many headings/figures/references the document actually contains — `build_id_map` keying by pseudo-number *and*
+title (step 3) is what makes Extension 3a's disambiguation automatic rather than a separate branch here;
+Extension 3b (`duplicate_identity`) is the one exceptional condition, since a source document with two headings
+sharing both number and title isn't something numbering can resolve. `[format_report]`'s branch on `invoked_by`
+covers Extension 8a. `[rewrite_references]` only ever touches the `surviving_refs` set `[find_surviving_references]`
+computed against the *original*, unmodified document (MSS step 4) — external (`@{repo-slug}/{path}`) references
+and non-reference `A.B.C`-shaped text are never in that set to begin with, so MSS step 7's exclusion needs no
+separate line here; it's a property of what counts as a reference in the first place, not a further transform.
+
+[SB-001 — Auto-Number A Document](../../design/doc-search-and-retrieval/specific-behaviors/SB-001-auto-number-document.md) - the operation above
