@@ -69,9 +69,39 @@ Confirmed as reasoned in §6: every file-touching function (`read_source_text`, 
 doing in-process I/O against files this project itself manages — not a formal External Dependency. No `ED-NNN`
 document exists or is needed for the filesystem.
 
-*(Still open: each use case's own specific §7 Open Design Question — UC-002's exit codes/report format,
-UC-003's path/recurse/depth flag syntax, UC-005's algorithm-selection syntax and N/X defaults, UC-006's
-out-of-bounds line range behavior — none decided yet.)*
+### 3.5 UC-002 Report Format And Exit Codes
+
+Bare invocation prints a human-readable report; `--json` switches to structured output. This is how
+`auto_number_document`'s `invoked_by` parameter (Technical Interpretation) actually gets set in practice: the
+Assistant's own tooling always passes `--json` when it shells out, a human typing the command directly doesn't
+— resolving Extension 8a without the binary needing to know who's calling it. Exit code `0` means the run
+completed, whether or not changes were made; non-zero only on a real error (`duplicate_identity`, Extension 3b).
+
+### 3.6 UC-003 Recurse/Depth Flags
+
+`--recursive` opts into walking the full tree (default: the given directory's immediate `.md` files only, per
+the use case's own default). `--recursive --depth N` caps how many levels deep. `--depth` without `--recursive`
+is a usage error — depth only means something once recursion is on.
+
+### 3.7 UC-006 Out-Of-Bounds Line Range
+
+Clamped, not an error: a requested range is silently capped to whatever actually exists (`[40-200]` on a
+50-line document returns lines 40-50). Consistent with the use case's own existing pattern of degrading
+gracefully on a partial match (Extension 2a's empty wildcard result) rather than failing — distinct from
+Extension 3a's `§section`-not-found case, which *does* fail, because a missing section is a wrong reference
+entirely, not a partially-satisfiable range.
+
+### 3.8 UC-005 Algorithm Selection And Details-Mode Defaults
+
+Three independent flags, not one bundled together: `--calc <name>` selects the scoring algorithm (default
+unspecified — whichever `score_nodes` treats as its own baseline). `--max-results <N>` caps the ranked list
+(default `20`). `--preview-lines <X>` caps each result's preview length in details mode (default `5`). None of
+the three implies or constrains another — selecting an algorithm doesn't change how many results or preview
+lines come back, and vice versa.
+
+This resolves the last Open Design Question in scope — every use case's `## 7 Open Design Questions` (§2.1's
+own requirement) is now either resolved (§3.1-§3.8) or, where genuinely out of this Feature's scope (UC-005's
+cross-repo score comparability, Extension 3b), explicitly left alone rather than silently ignored.
 
 ## 4 Data Types
 
@@ -95,9 +125,15 @@ made here.
   Analysis originally surfaced.
 * `compute_numbering`, `build_id_map`, `find_surviving_references`, `rewrite_headings`, `rewrite_references`,
   `format_report` — **new** (UC-002).
-* `resolve_documents`, `extract_words`, `extract_todos`, `write_index_files`, `list_index_entries`,
-  `find_stale_entries`, `remove_index_entries` — **new** (UC-003).
-* `load_word_index`, `score_nodes`, `select_top_n`, `preview_content` — **new** (UC-005).
+* `resolve_index_units`, `resolve_documents_in_unit`, `extract_words`, `extract_todos`, `write_index_files`,
+  `list_index_entries`, `find_stale_entries`, `remove_index_entries` — **new** (UC-003). Revised from an
+  earlier single `resolve_documents` after review: recursion has to resolve to independent per-directory
+  *units*, each with its own document set, not one flat list spanning the whole recursed tree — see UC-003's
+  own Technical Interpretation for why.
+* `reduce_query`, `load_word_index`, `score_nodes`, `select_top_n`, `preview_content` — **new** (UC-005).
+  `reduce_query` and `load_word_index`'s own signature (taking the reduced query, not just scope) are additions
+  after review: search needs to load only the index sections the reduced query actually matches, not the whole
+  scoped tree.
 * `resolve_document`, `resolve_target_range`, `find_closest_section`, `read_source_text` — **new** (UC-006).
 
 ## 6 External Dependencies
@@ -117,9 +153,12 @@ a temp directory without needing anything external.
 * [SB-004 — Extract Document Content](specific-behaviors/SB-004-extract-document-content.md) - realizes [UC-006](../../analysis/use-cases/UC-006-extract-document-content.md) (stub — behaviors not yet derived)
 
 *(All four use cases in scope now have a Technical Interpretation and an identified operation, Gap Analysis is
-done, and Phase 3 Ideation (§3) is under way — three gaps resolved (§3.1-§3.4), each use case's own specific
-§7 Open Design Question still open. Ideation remains a named human-judgement point (§4.1); each remaining gap
-gets presented to the architect in turn, not resolved unilaterally.)*
+done, and every individual gap from Phase 3 Ideation (§3.1-§3.8) is resolved — including every use case's own
+§7 Open Design Question (Design Directory And HLD §2.1's own requirement). Per Design Feature Instructions §1,
+the next unit of work is §4.2's Merge Pass (checking whether any of §5's still-separately-listed new candidates
+actually turned out to want the same function once visible side by side), followed by deciding which of them
+earn a standing `IC-NNN` document (Design Directory And HLD §4.3) versus staying Chunk-private — populating §2's
+Solution Overview is what that produces.)*
 
 ## 8 Technology Stack
 
@@ -159,3 +198,26 @@ multi-project form... since extraction already knows where it's going"), and a s
 either way relies on caller discipline to respect that boundary rather than the interface itself preventing it.
 Splitting into `resolve_scope_single`/`resolve_chained_scope` makes UC-006's own exclusion structural: it has no
 function to call that would even let it chain.
+
+**§3.5 UC-002 report format.** The alternative — auto-detecting human vs. machine output via whether stdout is
+a TTY — was discarded: it works for a human running the command interactively, but the Assistant's own
+constraint (Technical Proficiency, its persona) is that it needs machine-consumable output *reliably*, not
+dependent on however its own process happens to invoke this tool (which may or may not attach a TTY depending
+on the caller's own plumbing). An explicit `--json` flag is unambiguous regardless of invocation context.
+
+**§3.6 UC-003 recurse flags.** The alternative — a single `--depth N` flag where `0` means non-recursive — was
+discarded in favor of the two-flag form: it overloads one flag with two jobs (turning recursion on, and how far)
+and needs a sentinel value for "unlimited," whereas `--recursive`/`--depth` keeps "recurse at all" and "how far"
+as two separate, independently-omittable questions — closer to the use case's own framing of recursion as a
+distinct opt-in, not a magnitude.
+
+**§3.7 UC-006 out-of-bounds range.** The alternative — failing with the actual bounds reported, mirroring
+Extension 3a's `§section`-not-found handling — was discarded: 3a fails because a *named section that doesn't
+exist* is a wrong reference (nothing at that address), whereas an out-of-bounds line range names a real
+document/section that *does* exist, just asks for more of it than there is — closer to Extension 2a's empty
+wildcard match (a valid request, an incomplete answer) than to 3a's bad reference.
+
+**§3.8 UC-005 defaults.** No alternative candidates were proposed for `--max-results`/`--preview-lines` as
+separate flags — the architect corrected an initial framing that bundled them with `--calc` as if related, on
+the basis that algorithm choice and result-volume are genuinely independent questions. `20`/`5` are the
+architect's own stated defaults, not derived from any stated NFR.

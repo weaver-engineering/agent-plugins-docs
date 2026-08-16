@@ -31,10 +31,11 @@ actual content at a known or approximately-known location.
 
 ## 4 Main Success Scenario
 
-1. Resolve scope: `@{scope}` — a single project (`@{slug}`, `-docs` suffix optional), `@docs` for
-   `weaver-engineering/docs`, or `@all` for every weaver-engineering docs repo, but not the chained
-   multi-project form ([UC-005](UC-005-search-documentation.md)'s job, not this one's, since extraction
-   already knows where it's going) — optionally narrowed further by `/{path}`. Defaults to cwd if omitted.
+1. Resolve scope: `@{scope}` — a single project (`@{slug}`, `-docs` suffix optional) or `@docs` for
+   `weaver-engineering/docs` — optionally narrowed further by `/{path}`. Defaults to cwd if omitted. Neither
+   `@all` nor the chained multi-project form is valid here ([UC-005](UC-005-search-documentation.md)'s job, not
+   this one's): extraction always targets one already-known reference — typically a UC-005 result — so a scope
+   spanning every project would just be ambiguous about which project's copy to read, not useful.
 2. Resolve the target document: an exact file path, or a `**{slug}` wildcard matched within the resolved
    scope/path (a trailing `.md` on `{slug}` is ignored — every document is one).
 3. Resolve target content within the matched document: the whole document (nothing further given),

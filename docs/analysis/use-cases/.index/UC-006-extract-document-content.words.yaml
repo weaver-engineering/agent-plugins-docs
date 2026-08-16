@@ -72,6 +72,7 @@ sections:
     wildcard: 1
   "Main Success Scenario":
     resolve: 5
+    project: 3
     range: 3
     section: 3
     slug: 3
@@ -85,11 +86,16 @@ sections:
     scope: 2
     start: 2
     target: 2
+    uc-005: 1
+    uc-005-search-documentation.md: 1
     "@all": 1
     "@docs": 1
-    already: 1
+    already-known: 1
+    ambiguous: 1
+    always: 1
     chained: 1
     content: 1
+    copy: 1
     cwd: 1
     default: 1
     directly: 1
@@ -98,11 +104,9 @@ sections:
     extraction: 1
     form: 1
     given: 1
-    going: 1
     ignore: 1
     index: 1
     job: 1
-    know: 1
     multi-project: 1
     narrow: 1
     never: 1
@@ -110,21 +114,22 @@ sections:
     omitted: 1
     optional: 1
     optionally: 1
-    project: 1
     raw: 1
     read: 1
     reconstruct: 1
-    repo: 1
+    reference: 1
+    result: 1
     return: 1
     scope/path: 1
-    since: 1
     single: 1
     source: 1
+    spanning: 1
     suffix: 1
     text: 1
     trailing: 1
-    uc-005-search-documentation.md: 1
-    weaver-engineering: 1
+    typically: 1
+    useful: 1
+    valid: 1
     weaver-engineering/doc: 1
     whole: 1
     wildcard: 1

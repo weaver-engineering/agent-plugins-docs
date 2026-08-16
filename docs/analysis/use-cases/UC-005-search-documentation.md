@@ -73,8 +73,9 @@ covers it.
 ```
 FUNCTION search_documentation(query, scope, mode):
   resolved_scope <-- [resolve_scope - scope]
-  word_tree <-- [load_word_index - resolved_scope]
-  scores <-- [score_nodes - word_tree, query]
+  reduced_query <-- [reduce_query - query]
+  matching_index <-- [load_word_index - resolved_scope, reduced_query]
+  scores <-- [score_nodes - matching_index, reduced_query]
   IF mode IS details:
     top_results <-- [select_top_n - scores]
     previews <-- [preview_content - top_results]
@@ -84,13 +85,20 @@ FUNCTION search_documentation(query, scope, mode):
 ```
 
 One operation: the actor crosses the system boundary once per invocation, whether the result is the full
-ranked list or a details-mode preview. `[score_nodes]` is a single call producing both document- and
-section-level scores together — MSS steps 3 and 4 collapse into one capability here rather than two, since the
-use case itself states they share the same algorithm and swapping it "affects both levels together" (§7's own
-open design question about this allocation is about *how* `[score_nodes]` is realized, not whether it's one
-call or two — that's already settled by the use case). Extension 3a (no matches) needs no separate branch:
-`[score_nodes]` naturally returns an empty/zero-scored result when nothing matches, the same as any other
-query. Extension 3b (cross-repo score comparability) is explicitly out of scope per the use case itself, so
-there's nothing to crystallize here — it stays an open question for `[score_nodes]`'s own eventual design.
+ranked list or a details-mode preview. `[reduce_query]` applies the *same* tokenization/stemming/stopword
+reduction the index itself was built with (documentation standard §4 — plurals and possessives to their root,
+stopwords dropped, punctuation stripped) so the query and the index it's compared against speak the same
+vocabulary. `[load_word_index]` takes that reduced query as an input, not just the scope — it only needs to
+return the sections that actually contain at least one reduced-query word, each with its own word counts *and*
+its total word count (needed for the relevance calculation's own normalization, MSS step 3), rather than
+loading every `.words.yaml` under scope regardless of whether it matches anything. `[score_nodes]` then scores
+only that already-narrowed candidate set — it's still a single call producing both document- and section-level
+scores together (MSS steps 3 and 4 collapse into one capability, since the use case itself states they share
+the same algorithm and swapping it "affects both levels together" — §7's own open design question about this
+allocation is about *how* `[score_nodes]` is realized, not whether it's one call or two, which is already
+settled by the use case). Extension 3a (no matches) needs no separate branch: an empty `matching_index` (no
+section anywhere contained a reduced-query word) flows naturally into an empty `scores` result, the same as any
+other query. Extension 3b (cross-repo score comparability) is explicitly out of scope per the use case itself,
+so there's nothing to crystallize here — it stays an open question for `[score_nodes]`'s own eventual design.
 
 [SB-003 — Search Documentation](../../design/doc-search-and-retrieval/specific-behaviors/SB-003-search-documentation.md) - the operation above

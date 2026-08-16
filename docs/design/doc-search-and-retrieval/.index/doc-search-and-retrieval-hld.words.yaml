@@ -203,6 +203,177 @@ sections:
     left: 1
     caller: 1
     discipline: 1
+  "UC-002 Report Format And Exit Codes":
+    bare: 1
+    invocation: 1
+    prints: 1
+    human-readable: 1
+    report: 1
+    json: 2
+    switches: 1
+    structured: 1
+    output: 1
+    auto_number_document: 1
+    invoked_by: 1
+    parameter: 1
+    technical: 1
+    interpretation: 1
+    actually: 1
+    set: 1
+    practice: 1
+    assistant: 1
+    tooling: 1
+    always: 1
+    passes: 1
+    shells: 1
+    human: 1
+    typing: 1
+    command: 1
+    directly: 1
+    doesn't: 1
+    resolving: 1
+    extension: 2
+    binary: 1
+    needing: 1
+    know: 1
+    calling: 1
+    exit: 1
+    code: 1
+    run: 1
+    completed: 1
+    whether: 1
+    changes: 1
+    made: 1
+    non-zero: 1
+    real: 1
+    error: 1
+    duplicate_identity: 1
+  "UC-003 Recurse/Depth Flags":
+    recursive: 3
+    opts: 1
+    walking: 1
+    full: 1
+    tree: 1
+    default: 2
+    given: 1
+    directory: 1
+    immediate: 1
+    files: 1
+    per: 1
+    use: 1
+    case: 1
+    depth: 3
+    caps: 1
+    many: 1
+    levels: 1
+    deep: 1
+    without: 1
+    usage: 1
+    error: 1
+    means: 1
+    something: 1
+    recursion: 1
+  "UC-006 Out-Of-Bounds Line Range":
+    clamped: 1
+    error: 1
+    requested: 1
+    range: 2
+    silently: 1
+    capped: 1
+    actually: 1
+    exists: 1
+    "40-200": 1
+    50-line: 1
+    returns: 1
+    lines: 1
+    "40-50": 1
+    consistent: 1
+    use: 1
+    case: 2
+    existing: 1
+    pattern: 1
+    degrading: 1
+    gracefully: 1
+    partial: 1
+    match: 1
+    extension: 2
+    empty: 1
+    wildcard: 1
+    result: 1
+    rather: 1
+    failing: 1
+    distinct: 1
+    section-not-found: 1
+    fail: 1
+    missing: 1
+    section: 1
+    wrong: 1
+    reference: 1
+    entirely: 1
+    partially-satisfiable: 1
+  "UC-005 Algorithm Selection And Details-Mode Defaults":
+    three: 2
+    independent: 1
+    flags: 1
+    bundled: 1
+    together: 1
+    calc: 1
+    selects: 1
+    scoring: 1
+    algorithm: 2
+    default: 3
+    unspecified: 1
+    whichever: 1
+    score_nodes: 1
+    treats: 1
+    baseline: 1
+    max-results: 1
+    caps: 2
+    ranked: 1
+    list: 1
+    preview-lines: 1
+    result: 1
+    preview: 2
+    length: 1
+    details: 1
+    mode: 1
+    none: 1
+    implies: 1
+    constrains: 1
+    another: 1
+    selecting: 1
+    doesn't: 1
+    change: 1
+    many: 1
+    results: 1
+    lines: 1
+    come: 1
+    back: 1
+    vice: 1
+    versa: 1
+    resolves: 1
+    last: 1
+    open: 1
+    design: 1
+    question: 1
+    scope: 2
+    use: 1
+    case: 1
+    questions: 1
+    requirement: 1
+    resolved: 1
+    genuinely: 1
+    feature: 1
+    uc-005: 1
+    cross-repo: 1
+    score: 1
+    comparability: 1
+    extension: 1
+    explicitly: 1
+    left: 1
+    alone: 1
+    silently: 1
+    ignored: 1
   "Filesystem Is Not An External Dependency":
     confirmed: 1
     reasoned: 1
@@ -278,7 +449,7 @@ sections:
     candidate: 3
     function: 1
     four: 1
-    technical: 1
+    technical: 2
     interpretation: 2
     collectively: 1
     name: 1
@@ -289,7 +460,7 @@ sections:
     against: 1
     inventory: 1
     produces: 1
-    actually: 1
+    actually: 2
     earn: 1
     standing: 1
     ic-nnn: 1
@@ -309,7 +480,7 @@ sections:
     calls: 2
     specifier: 1
     supersedes: 1
-    single: 1
+    single: 2
     resolve_scope: 1
     parse_markdown_structure: 1
     shared: 1
@@ -318,7 +489,7 @@ sections:
     uc-002: 1
     uc-003: 1
     parsing: 1
-    needs: 1
+    needs: 2
     superseding: 1
     separately-named: 1
     parse_document/parse_structure: 1
@@ -330,17 +501,47 @@ sections:
     rewrite_headings: 1
     rewrite_references: 1
     format_report: 1
-    resolve_documents: 1
+    resolve_index_units: 1
+    resolve_documents_in_unit: 1
     extract_words: 1
     extract_todos: 1
     write_index_files: 1
     list_index_entries: 1
     find_stale_entries: 1
     remove_index_entries: 1
-    load_word_index: 1
+    revised: 1
+    earlier: 1
+    resolve_documents: 1
+    recursion: 1
+    resolve: 1
+    independent: 1
+    unit: 1
+    set: 1
+    flat: 1
+    list: 1
+    spanning: 1
+    whole: 1
+    recursed: 1
+    tree: 1
+    why: 1
+    reduce_query: 1
+    load_word_index: 2
     score_nodes: 1
     select_top_n: 1
     preview_content: 1
+    signature: 1
+    taking: 1
+    reduced: 1
+    query: 1
+    scope: 1
+    additions: 1
+    review: 2
+    search: 1
+    load: 1
+    index: 1
+    sections: 1
+    matches: 1
+    scoped: 1
     resolve_document: 1
     resolve_target_range: 1
     find_closest_section: 1
