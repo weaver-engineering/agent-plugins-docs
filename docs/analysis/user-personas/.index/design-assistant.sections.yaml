@@ -1,0 +1,21 @@
+sections:
+  Role:
+    number: '1'
+    type: section
+    start_line: 16
+    end_line: 25
+  Goals:
+    number: '2'
+    type: section
+    start_line: 26
+    end_line: 36
+  Frustrations:
+    number: '3'
+    type: section
+    start_line: 37
+    end_line: 49
+  Technical Proficiency:
+    number: '4'
+    type: section
+    start_line: 50
+    end_line: 54

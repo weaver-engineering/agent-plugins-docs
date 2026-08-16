@@ -20,6 +20,7 @@ The Loom runs.
 
 * [The Architect](analysis/user-personas/architect.md)
 * [The Architect's Assistant](analysis/user-personas/architects-assistant.md)
+* [The Design Assistant](analysis/user-personas/design-assistant.md)
 
 ## 3 Design
 
@@ -47,3 +48,8 @@ Design proposals for candidate Claude Code Skills supporting weaver-engineering'
 * [Called-From Backward Walker](claude-skills/called-from-backward-walker/called-from-backward-walker-design.md) — finds every use case affected when a shared function changes
 * [Gap Classifier](claude-skills/gap-classifier/gap-classifier-design.md) — as-is / extended / new, scaffolded, and the bound pseudocode recorded once every gap closes
 * [Specific-Behavior Presenter](claude-skills/specific-behavior-presenter/specific-behavior-presenter-design.md) — standardised, provenance-rich presentation for final human review
+
+## 6 Sub-Agents
+
+* [Design Assistant](sub-agents/design-assistant/design-assistant.md) — drives the Design The Feature workflow
+  step (WVR-119), the first sub-agent built to dogfood that process against a real Feature

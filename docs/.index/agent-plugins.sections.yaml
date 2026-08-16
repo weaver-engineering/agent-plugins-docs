@@ -8,19 +8,24 @@ sections:
     number: '2'
     type: section
     start_line: 19
-    end_line: 23
+    end_line: 24
   Design:
     number: '3'
     type: section
-    start_line: 24
-    end_line: 28
+    start_line: 25
+    end_line: 29
   Architecture:
     number: '4'
     type: section
-    start_line: 29
-    end_line: 33
+    start_line: 30
+    end_line: 34
   Claude Skills:
     number: '5'
     type: section
-    start_line: 34
-    end_line: 49
+    start_line: 35
+    end_line: 51
+  Sub-Agents:
+    number: '6'
+    type: section
+    start_line: 52
+    end_line: 55
