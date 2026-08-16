@@ -1,16 +1,19 @@
-"IC-002 — ScopeResolver":
+IC-002 — ScopeResolver:
   internal: 1
   service: 1
 sections:
-  "Purpose":
+  Purpose:
     resolves: 1
-    scope: 2
+    '@{scope}': 1
     specifier: 1
     single: 1
     project: 1
+    '@docs': 1
+    '@all': 1
     filesystem: 1
     path: 1
     concrete: 1
+    scope: 1
     split: 1
     functions: 1
     caller: 1
@@ -21,40 +24,46 @@ sections:
     specifiers: 1
     function: 1
     available: 1
-  "`resolve_scope_single`":
+    would: 1
+    let: 1
+  '`resolve_scope_single`':
     resolves: 1
     exactly: 1
     scope: 1
     specifier: 2
-    resolve_scope_single: 1
-    string: 1
     accepts: 1
-    slug: 1
+    '@{slug}': 1
+    -docs: 1
     suffix: 1
     optional: 1
-    docs: 1
+    '@docs': 1
+    weaver-engineering/docs: 1
+    '@all': 1
     weaver-engineering: 1
+    docs: 1
     repo: 1
     filesystem: 1
-    path: 2
+    path: 1
     optionally: 1
     narrowed: 1
+    /{path}: 1
     defaults: 1
     cwd: 1
     omitted: 1
-  "`resolve_chained_scope`":
+    resolve_scope_single: 1
+  '`resolve_chained_scope`':
     resolves: 1
     several: 1
     chained: 1
-    specifiers: 1
-    combines: 1
+    specifiers: 2
+    combines: 2
     results: 2
-    resolve_chained_scope: 1
-    string: 1
     calls: 1
     resolve_scope_single: 1
+    once: 1
     per: 1
     specifier: 1
+    '@{slug}@{slug}': 1
     form: 1
     uc-006: 1
     path: 1
@@ -64,3 +73,4 @@ sections:
     structural: 1
     caller: 1
     discipline: 1
+    resolve_chained_scope: 1

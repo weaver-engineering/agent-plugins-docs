@@ -16,7 +16,7 @@ coherent class-shaped interface.
 Reduces the query string via `WordReducer`, so it's mechanically the same reduction the index itself was
 built with.
 
-`reduce_query(query: string) -> reduced_query`
+`reduce_query(query: string) -> Words`
 
 ```yaml
 calls:
@@ -30,7 +30,7 @@ called_from:
 Scores document- and section-level relevance together, via a selectable algorithm (`--calc`, §3.8) — one call
 producing both levels, since swapping the algorithm affects both together (UC-005 MSS steps 3-4).
 
-`score_nodes(matching_index: MatchingIndex, reduced_query: Words) -> scores`
+`score_nodes(matching_index: MatchingIndex, reduced_query: Words) -> Scores`
 
 ```yaml
 calls: []
@@ -42,7 +42,7 @@ called_from:
 
 Selects the top `--max-results` results (default `20`, §3.8).
 
-`select_top_n(scores: Scores) -> top_results`
+`select_top_n(scores: Scores) -> TopResults`
 
 ```yaml
 calls: []
@@ -54,7 +54,7 @@ called_from:
 
 Produces the first `--preview-lines` lines (default `5`, §3.8) of each result's content, for details mode.
 
-`preview_content(top_results: TopResults) -> previews`
+`preview_content(top_results: TopResults) -> Previews`
 
 ```yaml
 calls: []

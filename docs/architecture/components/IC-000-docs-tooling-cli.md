@@ -16,7 +16,7 @@ competing one (Design Directory And HLD §4.4/§3.2's ownership rule).
 
 CLI entry for UC-002 (Auto-Number Document Sections).
 
-`auto_number_document(document: path, invoked_by: "architect" | "assistant") -> (document, report)`
+`auto_number_document(document: path, invoked_by: "architect" | "assistant") -> (string, NumberingReport)`
 
 ```yaml
 calls:
@@ -55,7 +55,7 @@ used_by_behaviors:
 
 CLI entry for UC-003 (Index A Path).
 
-`index_path(path: path, recursive: bool, depth: int?) -> report`
+`index_path(path: path, recursive: bool, depth: int?) -> IndexReport`
 
 ```yaml
 calls:
@@ -97,7 +97,7 @@ used_by_behaviors:
 
 CLI entry for UC-005 (Search Documentation).
 
-`search_documentation(query: string, scope: string, mode: "list" | "details") -> results`
+`search_documentation(query: string, scope: string, mode: "list" | "details") -> Scores | (TopResults, Previews)`
 
 ```yaml
 calls:
@@ -137,7 +137,7 @@ used_by_behaviors:
 
 CLI entry for UC-006 (Extract Document Content).
 
-`extract_content(reference: Reference, scope_hint: string?) -> content`
+`extract_content(reference: Reference, scope_hint: string?) -> string | DocumentMatches | (failure, Heading)`
 
 ```yaml
 calls:

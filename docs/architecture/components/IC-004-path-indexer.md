@@ -16,7 +16,7 @@ per-unit work repeated, never one combined pass spanning a whole recursed tree.
 Resolves `path`/`recursive`/`depth` to independent per-directory units — a single unit for a single file or a
 non-recursive directory, one unit per directory encountered when `recursive` is set.
 
-`resolve_index_units(path: path, recursive: bool, depth: int?) -> units`
+`resolve_index_units(path: path, recursive: bool, depth: int?) -> Units`
 
 ```yaml
 calls: []
@@ -28,7 +28,7 @@ called_from:
 
 Resolves one unit's own immediate `.md` documents — never documents belonging to any other unit.
 
-`resolve_documents_in_unit(unit: Unit) -> documents`
+`resolve_documents_in_unit(unit: Unit) -> Documents`
 
 ```yaml
 calls: []
@@ -40,7 +40,7 @@ called_from:
 
 Extracts significant words per node (the document itself, plus each section/figure), via `WordReducer`.
 
-`extract_words(structure: ParsedStructure) -> words`
+`extract_words(structure: ParsedStructure) -> WordIndex`
 
 Calls `WordReducer.reduce_words` per node's own text, then records the result against that node (documentation
 standard §4).
@@ -57,7 +57,7 @@ called_from:
 Extracts every `//TODO`-style marker, with its text, containing section, line, and any task reference found
 within it.
 
-`extract_todos(document: path) -> todos`
+`extract_todos(document: path) -> Todos`
 
 ```yaml
 calls: []

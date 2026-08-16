@@ -14,7 +14,7 @@ own operation could want, in one call — one shared walk rather than two indepe
 
 Parses one document's headings and figures.
 
-`parse_markdown_structure(document: path) -> { headings, figures, pseudo_numbers, references, start_end_lines }`
+`parse_markdown_structure(document: path) -> ParsedStructure`
 
 Per the documentation standard's own §3/§4 rules: eligible headings exclude `## Context`/`# Appendix`/
 `# Rationale`; a figure is a fenced code block carrying a pseudo-number; `pseudo_numbers` and `references`

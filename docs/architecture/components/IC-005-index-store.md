@@ -16,7 +16,7 @@ this project itself manages, not a formal External Dependency (§3.4).
 Persists `sections`/`words`/`todo` `.index/` files for one document; omits a file entirely when it has no
 content to hold (UC-003 Extension 5a) rather than writing one empty.
 
-`write_index_files(document: path, structure: ParsedStructure, words: Words, todos: Todos) -> void`
+`write_index_files(document: path, structure: ParsedStructure, words: WordIndex, todos: Todos) -> void`
 
 ```yaml
 calls: []
@@ -28,7 +28,7 @@ called_from:
 
 Lists existing `.index/` entries for one unit.
 
-`list_index_entries(unit: Unit) -> entries`
+`list_index_entries(unit: Unit) -> Entries`
 
 ```yaml
 calls: []
@@ -40,7 +40,7 @@ called_from:
 
 Finds entries in a unit with no corresponding current document (UC-003 MSS step 6), scoped to that unit only.
 
-`find_stale_entries(existing_entries: entries, documents: documents) -> stale_entries`
+`find_stale_entries(existing_entries: Entries, documents: Documents) -> Entries`
 
 ```yaml
 calls: []
@@ -66,7 +66,7 @@ Reads `.words.yaml` content under a resolved scope, filtered to a reduced query:
 actually contain a matching word, plus each one's total word count (needed for relevance normalization) — not
 the whole scoped tree.
 
-`load_word_index(scope: Scope, reduced_query: Words) -> matching_index`
+`load_word_index(scope: Scope, reduced_query: Words) -> MatchingIndex`
 
 ```yaml
 calls: []
@@ -81,7 +81,7 @@ resolving a `§section` reference to a line range, or finding the closest matchi
 one document's section boundaries, which is neither `load_word_index` (scoped to a query match, not a single
 document) nor any function `PathIndexer` exposes.
 
-`read_section_index(document: path) -> sections`
+`read_section_index(document: path) -> SectionIndex`
 
 ```yaml
 calls: []

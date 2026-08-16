@@ -16,7 +16,7 @@ that reads `IndexStore`'s own persisted data directly (`sections.yaml`, via IC-0
 Resolves an exact path or `**{slug}` wildcard match within a resolved scope. Its own cardinality covers UC-006
 Extensions 2a (empty) and 2b (multiple) as its two outcomes, not additional branches layered on top.
 
-`resolve_document(reference: Reference, resolved_scope: Scope) -> matches`
+`resolve_document(reference: Reference, resolved_scope: Scope) -> DocumentMatches`
 
 ```yaml
 calls: []
@@ -29,7 +29,7 @@ called_from:
 Resolves the whole document, a `§section`, an explicit line range, or a `§section` plus range, within the
 matched document.
 
-`resolve_target_range(reference: Reference, document: path) -> target_range`
+`resolve_target_range(reference: Reference, document: path) -> TargetRange`
 
 Raises `section_not_found` when the referenced section doesn't exist (UC-006 Extension 3a). Out-of-bounds line
 ranges are clamped to actual bounds, not an error (§3.7).
@@ -46,7 +46,7 @@ called_from:
 Finds the nearest matching section on a `section_not_found` failure from §2, so the caller gets a pointer
 rather than a bare error (UC-006 Extension 3a).
 
-`find_closest_section(reference: Reference, document: path) -> closest_section`
+`find_closest_section(reference: Reference, document: path) -> Heading`
 
 ```yaml
 calls:
@@ -60,7 +60,7 @@ called_from:
 Reads verbatim source text directly from the source `.md` file at a resolved range — never reconstructed from
 index data (UC-006 MSS step 4).
 
-`read_source_text(document: path, target_range: TargetRange) -> content`
+`read_source_text(document: path, target_range: TargetRange) -> string`
 
 ```yaml
 calls: []

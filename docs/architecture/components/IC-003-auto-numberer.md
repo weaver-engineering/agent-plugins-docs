@@ -15,7 +15,7 @@ UC-002's own Main Success Scenario, called directly by `IC-000 §1`, not chained
 
 Computes fresh numbering by document position and heading depth.
 
-`compute_numbering(parsed: ParsedStructure) -> numbering`
+`compute_numbering(parsed: ParsedStructure) -> Numbering`
 
 ```yaml
 calls: []
@@ -27,7 +27,7 @@ called_from:
 
 Builds the old→new id map, keyed by pseudo-number and title.
 
-`build_id_map(parsed: ParsedStructure, numbering: Numbering) -> id_map`
+`build_id_map(parsed: ParsedStructure, numbering: Numbering) -> IdMap`
 
 Raises `duplicate_identity` when two headings/figures share both pseudo-number and title (UC-002 Extension 3b)
 — a broken source document, not something numbering resolves.
@@ -43,7 +43,7 @@ called_from:
 Finds same-document references whose old id survives into `id_map`, evaluated against the original,
 unmodified document (UC-002 MSS step 4) — a dangling reference is simply absent from the result, not flagged.
 
-`find_surviving_references(parsed: ParsedStructure, id_map: IdMap) -> references`
+`find_surviving_references(parsed: ParsedStructure, id_map: IdMap) -> SurvivingReferences`
 
 ```yaml
 calls: []
@@ -55,7 +55,7 @@ called_from:
 
 Applies computed numbering to headings/figures.
 
-`rewrite_headings(parsed: ParsedStructure, numbering: Numbering) -> document`
+`rewrite_headings(parsed: ParsedStructure, numbering: Numbering) -> string`
 
 ```yaml
 calls: []
@@ -67,7 +67,7 @@ called_from:
 
 Rewrites the surviving reference set found by §3 into the numbered document from §4.
 
-`rewrite_references(numbered_document: document, surviving_refs: references, id_map: IdMap) -> document`
+`rewrite_references(numbered_document: string, surviving_refs: SurvivingReferences, id_map: IdMap) -> string`
 
 ```yaml
 calls: []
@@ -79,7 +79,7 @@ called_from:
 
 Formats the change report, human-readable or machine-consumable (§3.5).
 
-`format_report(rewritten_document: document, mode: "human_readable" | "machine_consumable") -> report`
+`format_report(rewritten_document: string, mode: "human_readable" | "machine_consumable") -> NumberingReport`
 
 ```yaml
 calls: []

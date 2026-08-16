@@ -1,12 +1,12 @@
-"IC-007 — Searcher":
+IC-007 — Searcher:
   internal: 1
   service: 1
 sections:
-  "Purpose":
+  Purpose:
     reduces: 1
     query: 1
     scores: 1
-    indexstore: 1
+    indexstore`'s: 1
     matching: 1
     sections: 1
     produces: 1
@@ -20,61 +20,62 @@ sections:
     four: 1
     steps: 1
     search_documentation: 1
+    ic-000: 1
     sequences: 1
     coherent: 1
     class-shaped: 1
     interface: 1
-  "`reduce_query`":
+  '`reduce_query`':
     reduces: 1
+    query: 2
     string: 1
+    via: 1
     wordreducer: 1
     mechanically: 1
     reduction: 1
     index: 1
-    itself: 1
     built: 1
     reduce_query: 1
-    query: 1
-    reduced_query: 1
-  "`score_nodes`":
+  '`score_nodes`':
     scores: 1
-    document: 1
+    document-: 1
     section-level: 1
     relevance: 1
-    together: 1
+    together: 2
+    via: 1
     selectable: 1
-    algorithm: 1
-    calc: 1
+    algorithm: 2
+    --calc: 1
     call: 1
     producing: 1
+    both: 2
     levels: 1
     swapping: 1
     affects: 1
+    uc-005: 1
     mss: 1
     steps: 1
+    3-4: 1
     score_nodes: 1
     matching_index: 1
-    matchingindex: 1
     reduced_query: 1
-    words: 1
-  "`select_top_n`":
+  '`select_top_n`':
     selects: 1
     top: 1
-    max-results: 1
+    --max-results: 1
     results: 1
     default: 1
     select_top_n: 1
-    top_results: 1
-  "`preview_content`":
+    scores: 1
+  '`preview_content`':
     produces: 1
     first: 1
-    preview-lines: 1
+    --preview-lines: 1
     lines: 1
     default: 1
-    result: 1
+    result's: 1
     content: 1
     details: 1
     mode: 1
     preview_content: 1
     top_results: 1
-    previews: 1

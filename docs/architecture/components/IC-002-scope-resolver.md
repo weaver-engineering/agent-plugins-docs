@@ -15,7 +15,7 @@ has no function available that would let it.
 
 Resolves exactly one scope specifier.
 
-`resolve_scope_single(specifier: string) -> scope`
+`resolve_scope_single(specifier: string) -> Scope`
 
 Accepts `@{slug}` (`-docs` suffix optional), `@docs` (`weaver-engineering/docs`), `@all` (every
 weaver-engineering docs repo), or a filesystem path, optionally narrowed by `/{path}`. Defaults to cwd if
@@ -33,7 +33,7 @@ called_from:
 
 Resolves several chained specifiers and combines the results.
 
-`resolve_chained_scope(specifiers: string[]) -> scope`
+`resolve_chained_scope(specifiers: string[]) -> Scope`
 
 Calls `resolve_scope_single` once per specifier in `@{slug}@{slug}` form and combines the results. UC-006 has
 no path to this function at all — its own scope exclusion is structural, not caller discipline (§3.3).

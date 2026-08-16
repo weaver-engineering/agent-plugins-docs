@@ -1,39 +1,39 @@
-"IC-001 — MarkdownParser":
+IC-001 — MarkdownParser:
   internal: 1
   service: 1
 sections:
-  "Purpose":
+  Purpose:
     parses: 1
     markdown: 1
+    document's: 1
     headings: 1
     pseudo-numbered: 1
     figures: 1
     field: 1
-    uc-002: 1
-    uc-003: 1
+    either: 1
+    uc-002's: 1
+    uc-003's: 1
     operation: 1
+    could: 1
     want: 1
     call: 1
     shared: 1
     walk: 1
-    rather: 1
     independently-maintained: 1
     ones: 1
-  "`parse_markdown_structure`":
+  '`parse_markdown_structure`':
     parses: 1
-    document: 1
-    headings: 3
-    figures: 2
-    parse_markdown_structure: 1
-    path: 1
-    pseudo_numbers: 2
-    references: 1
-    start_end_lines: 2
-    standard: 1
+    document's: 1
+    headings: 2
+    figures: 1
+    per: 1
+    documentation: 1
+    standard's: 1
     rules: 1
     eligible: 1
     exclude: 1
-    appendix: 1
+    context`/: 1
+    appendix`/: 1
     rationale: 1
     figure: 1
     fenced: 1
@@ -41,11 +41,17 @@ sections:
     block: 1
     carrying: 1
     pseudo-number: 1
+    pseudo_numbers: 1
+    references: 1
+    include: 1
     same-document: 1
     tokens: 1
     markdown-link: 1
     anchors: 1
+    start_end_lines: 1
     gives: 1
-    node: 1
+    node's: 1
     line: 1
     range: 1
+    parse_markdown_structure: 1
+    document: 1

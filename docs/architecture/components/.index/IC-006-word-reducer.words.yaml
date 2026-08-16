@@ -1,15 +1,16 @@
-"IC-006 — WordReducer":
+IC-006 — WordReducer:
   internal: 1
   service: 1
 sections:
-  "Purpose":
-    standard: 1
+  Purpose:
+    documentation: 1
+    standard's: 1
     tokenization/stemming/stopword: 1
     reduction: 1
     exactly: 1
-    place: 1
     called: 1
     directly: 1
+    both: 1
     pathindexer: 1
     building: 1
     index: 1
@@ -20,20 +21,16 @@ sections:
     guaranteed: 1
     stay: 1
     consistent: 1
-    rather: 1
     independently: 1
     asserting: 1
     equivalence: 1
-  "`reduce_words`":
-    reduces: 1
+  '`reduce_words`':
+    reduces: 2
     given: 1
     text: 2
     significant: 1
     word: 1
     tokens: 1
-    reduce_words: 1
-    string: 1
-    words: 1
     case-folds: 1
     keeps: 1
     inside: 1
@@ -41,11 +38,12 @@ sections:
     treats: 1
     character: 1
     break: 1
-    except: 1
     starts: 1
     verbatim: 1
-    reduces: 1
+    '@{repo-slug}/{path}[/§m.n': 1
     plurals/possessives: 1
     root: 1
     drops: 1
     stopwords: 1
+    stopwords.yaml: 1
+    reduce_words: 1

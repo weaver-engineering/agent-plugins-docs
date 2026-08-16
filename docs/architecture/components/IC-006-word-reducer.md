@@ -15,7 +15,7 @@ mechanically guaranteed to stay consistent rather than independently asserting e
 
 Reduces any given text to its significant word tokens.
 
-`reduce_words(text: string) -> words`
+`reduce_words(text: string) -> Words`
 
 Case-folds; keeps `-`, `_`, `.`, `:`, `/` inside a token; treats every other character as a break, except `@`,
 which starts a verbatim `@{repo-slug}/{path}[/§M.N]` token; reduces plurals/possessives to their root; drops
