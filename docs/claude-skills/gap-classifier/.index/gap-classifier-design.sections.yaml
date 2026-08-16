@@ -1,0 +1,41 @@
+sections:
+  Purpose:
+    number: '1'
+    type: section
+    start_line: 12
+    end_line: 29
+  Trigger:
+    number: '2'
+    type: section
+    start_line: 30
+    end_line: 36
+  Inputs:
+    number: '3'
+    type: section
+    start_line: 37
+    end_line: 43
+  Outputs And Effects:
+    number: '4'
+    type: section
+    start_line: 44
+    end_line: 51
+  Algorithm:
+    number: '5'
+    type: section
+    start_line: 52
+    end_line: 67
+  Composition With Other Skills:
+    number: '6'
+    type: section
+    start_line: 68
+    end_line: 78
+  Cost/Benefit:
+    number: '7'
+    type: section
+    start_line: 79
+    end_line: 88
+  Open Questions:
+    number: '8'
+    type: section
+    start_line: 89
+    end_line: 99
