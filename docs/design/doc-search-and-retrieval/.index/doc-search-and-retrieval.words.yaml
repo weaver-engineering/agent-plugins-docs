@@ -1,2 +1,37 @@
-"Doc Search & Retrieval": {}
+"Doc Search & Retrieval":
+  design: 3
+  work: 1
+  mcp: 1
+  server: 1
+  way: 1
+  per: 2
+  feature: 1
+  process: 2
+  "@docs/workflows/feature-workflow/design-feature-instructions.md": 1
+  directory: 1
+  actual: 1
+  entry: 1
+  point: 1
+  convention: 1
+  hld: 3
+  doc-search-and-retrieval-hld.md: 1
+  file: 1
+  stays: 1
+  place: 1
+  stable: 1
+  landing: 1
+  page: 1
+  capability: 1
+  catalog: 1
+  architecture: 1
+  definition: 1
+  already: 1
+  link: 1
+  current: 1
+  state: 1
+  including: 1
+  specific: 1
+  behaviors: 1
+  produced: 1
+  far: 1
 sections: {}
