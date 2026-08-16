@@ -538,14 +538,14 @@ sections:
     scoperesolver: 1
     six: 2
     components: 2
-    genuinely: 1
+    genuinely: 2
     competing: 1
-    shape: 2
+    shape: 3
     weigh: 1
     functions: 1
     grouping: 1
     follow: 1
-    directly: 1
+    directly: 2
     owning: 1
     use: 1
     case: 1
@@ -564,14 +564,14 @@ sections:
     query-narrowing: 1
     ic-000: 1
     fixed: 1
-    design: 2
+    design: 3
     directory: 1
     hld: 1
     function: 2
-    per: 2
+    per: 3
     operation: 1
     choice: 1
-    feature: 1
+    feature: 2
     makes: 1
     separate: 1
     multi-candidate: 1
@@ -589,15 +589,42 @@ sections:
     judgement: 1
     call: 1
     among: 1
-    group: 1
+    group: 2
     indexstore: 1
     vs: 1
     pathindexer: 1
     rather: 1
     rationale: 1
-    entry: 1
+    entry: 2
     immediately: 1
     below: 1
+    explicitly: 1
+    see: 1
+    mode: 1
+    rendering: 1
+    deferred: 1
+    report: 1
+    differ: 1
+    uc-002: 1
+    instructions: 1
+    both: 1
+    while: 1
+    structured: 1
+    diff: 1
+    undecided: 1
+    format_report`'s: 1
+    sb-001`'s: 1
+    piece: 1
+    deriving: 1
+    behaviors: 1
+    ic-003: 1
+    change: 1
+    left: 1
+    elicited: 1
+    human_readable: 1
+    architect: 1
+    specific: 1
+    machine_consumable: 1
   '`WordReducer` As Its Own Component':
     extract_words: 2
     pathindexer: 1
@@ -649,12 +676,56 @@ sections:
     maintained-by-hand: 1
     invariant: 1
   Data Types:
+    19's: 1
+    addition: 1
+    after: 1
+    behaviors: 1
+    bool: 1
+    concrete: 1
+    decided: 1
+    decision: 1
+    decisions: 1
+    defined: 1
+    design: 1
+    details: 1
+    e.g: 1
+    enough: 1
+    example: 1
+    fact: 1
+    feature: 1
+    feature's: 1
+    fills: 1
+    float: 1
+    here: 2
+    instantiate: 1
+    instructions: 1
+    int: 1
+    interface: 1
+    introduces: 1
+    key: 2
+    literal: 2
+    new: 1
+    normally: 1
+    onward: 1
+    path: 1
+    per: 1
     populated: 1
-    depends: 1
-    internal: 1
-    component: 1
-    interfaces: 1
-    decide: 1
+    pr: 1
+    predates: 1
+    primitives: 1
+    recorded: 1
+    requirement: 1
+    retroactively: 1
+    section: 1
+    shape: 1
+    specific: 1
+    step: 1
+    string: 1
+    string-enum: 1
+    types: 2
+    values: 1
+    weaver-engineering/docs: 1
+    '|': 1
   Internal Components:
     ic-000: 2
     entry: 5
@@ -1133,3 +1204,273 @@ sections:
     until: 1
     actually: 1
     says: 1
+  '`ParsedStructure` (§3.1)':
+    +: 1
+    actually: 1
+    apart: 1
+    because: 1
+    both: 1
+    build_id_map: 1
+    caller: 2
+    computes: 1
+    depth: 1
+    duplicates: 1
+    either: 1
+    field: 2
+    figures: 1
+    flat: 1
+    given: 1
+    heading/figure's: 1
+    headings: 1
+    ic-001: 1
+    ic-003: 1
+    id: 1
+    id`/`owner_id`/`node_id: 1
+    identifiers: 1
+    ids: 1
+    iterates: 1
+    kept: 1
+    keyed: 1
+    know: 1
+    needing: 1
+    needs: 1
+    node: 1
+    parse: 1
+    parse_markdown_structure: 1
+    parsedstructure: 1
+    parser's: 1
+    per-node: 1
+    position: 1
+    present: 1
+    pseudo_number: 1
+    pseudo_numbers: 1
+    reads: 1
+    renumbered: 1
+    returned: 1
+    serves: 1
+    stable: 1
+    uc-002: 2
+    uc-003: 1
+    what: 1
+    whether: 1
+    without: 1
+  '`Scope` (§3.3)':
+    '@{slug}`/`@docs`/`@all`/path': 1
+    combined: 1
+    concrete: 1
+    filesystem: 1
+    form: 1
+    ic-002: 1
+    parsed: 1
+    resolve_scope_single`/`resolve_chained_scope: 1
+    resolved: 1
+    returned: 1
+    scope: 1
+    several: 1
+    specifier: 1
+    target: 1
+  '`Unit`, `Entry` (§3.9)':
+    entry: 3
+    existing: 1
+    files: 1
+    group: 1
+    ic-004: 2
+    ic-005: 1
+    immediate: 1
+    independent: 1
+    index/: 1
+    list_index_entries`/`find_stale_entries`/`remove_index_entries: 1
+    md: 1
+    operate: 1
+    per-directory: 1
+    produces: 1
+    reads: 1
+    resolve_documents_in_unit: 1
+    resolve_index_units: 1
+    unit: 2
+  '`Words`, `Todos` (§3.9, §3.10)':
+    both: 1
+    building: 1
+    extract_todos`'s: 1
+    extract_words: 1
+    ic-004: 1
+    ic-006: 1
+    index: 1
+    mechanically: 1
+    output: 2
+    querying: 1
+    reduce_query: 1
+    reduce_words`'s: 1
+    reduction: 1
+    shared: 1
+    todos: 2
+    words: 2
+  '`Numbering`, `IdMap`, `SurvivingReferences` (§3.9)':
+    against: 1
+    build_id_map`'s: 1
+    compute_numbering`'s: 1
+    entries: 1
+    entry: 1
+    evaluated: 1
+    find_surviving_references`'s: 1
+    fresh: 1
+    ic-003: 3
+    id: 1
+    idmap: 3
+    keyed: 1
+    map: 1
+    mss: 2
+    numbering: 3
+    old→new: 1
+    original: 1
+    output: 1
+    parsedstructure.references: 1
+    position-based: 1
+    pseudo-number: 1
+    step: 2
+    survivingreferences: 2
+    title: 1
+    uc-002: 2
+  '`NumberingReport` (§3.9)':
+    addendum: 1
+    change: 1
+    decided: 1
+    deriving: 1
+    diff: 1
+    different: 1
+    differently: 1
+    entry: 1
+    format_report`'s: 1
+    human_readable: 1
+    ic-003: 1
+    machine_consumable: 1
+    mode: 1
+    numberingreport: 1
+    output: 1
+    per: 1
+    render: 1
+    sb-001: 1
+    see: 1
+    shapes: 1
+    structured: 1
+    while: 1
+  '`IndexReport` (§3.9)':
+    --recursive`/`--depth: 1
+    accumulates: 1
+    across: 1
+    between: 1
+    calling: 1
+    decide: 1
+    decides: 1
+    dedicated: 1
+    directly: 1
+    distinction: 1
+    exists: 1
+    flags: 1
+    format_report`-equivalent: 1
+    formatting: 1
+    function: 1
+    human/machine-mode: 1
+    ic-000: 2
+    index_path`'s: 1
+    indexreport: 1
+    loop: 1
+    numberingreport: 1
+    per-`unit: 1
+    return: 1
+    uc-003: 1
+    unlike: 1
+    value: 1
+  '`Reference`, `TargetRange` (§3.7, §3.9)':
+    actual: 2
+    against: 1
+    already: 1
+    argument: 1
+    before: 1
+    bounds: 1
+    clamped: 1
+    closest_section: 1
+    concrete: 1
+    directly: 1
+    document's: 1
+    entry: 1
+    extract_content`/`resolve_document`/`resolve_target_range: 1
+    find_closest_section`'s: 1
+    form: 1
+    ic-008: 2
+    line: 1
+    new: 1
+    output: 1
+    parsed: 1
+    parsedstructure.headings: 1
+    range: 1
+    read_source_text: 1
+    reads: 1
+    reference: 2
+    resolve_target_range`'s: 1
+    resolved: 1
+    reuses: 1
+    targetrange: 2
+    type: 1
+    '{slug}[/§m.n][/l1-l2': 1
+  '`MatchingIndex`, `Scores`, `TopResults`, `Previews` (§3.8, §3.9)':
+    --max-results: 1
+    --preview-lines: 1
+    accumulator: 1
+    anywhere: 1
+    architect: 1
+    assumptions: 1
+    bound: 2
+    constructing: 1
+    content: 1
+    decided: 1
+    default: 2
+    distinct: 1
+    ever: 1
+    explicitly: 1
+    field: 1
+    fills: 1
+    filtered: 1
+    flagged: 1
+    formally: 1
+    gap: 1
+    heading/figure's: 1
+    ic-000: 1
+    ic-003: 1
+    ic-005: 1
+    ic-007: 3
+    indexreport`'s: 1
+    inferred: 2
+    iteration: 1
+    lines: 1
+    load_word_index`'s: 1
+    matchingindex: 2
+    need: 1
+    output: 4
+    parsedstructure.pseudo_numbers: 1
+    per: 1
+    preview_content`'s: 1
+    previews: 2
+    pseudo_number: 1
+    pseudocode: 2
+    query: 1
+    recorded: 1
+    reduced: 1
+    report: 1
+    resolved: 1
+    resolves: 1
+    result: 1
+    returning: 1
+    review: 1
+    scope: 1
+    score_nodes`'s: 1
+    scores: 3
+    select_top_n`'s: 1
+    shape: 1
+    silently: 1
+    stated: 1
+    topresults: 2
+    treated: 1
+    truncated: 1
+    without: 1
+    words.yaml: 1

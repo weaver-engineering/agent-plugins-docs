@@ -142,6 +142,11 @@ note in §5 *is* its justification, not a placeholder pending a fuller writeup. 
 this group — `IndexStore` vs. `PathIndexer` as two components rather than one — already has its own Rationale
 entry, immediately below.
 
+`format_report`'s (`IC-003 §6`) own `report` shape was the one piece this group left genuinely undecided —
+UC-002 §7 deferred it explicitly. Elicited directly from the architect while deriving `SB-001`'s specific
+behaviors (Design Feature Instructions §5): a structured diff, one entry per change, the same data in both
+`human_readable` and `machine_consumable` mode (§3.5) — the two differ only in rendering. See §4.6.
+
 ### 3.10 `WordReducer` As Its Own Component
 
 `extract_words` (`PathIndexer`) and `reduce_query` (`Searcher`) both need the documentation standard's own §4
@@ -154,7 +159,176 @@ rule now lives in exactly one place, and staying consistent is structural, not a
 
 ## 4 Data Types
 
-*(Not yet populated — depends on the Internal Component interfaces §3/§5 decide.)*
+Retroactively populated from the Key Decisions (§3.1 onward) that decided each interface — per
+`weaver-engineering/docs` PR #19's addition to Design Feature Instructions §4.1/§4.2, a new data shape is
+normally recorded here in the same step as the Key Decision that introduces it; this Feature's own §3 predates
+that requirement, so this section fills in after the fact, concrete enough for §5's specific behaviors to
+instantiate with literal example values. `path`, `string`, `bool`, `int`, `float`, and literal string-enum
+types (e.g. `"list" | "details"`) are primitives, not defined here.
+
+### 4.1 `ParsedStructure` (§3.1)
+
+Returned by `parse_markdown_structure` (`IC-001 §1`). One parse serves both UC-002 and UC-003, so every field
+either caller needs is present, whether or not a given caller reads it.
+
+```
+ParsedStructure = {
+  headings: [{ id: string, title: string, depth: int, pseudo_number: string|null, start_line: int, end_line: int }],
+  figures: [{ id: string, pseudo_number: string, start_line: int, end_line: int }],
+  pseudo_numbers: [{ value: string, owner_id: string }],
+  references: [{ token: string, kind: "section" | "anchor", start_line: int }],
+  start_end_lines: { [node_id: string]: { start_line: int, end_line: int } }
+}
+```
+
+`id`/`owner_id`/`node_id` are the parser's own stable per-node identifiers (document position + depth) — not
+yet the renumbered `§M` ids UC-002 computes (§4.5). `pseudo_numbers` duplicates each heading/figure's own
+`pseudo_number` as a flat list keyed by node id; kept as its own field because it's what `IC-003 §2` (`build_id_map`)
+actually iterates, without needing to know headings and figures apart.
+
+### 4.2 `Scope` (§3.3)
+
+Returned by `resolve_scope_single`/`resolve_chained_scope` (`IC-002 §1`/`§2`) — a resolved, concrete filesystem
+target: the parsed form of a `@{slug}`/`@docs`/`@all`/path specifier, or several combined.
+
+```
+Scope = {
+  roots: [path],      # one or more resolved filesystem roots this scope covers
+  specifier: string    # the original specifier(s), for reporting/error messages
+}
+```
+
+### 4.3 `Unit`, `Entry` (§3.9)
+
+`Unit` — one independent per-directory group `resolve_index_units` (`IC-004 §1`) produces; `resolve_documents_in_unit`
+(`IC-004 §2`) reads its own immediate `.md` files.
+
+```
+Unit = { directory: path }
+```
+
+`Entry` — one existing `.index/` entry `list_index_entries`/`find_stale_entries`/`remove_index_entries`
+(`IC-005 §2`-`§4`) operate on.
+
+```
+Entry = { document_path: path, index_files: [path] }   # the .sections.yaml/.words.yaml/.todo.yaml this entry owns
+```
+
+### 4.4 `Words`, `Todos` (§3.9, §3.10)
+
+`Words` — `reduce_words`'s (`IC-006 §1`) own output, shared by `extract_words` (building the index) and
+`reduce_query` (querying it) so both are mechanically the same reduction (§3.10).
+
+```
+Words = [string]   # case-folded, stemmed, stopword-free tokens
+```
+
+`Todos` — `extract_todos`'s (`IC-004 §4`) own output.
+
+```
+Todos = [{ text: string, section: string, line: int, ref: string|null }]
+```
+
+### 4.5 `Numbering`, `IdMap`, `SurvivingReferences` (§3.9)
+
+`Numbering` — `compute_numbering`'s (`IC-003 §1`) fresh position-based numbering.
+
+```
+Numbering = { [node_id: string]: string }   # ParsedStructure node id -> new §M id, or "0" for a hidden first section
+```
+
+`IdMap` — `build_id_map`'s (`IC-003 §2`) old→new id map, keyed by pseudo-number and title (UC-002 MSS step 3).
+
+```
+IdMap = { [(old_pseudo_number, title)]: { new_id: string, node_id: string } }
+```
+
+`SurvivingReferences` — `find_surviving_references`'s (`IC-003 §3`) own output: which `ParsedStructure.references`
+entries have an entry in `IdMap`, evaluated against the original document (UC-002 MSS step 4).
+
+```
+SurvivingReferences = [{ token: string, start_line: int, old_id: string, new_id: string }]
+```
+
+### 4.6 `NumberingReport` (§3.9)
+
+`format_report`'s (`IC-003 §6`) own output, decided while deriving `SB-001` (see §3.9's addendum) — a
+structured diff, one entry per change; `human_readable` and `machine_consumable` mode (§3.5) render the same
+data differently, not two different shapes.
+
+```
+NumberingReport = {
+  renumbered: [{ old: string, new: string, title: string }],
+  references_rewritten: [{ old: string, new: string, line: int }],
+  references_removed: [{ old: string, line: int }]
+}
+```
+
+### 4.7 `IndexReport` (§3.9)
+
+`index_path`'s (`IC-000 §2`) own return value. Unlike `NumberingReport`, no dedicated formatting function
+exists for it — UC-003 has no human/machine-mode distinction to decide between (§3.6 only decides the
+`--recursive`/`--depth` flags), so `IC-000 §2` accumulates it directly across the per-`Unit` loop rather than
+calling a `format_report`-equivalent.
+
+```
+IndexReport = {
+  indexed: [{ document: path, sections_written: bool, words_written: bool, todos_written: bool }],
+  removed: [{ document: path }]   # stale .index/ entries removed
+}
+```
+
+### 4.8 `Reference`, `TargetRange` (§3.7, §3.9)
+
+`Reference` — the parsed form of an `extract_content`/`resolve_document`/`resolve_target_range` argument
+(`{slug}[/§M.N][/L1-L2]`), before it's resolved against any actual document.
+
+```
+Reference = { slug_or_path: string, section: string|null, line_range: [int, int]|null }
+```
+
+`TargetRange` — `resolve_target_range`'s (`IC-008 §2`) own output: the concrete line range `read_source_text`
+reads, already clamped to the document's actual bounds (§3.7).
+
+```
+TargetRange = { start_line: int, end_line: int }
+```
+
+`find_closest_section`'s (`IC-008 §3`) own `closest_section` reuses one entry from `ParsedStructure.headings`
+(§4.1) directly — not a new type.
+
+### 4.9 `MatchingIndex`, `Scores`, `TopResults`, `Previews` (§3.8, §3.9)
+
+`MatchingIndex` — `load_word_index`'s (`IC-005 §5`) own output: `.words.yaml` content under a resolved scope,
+filtered to the reduced query.
+
+```
+MatchingIndex = [{ document: path, section: string, matched_words: Words, total_word_count: int }]
+```
+
+`Scores` — `score_nodes`'s (`IC-007 §2`) own output.
+
+```
+Scores = [{ document: path, section: string|null, score: float }]   # section null = document-level score
+```
+
+`TopResults` — `select_top_n`'s (`IC-007 §3`) own output: `Scores`, truncated to `--max-results` (§3.8, default `20`).
+
+```
+TopResults = Scores   # same shape, just truncated
+```
+
+`Previews` — `preview_content`'s (`IC-007 §4`) own output: `--preview-lines` (§3.8, default `5`) lines per result.
+
+```
+Previews = [{ document: path, section: string|null, preview_lines: [string] }]
+```
+
+*(Two assumptions flagged for architect review rather than silently treated as decided: `ParsedStructure.pseudo_numbers`
+as a field distinct from each heading/figure's own `pseudo_number` (§4.1) is inferred from `IC-003 §2`'s own
+iteration need, not stated explicitly anywhere; `IndexReport`'s accumulator shape (§4.7) is inferred from
+`IC-000 §2`'s bound pseudocode returning `report` without ever constructing it — a gap in the recorded bound
+pseudocode this fills rather than resolves formally.)*
 
 ## 5 Internal Components
 

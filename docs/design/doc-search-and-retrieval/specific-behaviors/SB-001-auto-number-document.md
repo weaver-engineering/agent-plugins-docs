@@ -34,6 +34,64 @@ reconciliation:
   reviewed_at: null
 ```
 
-//TODO - Derive this operation's specific behaviors (Design Feature Instructions §5): establish every valid
-entry state (Given) from UC-002's own Preconditions/Extensions, trace each through the bound pseudocode above,
-and present each resulting behavior for a quick sanity check. Given/When/Then and Call Tree aren't recorded yet.
+## 1 Happy Path
+
+**Realizes:** happy path
+
+**Given** a document `docs/example/sample.md`:
+```
+# Sample Document
+
+## Context
+* [Other Doc](other.md) - related
+
+## 3 First Section
+Intro text. See §5 for background.
+
+## 5 Second Section
+Background details here.
+```
+
+**When** `auto_number_document(document: "docs/example/sample.md", invoked_by: "assistant")` is invoked (`IC-000 §1`)
+
+**Then** the document is rewritten to:
+```
+# Sample Document
+
+## Context
+* [Other Doc](other.md) - related
+
+## 1 First Section
+Intro text. See §2 for background.
+
+## 2 Second Section
+Background details here.
+```
+and the report returned (`NumberingReport`, HLD §4.6) is:
+```yaml
+renumbered:
+  - {old: "3", new: "1", title: "First Section"}
+  - {old: "5", new: "2", title: "Second Section"}
+references_rewritten:
+  - {old: "§5", new: "§2", line: 8}
+references_removed: []
+```
+
+**Call Tree**
+
+```yaml
+call_tree:
+  address: "IC-000 §1"
+  children:
+    - address: "IC-001 §1"
+    - address: "IC-003 §1"
+    - address: "IC-003 §2"
+    - address: "IC-003 §3"
+    - address: "IC-003 §4"
+    - address: "IC-003 §5"
+    - address: "IC-003 §6"
+```
+
+//TODO - Derive the remaining specific behaviors (Design Feature Instructions §5): §1.1 (Extension 8a, invoked
+by the Architect — human-readable report), §2 (Extension 3a, disambiguated duplicate pseudo-number), and §3
+(Extension 3b, `duplicate_identity` failure) are the three still outstanding, pending sanity check on §1 above.

@@ -58,34 +58,79 @@ sections:
     number: "3.9"
     type: section
     start_line: 133
-    end_line: 144
+    end_line: 149
   "`WordReducer` As Its Own Component":
     number: "3.10"
     type: section
-    start_line: 145
-    end_line: 154
+    start_line: 150
+    end_line: 159
   "Data Types":
     number: "4"
     type: section
-    start_line: 155
-    end_line: 158
+    start_line: 160
+    end_line: 168
+  "`ParsedStructure` (§3.1)":
+    number: "4.1"
+    type: section
+    start_line: 169
+    end_line: 188
+  "`Scope` (§3.3)":
+    number: "4.2"
+    type: section
+    start_line: 189
+    end_line: 200
+  "`Unit`, `Entry` (§3.9)":
+    number: "4.3"
+    type: section
+    start_line: 201
+    end_line: 216
+  "`Words`, `Todos` (§3.9, §3.10)":
+    number: "4.4"
+    type: section
+    start_line: 217
+    end_line: 231
+  "`Numbering`, `IdMap`, `SurvivingReferences` (§3.9)":
+    number: "4.5"
+    type: section
+    start_line: 232
+    end_line: 252
+  "`NumberingReport` (§3.9)":
+    number: "4.6"
+    type: section
+    start_line: 253
+    end_line: 266
+  "`IndexReport` (§3.9)":
+    number: "4.7"
+    type: section
+    start_line: 267
+    end_line: 280
+  "`Reference`, `TargetRange` (§3.7, §3.9)":
+    number: "4.8"
+    type: section
+    start_line: 281
+    end_line: 299
+  "`MatchingIndex`, `Scores`, `TopResults`, `Previews` (§3.8, §3.9)":
+    number: "4.9"
+    type: section
+    start_line: 300
+    end_line: 332
   "Internal Components":
     number: "5"
     type: section
-    start_line: 159
-    end_line: 241
+    start_line: 333
+    end_line: 415
   "External Dependencies":
     number: "6"
     type: section
-    start_line: 242
-    end_line: 249
+    start_line: 416
+    end_line: 423
   "Specific Behaviors":
     number: "7"
     type: section
-    start_line: 250
-    end_line: 272
+    start_line: 424
+    end_line: 447
   "Technology Stack":
     number: "8"
     type: section
-    start_line: 273
-    end_line: 279
+    start_line: 448
+    end_line: 522
