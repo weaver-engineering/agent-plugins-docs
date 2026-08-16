@@ -43,12 +43,35 @@ start/end lines. UC-002 (`auto_number_document`) reads `pseudo_numbers` and `ref
 (`index_path`)'s `parse_structure` step reads `start_end_lines`. Neither caller narrows the interface to only
 its own fields.
 
-*(Remaining §3.1-style subsections — one per Internal Component interface, plus one per use case's Open Design
-Question — get added here as each is decided. Still open: `resolve_scope`'s exact `@{scope}`/`@{slug}` grammar
-as one shared interface for both UC-005 and UC-006 despite their slightly different needs; the
-filesystem-as-in-process-I/O modeling choice from §6; and UC-002/003/005/006's own §7 Open Design Questions
-(CLI flags/report format, CLI flags for path/recurse/depth, algorithm-selection syntax + N/X defaults,
-out-of-bounds line range behavior) — none decided yet.)*
+### 3.2 Delivery Surface: CLI Now, MCP Later
+
+This Feature ships as a command-line tool now, not an MCP tool — the ADD's own MCP-hosting default (§1) is
+about how this capability is eventually *published*, not something this design phase builds today. Every
+operation's core logic (each `IC-000` function below) is written as a plain, directly-testable function; the
+CLI is a thin argument-parsing wrapper around it, the same relationship an MCP tool wrapper would have if one
+gets built later. Nothing about this design commits to CLI-specific concerns (argv parsing, exit codes) leaking
+into the core functions themselves. This resolves the "MCP vs CLI" half of UC-002/003/005/006's own §7 Open
+Design Questions; each use case's *specific* flag/format questions are still open, and get their own subsection
+here as each is decided.
+
+### 3.3 `resolve_scope` Interface
+
+Split into two functions rather than one. `resolve_scope_single(specifier)` resolves exactly one scope
+(`@{slug}`, `@docs`, `@all`, or a filesystem path) and is what both UC-005 and UC-006 call. `resolve_chained_scope(specifiers)`
+— UC-005 only — calls `resolve_scope_single` once per specifier and combines the results; UC-006 has no path to
+it at all, so its own scope exclusion (no `@{slug}@{slug}` chaining) is enforced by which function exists for
+it to call, not left to caller discipline.
+
+### 3.4 Filesystem Is Not An External Dependency
+
+Confirmed as reasoned in §6: every file-touching function (`read_source_text`, `write_index_files`,
+`parse_markdown_structure`, `list_index_entries`, `remove_index_entries`) is an ordinary Internal Component
+doing in-process I/O against files this project itself manages — not a formal External Dependency. No `ED-NNN`
+document exists or is needed for the filesystem.
+
+*(Still open: each use case's own specific §7 Open Design Question — UC-002's exit codes/report format,
+UC-003's path/recurse/depth flag syntax, UC-005's algorithm-selection syntax and N/X defaults, UC-006's
+out-of-bounds line range behavior — none decided yet.)*
 
 ## 4 Data Types
 
@@ -63,9 +86,10 @@ against. This is the inventory Gap Analysis produces; which of these actually ea
 versus staying Chunk-private (Design Directory And HLD §4.3) is Solution Shape's decision (§2.3/§4), not yet
 made here.
 
-* `resolve_scope` — **new** — named identically in both UC-005 and UC-006's Technical Interpretation (the
-  `@{scope}` resolution rules differ slightly between them — UC-005 allows chained `@{slug}@{slug}`, UC-006
-  doesn't — but both need it). One candidate, two relying use cases, not two candidates.
+* `resolve_scope_single`, `resolve_chained_scope` — **new** — decided (§3.3) as a split interface: both UC-005
+  and UC-006 call `resolve_scope_single`; only UC-005 also calls `resolve_chained_scope`, which itself calls
+  `resolve_scope_single` per specifier. Supersedes the single `resolve_scope` candidate Gap Analysis originally
+  surfaced.
 * `parse_markdown_structure` — **new** — decided (§3.1) as one shared component satisfying both UC-002's and
   UC-003's parsing needs, superseding the separately-named `parse_document`/`parse_structure` candidates Gap
   Analysis originally surfaced.
@@ -78,13 +102,12 @@ made here.
 
 ## 6 External Dependencies
 
-None identified. Every candidate in §5 that touches the filesystem (`read_source_text`, `write_index_files`,
-`parse_document`/`parse_structure`, `list_index_entries`, `remove_index_entries`) does so against files this
-same project owns and manages, in-process — not a separate real system whose behavior can only be observed by
-calling it (Design Directory And HLD §3's own bar: "a network boundary, real time, real randomness, another
-team's own data"). A unit test can exercise these against a temp directory without needing anything external.
-This reasoning, not just its conclusion, belongs in Key Decisions (§3) once Ideation confirms it — recorded
-here for now since Gap Analysis is what surfaced the question.
+None identified — confirmed as Key Decision §3.4. Every candidate in §5 that touches the filesystem
+(`read_source_text`, `write_index_files`, `parse_markdown_structure`, `list_index_entries`,
+`remove_index_entries`) does so against files this same project owns and manages, in-process — not a separate
+real system whose behavior can only be observed by calling it (Design Directory And HLD §3's own bar: "a
+network boundary, real time, real randomness, another team's own data"). A unit test can exercise these against
+a temp directory without needing anything external.
 
 ## 7 Specific Behaviors
 
@@ -93,10 +116,10 @@ here for now since Gap Analysis is what surfaced the question.
 * [SB-003 — Search Documentation](specific-behaviors/SB-003-search-documentation.md) - realizes [UC-005](../../analysis/use-cases/UC-005-search-documentation.md) (stub — behaviors not yet derived)
 * [SB-004 — Extract Document Content](specific-behaviors/SB-004-extract-document-content.md) - realizes [UC-006](../../analysis/use-cases/UC-006-extract-document-content.md) (stub — behaviors not yet derived)
 
-*(All four use cases in scope now have a Technical Interpretation and an identified operation, and Gap
-Analysis (§5/§6 above) is done. Per Design Feature Instructions §1, the next unit of work is step 4: Phase 3
-Ideation, one gap at a time — a named human-judgement point (§4.1), not something this document resolves on
-its own.)*
+*(All four use cases in scope now have a Technical Interpretation and an identified operation, Gap Analysis is
+done, and Phase 3 Ideation (§3) is under way — three gaps resolved (§3.1-§3.4), each use case's own specific
+§7 Open Design Question still open. Ideation remains a named human-judgement point (§4.1); each remaining gap
+gets presented to the architect in turn, not resolved unilaterally.)*
 
 ## 8 Technology Stack
 
@@ -122,3 +145,17 @@ asserted as decided until §3 actually says so.)*
 
 The chosen option (one component, broad output, each caller reads only the fields it needs) keeps the actual
 parse in exactly one place while still giving each caller a direct, un-reshaped answer.
+
+**§3.2 CLI now, MCP later.** Two MCP-schema options were proposed (MCP tool only; MCP tool plus a thin CLI
+wrapper) — both discarded by the architect's own correction: designing the MCP surface at all is premature
+here. The ADD's MCP-hosting default (§1) governs how this Feature is eventually *published*, not what this
+design phase has to build. Building a CLI now, with core logic kept separate from CLI-specific concerns so an
+MCP wrapper is addable later without rework, delivers a real, usable tool today without committing to schema
+decisions (tool naming, param typing conventions) this Feature doesn't actually need yet.
+
+**§3.3 `resolve_scope` split.** The alternative — one `resolve_scope(specifiers)` handling both single and
+chained cases internally — was discarded: UC-006 draws its own scope boundary explicitly ("not the chained
+multi-project form... since extraction already knows where it's going"), and a single function accepting a list
+either way relies on caller discipline to respect that boundary rather than the interface itself preventing it.
+Splitting into `resolve_scope_single`/`resolve_chained_scope` makes UC-006's own exclusion structural: it has no
+function to call that would even let it chain.
