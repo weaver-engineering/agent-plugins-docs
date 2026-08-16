@@ -91,50 +91,79 @@ sections:
     fills: 1
     ideation: 1
     run: 1
-  "Key Decisions":
-    populated: 1
-    phase: 1
-    ideation: 1
-    design: 1
-    feature: 1
-    instructions: 1
-    hasn't: 1
-    run: 1
-    open: 1
-    question: 1
-    carried: 1
-    four: 1
+  "Key Decisions": {}
+  "`parse_markdown_structure` Interface":
+    uc-002: 2
+    uc-003: 2
+    uc-002/003/005/006: 1
+    parsing: 1
+    needs: 2
+    met: 1
+    single: 1
+    shared: 2
+    component: 1
+    parse_markdown_structure: 1
+    returning: 1
+    field: 1
+    caller: 2
+    want: 1
+    call: 1
+    headings: 1
+    figures: 1
+    pseudo-numbers: 1
+    pseudo_numbers: 1
+    references: 2
+    start/end: 1
+    lines: 1
+    auto_number_document: 1
+    reads: 2
+    index_path: 1
+    parse_structure: 1
+    step: 1
+    start_end_lines: 1
+    narrows: 1
+    interface: 3
+    fields: 1
+    remaining: 1
+    style: 1
+    subsections: 1
+    internal: 1
+    plus: 1
+    per: 1
     use: 1
-    cases: 1
+    case: 1
+    open: 2
+    design: 1
+    question: 2
+    added: 1
+    decided: 2
+    resolve_scope: 1
+    exact: 1
     scope: 1
-    addressed: 1
-    resolved: 1
-    explicitly: 1
-    deferred: 1
-    uc-002: 1
-    cli: 1
-    flags/exit: 1
-    codes/report: 1
-    format: 1
-    uc-003: 1
-    path/recurse/depth: 1
+    slug: 1
+    grammar: 1
     uc-005: 1
+    uc-006: 1
+    despite: 1
+    slightly: 1
+    different: 1
+    filesystem-as-in-process-i/o: 1
+    modeling: 1
+    choice: 1
+    cli: 2
+    flags/report: 1
+    format: 1
+    flags: 1
+    path/recurse/depth: 1
     algorithm-selection: 1
     syntax: 1
     n/x: 1
     defaults: 1
-    details: 1
-    mode: 1
-    deliberate: 1
-    single-component: 1
-    allocation: 1
-    section-level: 1
-    scoring: 1
-    uc-006: 1
     out-of-bounds: 1
     line: 1
     range: 1
     behavior: 1
+    none: 1
   "Data Types":
     populated: 1
     depends: 1
@@ -156,11 +185,11 @@ sections:
     confirmed: 1
     directly: 1
     assumed: 1
-    candidate: 3
+    candidate: 4
     function: 1
     four: 1
     technical: 1
-    interpretation: 3
+    interpretation: 2
     collectively: 1
     name: 1
     classifies: 1
@@ -197,35 +226,20 @@ sections:
     relying: 1
     use: 1
     cases: 1
-    parse_document: 1
-    uc-002: 2
-    parse_structure: 1
-    uc-003: 2
-    listed: 1
-    separately: 2
-    since: 1
-    read: 1
-    underlying: 1
-    capability: 1
-    parse: 1
-    markdown: 1
-    headings/figures: 1
-    requested: 1
-    different: 1
-    purposes: 1
-    renumbering: 1
-    indexing: 1
-    metadata: 1
-    flagged: 1
-    ideation: 1
-    decide: 1
+    parse_markdown_structure: 1
+    decided: 1
     shared: 1
-    component: 1
-    broader: 1
-    contract: 1
-    genuinely: 1
-    distinct: 1
-    ones: 1
+    component: 2
+    satisfying: 1
+    uc-002: 1
+    uc-003: 1
+    parsing: 1
+    needs: 1
+    superseding: 1
+    separately-named: 1
+    parse_document/parse_structure: 1
+    originally: 1
+    surfaced: 1
     compute_numbering: 1
     build_id_map: 1
     find_surviving_references: 1

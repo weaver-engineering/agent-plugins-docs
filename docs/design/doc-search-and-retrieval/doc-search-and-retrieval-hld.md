@@ -35,11 +35,20 @@ Design Directory And HLD §4.3. Gap Analysis (§3, below) is done; this section 
 
 ## 3 Key Decisions
 
-*(Not yet populated — Phase 3 Ideation, Design Feature Instructions §4, hasn't run yet. Every Open Design
-Question carried by the four use cases in scope must be addressed here, resolved or explicitly deferred:
-UC-002 §7 (CLI flags/exit codes/report format), UC-003 §7 (CLI flags for path/recurse/depth), UC-005 §7
-(algorithm-selection syntax, N/X defaults for details mode, and the deliberate single-component allocation for
-document- and section-level scoring), UC-006 §7 (out-of-bounds line range behavior).)*
+### 3.1 `parse_markdown_structure` Interface
+
+UC-002's and UC-003's parsing needs are met by a single shared component, `parse_markdown_structure(document)`,
+returning every field either caller could want in one call — headings, figures, pseudo-numbers, references, and
+start/end lines. UC-002 (`auto_number_document`) reads `pseudo_numbers` and `references`; UC-003
+(`index_path`)'s `parse_structure` step reads `start_end_lines`. Neither caller narrows the interface to only
+its own fields.
+
+*(Remaining §3.1-style subsections — one per Internal Component interface, plus one per use case's Open Design
+Question — get added here as each is decided. Still open: `resolve_scope`'s exact `@{scope}`/`@{slug}` grammar
+as one shared interface for both UC-005 and UC-006 despite their slightly different needs; the
+filesystem-as-in-process-I/O modeling choice from §6; and UC-002/003/005/006's own §7 Open Design Questions
+(CLI flags/report format, CLI flags for path/recurse/depth, algorithm-selection syntax + N/X defaults,
+out-of-bounds line range behavior) — none decided yet.)*
 
 ## 4 Data Types
 
@@ -57,10 +66,9 @@ made here.
 * `resolve_scope` — **new** — named identically in both UC-005 and UC-006's Technical Interpretation (the
   `@{scope}` resolution rules differ slightly between them — UC-005 allows chained `@{slug}@{slug}`, UC-006
   doesn't — but both need it). One candidate, two relying use cases, not two candidates.
-* `parse_document` (UC-002) and `parse_structure` (UC-003) — **new**, listed separately since the Technical
-  Interpretations name them separately, but they read as the same underlying capability (parse a markdown
-  document's headings/figures) requested for two different purposes (renumbering vs. indexing metadata).
-  Flagged for Ideation to decide: one shared component with a broader contract, or two genuinely distinct ones.
+* `parse_markdown_structure` — **new** — decided (§3.1) as one shared component satisfying both UC-002's and
+  UC-003's parsing needs, superseding the separately-named `parse_document`/`parse_structure` candidates Gap
+  Analysis originally surfaced.
 * `compute_numbering`, `build_id_map`, `find_surviving_references`, `rewrite_headings`, `rewrite_references`,
   `format_report` — **new** (UC-002).
 * `resolve_documents`, `extract_words`, `extract_todos`, `write_index_files`, `list_index_entries`,
@@ -99,5 +107,18 @@ asserted as decided until §3 actually says so.)*
 
 # Rationale
 
-*(Populated as Key Decisions (§3) are made — each entry there gets its justification and discarded
-alternatives recorded here, per Design Feature Instructions §4.1.)*
+**§3.1 `parse_markdown_structure` interface.** Two other candidates were considered and discarded:
+
+* *Two separate, single-purpose parsers* (`parse_document` for UC-002, `parse_structure` for UC-003, each
+  independently walking the document). Discarded: both need the exact same underlying walk — find headings,
+  detect figures, per the documentation standard's own rules — so this duplicates that walk in two places that
+  would have to change in lockstep every time the standard's own heading/figure rules do, for no interface
+  benefit over a single call.
+* *Shared low-level AST walk, separate per-caller shaping* (`parse_markdown_ast` plus two thin callers reshaping
+  its output). Discarded in favor of the simpler one-call option: with only two callers today, and both wanting
+  a strict subset of the same fields rather than needing genuinely different *shapes* of the same data, the
+  extra component this candidate adds doesn't earn its keep yet — reconsider if a third caller's needs ever
+  diverge enough that reshaping actually matters.
+
+The chosen option (one component, broad output, each caller reads only the fields it needs) keeps the actual
+parse in exactly one place while still giving each caller a direct, un-reshaped answer.
