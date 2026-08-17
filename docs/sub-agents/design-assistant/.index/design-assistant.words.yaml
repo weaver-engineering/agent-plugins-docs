@@ -165,12 +165,15 @@ sections:
     directly: 3
     section: 1
     name: 1
-    not-yet-built: 1
     skill: 1
+    family: 1
     '4': 3
-    ordinarily: 1
-    help: 1
-    'point:': 1
+    applie: 1
+    point: 2
+    marking: 1
+    actually: 1
+    available: 5
+    'yet:': 1
     '1.': 1
     determine: 1
     next: 1
@@ -285,6 +288,7 @@ sections:
     cascading-invalidation: 1
     lookup: 1
     made: 1
+    built: 3
     '5.': 1
     deriving: 1
     specific: 2
@@ -349,6 +353,7 @@ sections:
     unhandled-undeclared-exception-sweep: 1
     thin-shim-consistency-checker: 1
     reconciliation-checksum-utility: 1
+    none: 1
     '8.': 1
     human: 1
     '7.2': 2
@@ -362,7 +367,6 @@ sections:
     final: 1
     named: 1
     human-judgement: 1
-    point: 1
     '8': 1
     feedback: 1
     loop: 1
@@ -373,26 +377,37 @@ sections:
     never: 1
     make: 1
     unsupervised: 1
-  Skills Are Designed, Not Yet Built:
-    skill: 7
+  Using The Skill Family:
+    skill: 6
     named: 1
     '3': 2
-    design: 3
+    design: 2
     docs/claude-skills/: 1
     slug: 3
     /: 2
     -design.md: 1
-    time: 1
-    written: 1
-    implementation: 1
-    none: 1
-    deployed: 2
+    four: 1
+    next-unit-of-work-detector: 1
+    gap-classifier: 1
+    pseudocode-substitution-checker: 1
+    call-tree-reconciler: 1
+    now: 1
+    built: 2
+    deployed: 1
     /.claude/skills/: 2
-    .: 1
+    rest: 1
+    yet.: 2
     step: 3
-    ordinarily: 1
-    call: 1
-    'one:': 1
+    available: 1
+    run: 1
+    use: 2
+    output: 1
+    directly: 2
+    rather: 1
+    reasoning: 1
+    independently.: 1
+    doesn: 2
+    't:': 1
     '1.': 1
     say: 1
     plainly: 1
@@ -400,9 +415,8 @@ sections:
     asked: 1
     do.: 1
     '2.': 1
-    s: 4
+    s: 3
     work: 1
-    directly: 1
     instead: 1
     following: 1
     relevant: 1
@@ -414,26 +428,13 @@ sections:
     t: 2
     stall: 1
     wait: 1
-    doesn: 1
     exist: 2
-    yet.: 1
     '3.': 1
-    available: 1
-    later: 1
+    check: 1
+    next: 1
     session: 1
-    use: 2
-    explicitly: 1
-    verify: 1
-    output: 1
-    against: 3
-    manually: 2
-    produced.: 1
-    report: 1
-    mismatch: 1
-    finding: 1
-    doc: 1
-    silently-trusted: 1
-    result.: 1
+    family: 1
+    since.: 1
     deliberate: 1
     'workaround:': 1
     part: 1
@@ -448,22 +449,87 @@ sections:
     keep: 1
     real: 1
     compare: 1
+    against: 1
     nobody: 1
     ever: 1
     needed: 1
     fall: 1
     back: 1
+    manually: 1
     never: 1
     gets: 1
     evidence.: 1
+  Unexpected Skill Behavior:
+    four: 1
+    available: 1
+    skill: 2
+    newly: 1
+    built: 1
+    design: 3
+    assistant: 1
+    s: 4
+    use: 1
+    first: 1
+    real: 1
+    exercise: 1
+    outside: 1
+    test: 1
+    suites.: 1
+    output: 1
+    look: 1
+    wrong: 1
+    against: 3
+    already: 1
+    known: 1
+    directory: 1
+    crash: 1
+    'false': 1
+    positive/negative: 1
+    visible: 1
+    actual: 1
+    content: 1
+    hard: 1
+    stop: 1
+    something: 1
+    route: 1
+    'around:': 1
+    silent: 1
+    fallback: 1
+    step: 1
+    manually: 1
+    retrying: 1
+    hoping: 1
+    resolve: 1
+    itself.: 1
+    report: 1
+    exactly: 1
+    ran: 1
+    expected: 1
+    actually: 2
+    came: 1
+    back: 1
+    wait: 1
+    finding: 2
+    implementation: 1
+    gets: 1
+    weight: 1
+    itself: 1
+    building: 1
+    work: 1
+    unconfirmed: 1
+    answer: 1
+    risk: 1
+    compounding: 1
+    whatever: 1
+    wrong.: 1
   Constraints:
-    never: 5
+    never: 6
     work: 1
     project: 1
     s: 7
     main/dev: 1
     worktree: 2
-    alway: 3
+    alway: 4
     operate: 1
     architect: 5
     creating: 1
@@ -490,7 +556,7 @@ sections:
     sanity: 1
     check: 1
     '5': 1
-    unexpected: 1
+    unexpected: 2
     side: 1
     effect: 1
     resolution: 2
@@ -554,7 +620,7 @@ sections:
     immutable: 1
     written: 1
     specific: 1
-    behavior: 1
+    behavior: 2
     '2.1': 1
     editing: 2
     itself: 1
@@ -597,6 +663,22 @@ sections:
     rationale: 1
     explain: 1
     needed: 1
+    halt: 1
+    available: 1
+    skill: 1
+    '4.1': 1
+    wrong-looking: 1
+    output: 1
+    crash: 1
+    visible: 1
+    'false': 1
+    positive/negative: 1
+    reported: 1
+    waited: 1
+    silently: 1
+    worked: 1
+    around: 1
+    retried.: 1
   Cost/Benefit:
     one-time: 1
     'cost:': 1
@@ -706,11 +788,11 @@ sections:
     eventually: 2
     need: 2
     uc-nnn: 1
-    per: 2
+    per: 1
     architecture: 1
     definition: 1
-    '4': 2
-    s: 5
+    '4': 3
+    s: 4
     stated: 1
     persona-plus-use-case: 1
     pairing: 1
@@ -732,20 +814,30 @@ sections:
     several: 1
     skill: 2
     actually: 1
-    built: 2
+    built: 1
     deployed: 1
-    '3': 1
-    updating: 1
-    stop: 1
-    saying: 1
-    individually: 1
+    '3': 2
+    updating...: 1
+    'resolved:': 1
+    'yes': 1
+    per-skill: 1
+    availability: 1
+    tags: 1
+    kept: 1
+    itemized: 1
+    rather: 1
+    collapsed: 1
     single: 1
     standing: 1
     note: 1
-    check: 1
-    /.claude/skills/: 1
-    currently: 1
-    live: 1
-    replace: 1
-    itemized: 1
-    list: 1
+    since: 1
+    specific: 1
+    available: 1
+    exactly: 1
+    detail: 1
+    worth: 1
+    precise: 1
+    phase: 1
+    whether: 1
+    family: 1
+    landed.: 1

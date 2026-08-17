@@ -7,7 +7,7 @@
 * Design Feature Instructions (@docs/workflows/feature-workflow/design-feature-instructions.md) - the process this sub-agent drives, phase by phase
 * Specific Behaviors (@docs/workflows/feature-workflow/specific-behaviors.md), Pseudocode Style (@docs/workflows/feature-workflow/pseudocode-style.md), Design Directory And HLD (@docs/workflows/feature-workflow/design-directory-and-hld.md) - the shape and notation documents the process above depends on
 * [Capability Catalog](../../architecture/capability-catalog.md) - where this sub-agent is catalogued
-* [Claude Skills](../../claude-skills/) - the family of skills this sub-agent's process refers to, most not yet built (§4)
+* [Claude Skills](../../claude-skills/) - the family of skills this sub-agent's process refers to; four built and deployed as of this writing, the rest not yet (§4)
 
 Canonical instructions source lives in `agent-plugins` at `sub-agents/design-assistant/design-assistant.md`, per
 the Architecture Definition Document's own publishing model (§3): every capability is authored once, in
@@ -46,56 +46,66 @@ own use case describing its behavior in AgentPlugins' own terms, is left open.
 ## 3 Operating Procedure
 
 Design Assistant runs Design Feature Instructions' own phases directly — this section names which phase, and
-which not-yet-built skill (§4) would ordinarily help at each point:
+which skill from the family (§4) applies at each point, marking which are actually available yet:
 
 1. **Determine the next unit of work** (§1) — the resumability check: given a design directory (optionally
    scoped to one use case or operation), find the first unmet exit criterion in the fixed 9-step order and work
-   on that. *(next-unit-of-work-detector)*
+   on that. *(next-unit-of-work-detector — available)*
 2. **Technical Interpretation** (§2) — per use case, rewrite its Main Success Scenario and Extensions as
    solution-independent pseudocode (Pseudocode Style); create an `SB-NNN` stub for every operation identified.
 3. **Gap Analysis** (§3) — classify every touched Internal Component/External Dependency piece as as-is,
    extended, or new, via the substitution judgement (could this candidate's pseudocode/prose stand in for this
-   piece without changing what it describes). *(gap-classifier, itself calling pseudocode-substitution-checker)*
+   piece without changing what it describes). *(gap-classifier — available, itself calling
+   pseudocode-substitution-checker — available)*
 4. **Ideation & Solution Shape** (§4) — per gap, propose genuinely more than one candidate where plausible, score
    them against the project's NFRs, and **present the choice to the Architect rather than making it** (§5,
    Constraints). Once every gap in scope is closed: run the merge pass (§4.2) — creating and numbering every
    component's standing document, populating Data Types — then **stop and let the Architect look before
    continuing** (§5, Constraints); only once they've responded, record each `SB-NNN`'s bound pseudocode (§4.3).
-   *(called-from-backward-walker for cascading-invalidation lookups before an extension is made)*
+   *(called-from-backward-walker for cascading-invalidation lookups before an extension is made — not yet built)*
 5. **Deriving Specific Behaviors** (§5) — establish entry states (eliciting missing detail from the Architect
    directly rather than inventing it), trace each through the bound pseudocode to derive its Then, and present
    the result for the process's own quick sanity check before moving on.
 6. **Call Tree Reconciliation** (§6) — confirm each derived behavior's call tree is backed by its nodes'
    declared `calls:`; a simple documentation mismatch is fixed directly, a genuine design gap returns to step 4.
-   *(call-tree-reconciler)*
+   *(call-tree-reconciler — available)*
 7. **Design Review — Mechanical Reconciliation** (§7.1) — checksum comparison by default, falling back to
    re-running the substitution judgement only on drift; the reverse unexpected-side-effect walk; the
    unhandled/undeclared exception sweep; the thin-shim consistency check. *(pseudocode-subset-checker,
    unexpected-side-effect-scanner, unhandled-undeclared-exception-sweep, thin-shim-consistency-checker,
-   reconciliation-checksum-utility)*
+   reconciliation-checksum-utility — none yet built)*
 8. **Design Review — Human Review** (§7.2) — present each specific behavior individually, with full Given
-   provenance, for the Architect's actual approval. *(specific-behavior-presenter)*
+   provenance, for the Architect's actual approval. *(specific-behavior-presenter — not yet built)*
 
 Steps 4's ideation choice, 5's sanity check, 7.1's unexpected-side-effect resolution, and 7.2's final review are
 Design Feature Instructions' own named human-judgement points (§8, The Feedback Loop) — Design Assistant's job
 at each is to prepare the decision clearly, never to make it unsupervised (§5, Constraints).
 
-## 4 Skills Are Designed, Not Yet Built
+## 4 Using The Skill Family
 
-Every skill named in §3 above has a design (`docs/claude-skills/{slug}/{slug}-design.md`) but, at the time this
-document is written, no implementation — none are yet deployed to `~/.claude/skills/`. When a step in §3 would
-ordinarily call one:
+Every skill named in §3 above has a design (`docs/claude-skills/{slug}/{slug}-design.md`); four —
+`next-unit-of-work-detector`, `gap-classifier`, `pseudocode-substitution-checker`, `call-tree-reconciler` — are
+now built and deployed to `~/.claude/skills/`, the rest not yet. Where a step in §3 has an available skill, run
+it and use its output directly, rather than reasoning the step out independently. Where it doesn't:
 
 1. Say plainly which skill would apply and what it would have been asked to do.
 2. Do that step's work directly instead, by following the relevant Design Feature Instructions section itself —
    don't stall or wait for a skill that doesn't exist yet.
-3. If a skill *is* available (deployed to `~/.claude/skills/{slug}/`) in a later session, use it — and
-   explicitly verify its output against what doing the step manually would have produced. Report any mismatch as
-   a finding against that skill's own design doc, not a silently-trusted result.
+3. Check `~/.claude/skills/{slug}/` again next session — more of the family may have been built since.
 
 This is deliberate, not a workaround: part of this dogfooding exercise's own value (Cost/Benefit, §6) is
 surfacing exactly which skills earn their keep once real use exists to compare against — a skill nobody's ever
 needed to fall back to manually never gets that evidence.
+
+### 4.1 Unexpected Skill Behavior
+
+The four available skills are newly built, and Design Assistant's own use of them is their first real exercise
+outside their own test suites. An output that looks wrong against what's already known about the design
+directory, a crash, or a false positive/negative visible from the actual document content is a hard stop, not
+something to route around: no silent fallback to doing the step manually, no retrying hoping it resolves itself.
+Report exactly what ran, what was expected, and what actually came back, then wait — a finding against a
+skill's own implementation gets the same weight as a finding against the design itself, and building further
+work on an unconfirmed answer risks compounding whatever's actually wrong.
 
 ## 5 Constraints
 
@@ -116,6 +126,8 @@ needed to fall back to manually never gets that evidence.
   downstream builds directly on it. Commit, push, and wait for the Architect to respond; no separate recorded
   marker for this, unlike `reconciliation:` — the same session simply doesn't continue unprompted (Design
   Feature Instructions §4.2's own Rationale explains why no marker is needed here).
+* **Always halt on unexpected behavior from an available skill** (§4.1) — a wrong-looking output, a crash, or a
+  visible false positive/negative is reported and waited on, never silently worked around or retried.
 
 ## 6 Cost/Benefit
 
@@ -139,9 +151,10 @@ concentrated instead in the process it runs — exactly what this whole exercise
 * Does Design Assistant's own catalog entry eventually fold into, or stay permanently distinct from, [The
   Architect's Assistant](../../analysis/user-personas/architects-assistant.md)'s still-undesigned, broader
   capability?
-* Once several skills from §4 are actually built and deployed, does this document's own §3 need updating to stop
-  saying "not yet built" per skill individually, or does a single standing note ("check `~/.claude/skills/` for
-  what's currently live") replace the itemized list?
+* ~~Once several skills from §4 are actually built and deployed, does this document's own §3 need updating...~~
+  Resolved: yes, per-skill availability tags (§3, §4) — kept itemized rather than collapsed to a single standing
+  note, since which specific skills are available is exactly the detail worth being precise about at each phase,
+  not just whether *some* of the family has landed.
 
 # Rationale
 
