@@ -8,6 +8,7 @@ and never touches external (`@{repo-slug}/{path}`) references.
 
 ## Context
 * [Agent Plugins index](../../agent-plugins.md) - root index for this repo
+* [Doc Search & Retrieval — Feature](../../design/doc-search-and-retrieval/doc-search-and-retrieval-feature.md) - the Feature this use case is bundled into
 * [UC-001 — Discuss A Project Concept And Document It](UC-001-discuss-concept-and-document.md) - its main caller
 * [The Architect's Assistant](../user-personas/architects-assistant.md) - primary actor
 * @docs/standards/documentation-standards.md/§3 - Document Shape (the numbering convention this implements)

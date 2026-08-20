@@ -8,6 +8,7 @@
 
 ## Context
 * [Agent Plugins index](../../agent-plugins.md) - root index for this repo
+* [Doc Search & Retrieval — Feature](../../design/doc-search-and-retrieval/doc-search-and-retrieval-feature.md) - the Feature this use case is bundled into
 * [UC-005 — Search Documentation](UC-005-search-documentation.md) - typical pointer source
 * [UC-003 — Index A Path](UC-003-index-a-path.md) - produces the sections.yaml this relies on for line ranges
 * [The Architect's Assistant](../user-personas/architects-assistant.md) - primary actor
