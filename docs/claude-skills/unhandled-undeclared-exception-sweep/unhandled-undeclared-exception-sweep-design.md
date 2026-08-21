@@ -66,3 +66,8 @@ this skill has to interpret.
   unrecoverable condition, like an assertion failure, that's deliberately meant to propagate all the way to a
   generic top-level handler) — or does that case just need its own declared exception class at `IC-000`'s own
   contract, keeping the rule uniform?
+
+# Built And Deployed
+
+Built and deployed to `~/.claude/skills/unhandled-undeclared-exception-sweep/`, algorithm unchanged from this
+proposal. Ran clean against real WVR-95 data throughout the project.

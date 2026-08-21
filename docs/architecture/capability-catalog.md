@@ -20,6 +20,14 @@ before its design is written — design status is shown per entry.
   [UC-005](../analysis/use-cases/UC-005-search-documentation.md),
   [UC-006](../analysis/use-cases/UC-006-extract-document-content.md)) (no design doc yet)
 
+* [Design Assistant](../analysis/user-personas/design-assistant.md) — carries out the Design The Feature
+  workflow step (weaver-engineering/docs `design-feature-instructions.md`) on the Architect's behalf; a
+  narrower specialization of The Architect's Assistant, scoped to one workflow step rather than general
+  mechanical delegation. Built and dogfooded to completion against
+  [WVR-95](https://linear.app/weaver-engineering/issue/WVR-95/design-the-doc-search-and-retrieval-mcp-server)
+  ([WVR-119](https://linear.app/weaver-engineering/issue/WVR-119/sub-agent-design-assistant-drives-design-the-feature),
+  [design doc](../sub-agents/design-assistant/design-assistant.md))
+
 ## 2 Tools
 
 *(none yet — every tool analysed so far is MCP-hosted; see MCP Servers)*

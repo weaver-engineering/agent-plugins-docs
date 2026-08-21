@@ -27,8 +27,10 @@ periodically as a whole-graph sweep, since nothing else in the process specifica
 
 ## 3 Inputs
 
-* Forward: one derived specific behavior (an `SB-NNN §M`'s `call_tree:` block) plus the `calls:` declarations of
-  every `IC-NNN`/`ED-NNN` address it names.
+* Forward: one derived specific behavior — its `call_tree:` read from `reconciliation.behaviors.{id}.call_tree`
+  in the `SB-NNN` document's own YAML frontmatter (documentation-standards.md §3, WVR-130's rework — not an
+  inline body block as originally proposed) — plus the `calls:` declarations of every `IC-NNN`/`ED-NNN` address
+  it names.
 * Reverse: no specific input beyond a project scope — it's a whole-graph walk starting from every `IC-000`
   function.
 
@@ -71,7 +73,13 @@ suggest.
 
 ## 8 Open Questions
 
-* Should the reverse check run as part of every forward-check invocation (cheap insurance) or stay a separate,
-  less-frequent sweep, given its whole-graph cost?
-* Does a forward mismatch's triage (design-gap vs. doc-error) belong as a follow-on judgement step of *this*
-  skill, or is it correctly left entirely to per-gap-ideation / a human, as currently scoped?
+Resolved by build and use: the reverse check stays a separate, less-frequent sweep rather than part of every
+forward invocation (its whole-graph cost doesn't scale with per-behavior frequency); forward-mismatch triage
+stays entirely a human/per-gap-ideation call, never folded into this skill.
+
+# Built And Deployed
+
+Built and deployed to `~/.claude/skills/call-tree-reconciler/`. Both checks ran clean against the real WVR-95
+design directory throughout its own dogfooding; the fence-blindness and dual-role heading-search bugs found in
+this family's shared extraction helper (WVR-149, WVR-153) live in a different code path (behavior body/Then
+extraction) this skill doesn't use — its own frontmatter-based `call_tree` read was unaffected.

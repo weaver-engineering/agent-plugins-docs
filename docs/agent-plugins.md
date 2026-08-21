@@ -20,6 +20,7 @@ The Loom runs.
 
 * [The Architect](analysis/user-personas/architect.md)
 * [The Architect's Assistant](analysis/user-personas/architects-assistant.md)
+* [The Design Assistant](analysis/user-personas/design-assistant.md)
 
 ## 3 Design
 
@@ -34,8 +35,9 @@ The Loom runs.
 
 ## 5 Claude Skills
 
-Design proposals for candidate Claude Code Skills supporting weaver-engineering's Design The Feature process
-(WVR-107–115, 117–118), for architect review before implementation.
+Claude Code Skills supporting weaver-engineering's Design The Feature process (WVR-107–115, 117, 130, 139).
+Twelve built and deployed to `~/.claude/skills/`; one design below (`called-from-backward-walker`) not yet
+built — every other phase but its own (§4.1's cascading-invalidation lookup) has full skill coverage.
 
 * [Next Unit Of Work Detector](claude-skills/next-unit-of-work-detector/next-unit-of-work-detector-design.md) — the resumability router every design session starts with
 * [Call Tree Reconciler](claude-skills/call-tree-reconciler/call-tree-reconciler-design.md) — forward and reverse `calls:`/`called_from:` consistency
@@ -45,6 +47,14 @@ Design proposals for candidate Claude Code Skills supporting weaver-engineering'
 * [Thin-Shim Consistency Checker](claude-skills/thin-shim-consistency-checker/thin-shim-consistency-checker-design.md) — catches a shim that's stopped being thin
 * [Unhandled/Undeclared Exception Sweep](claude-skills/unhandled-undeclared-exception-sweep/unhandled-undeclared-exception-sweep-design.md) — every exception either caught or declared
 * [Reconciliation Checksum Utility](claude-skills/reconciliation-checksum-utility/reconciliation-checksum-utility-design.md) — the shared falsifiability mechanism the four checks above record through
-* [Called-From Backward Walker](claude-skills/called-from-backward-walker/called-from-backward-walker-design.md) — finds every use case affected when a shared function changes
+* [Called-From Backward Walker](claude-skills/called-from-backward-walker/called-from-backward-walker-design.md) — finds every use case affected when a shared function changes (design only, not yet built)
 * [Gap Classifier](claude-skills/gap-classifier/gap-classifier-design.md) — as-is / extended / new, scaffolded, and the bound pseudocode recorded once every gap closes
 * [Specific-Behavior Presenter](claude-skills/specific-behavior-presenter/specific-behavior-presenter-design.md) — standardised, provenance-rich presentation for final human review
+* [Behavior Regeneration Checker](claude-skills/behavior-regeneration-checker/behavior-regeneration-checker-design.md) — §7.2's regenerate-and-compare step, ahead of Specific-Behavior Presenter
+* [Chunk Scope Utility](claude-skills/chunk-scope-utility/chunk-scope-utility-design.md) — shared read/write primitive for a design task's own chunk-scope.yaml
+
+## 6 Sub-Agents
+
+* [Design Assistant](sub-agents/design-assistant/design-assistant.md) — drives the Design The Feature workflow
+  step (WVR-119), built and dogfooded to completion against
+  [WVR-95](https://linear.app/weaver-engineering/issue/WVR-95/design-the-doc-search-and-retrieval-mcp-server)

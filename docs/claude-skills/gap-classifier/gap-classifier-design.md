@@ -97,3 +97,8 @@ piece by piece — with the risk concentrated in §3's initial judgement rather 
   specific piece being closed — is that assumption ever actually false in practice (could resolving one gap
   invalidate another piece's still-as-is classification), and if so, should §4.3 re-verify rather than trust §3's
   cached result?
+
+# Built And Deployed
+
+Built and deployed to `~/.claude/skills/gap-classifier/`, algorithm and shape unchanged from this proposal — ran
+both passes clean against real WVR-95 data throughout the project's four operations.

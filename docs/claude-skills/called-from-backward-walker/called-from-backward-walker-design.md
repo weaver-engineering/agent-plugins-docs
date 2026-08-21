@@ -66,3 +66,11 @@ accurate, not in this skill's own logic.
   already caught it?
 * Does the walk need cycle detection, or is the call graph guaranteed acyclic by construction (a function can't
   transitively call itself) given nothing else in this process asserts that explicitly?
+
+# Status
+
+Not yet built, as of the rest of the family reaching twelve skills deployed. The one remaining gap in full §4.1
+coverage — `design-assistant` does this walk by hand when a gap closes by extending an existing function,
+naming plainly that this skill would apply and isn't available yet (per its own standing instructions'
+unavailable-skill protocol). Nothing about WVR-95's own dogfooding surfaced new requirements for this design; it
+simply hasn't come up against real cases yet the way the built eleven have.

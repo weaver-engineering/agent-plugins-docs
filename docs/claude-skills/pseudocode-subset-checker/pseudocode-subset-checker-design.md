@@ -81,3 +81,9 @@ pseudocode-substitution-checker's own judgement-assisting risk profile.
 * Should a first-ever reconciliation pass (no prior `reconciliation:` block to compare against) skip the checksum
   step entirely and always confirm §4.3's bound pseudocode was assembled correctly, or is trusting gap-classifier's
   own output on a first pass acceptable?
+
+# Built And Deployed
+
+Built and deployed to `~/.claude/skills/pseudocode-subset-checker/`. `reconciliation:` is now true YAML
+frontmatter (WVR-130/131), not an inline body block as originally proposed — this skill's own read/compare logic
+is otherwise unchanged. Ran clean against real WVR-95 data throughout the project.

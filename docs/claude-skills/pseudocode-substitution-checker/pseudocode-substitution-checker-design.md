@@ -102,3 +102,9 @@ and the interface they all rely on, still mutually consistent" — a uniformity 
 single candidate being judged as a replacement for anything. The two only look similar because both eventually
 compare pseudocode-shaped content; the actual comparison being made is structurally different, so collapsing them
 into one primitive would blur a distinction worth keeping.
+
+# Built And Deployed
+
+Built and deployed to `~/.claude/skills/pseudocode-substitution-checker/`, algorithm unchanged from this
+proposal. Called by both `gap-classifier` and `pseudocode-subset-checker` exactly as designed throughout
+WVR-95's own dogfooding.

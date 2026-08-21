@@ -72,3 +72,7 @@ grow real complexity that the design's own documentation never admits to.
   draw, or always a human call once flagged?
 * Should this check also run proactively during Gap Analysis (§3), when a new use case is first being classified
   against an existing ED operation, rather than only retrospectively at §7.1?
+
+# Built And Deployed
+
+Built and deployed to `~/.claude/skills/thin-shim-consistency-checker/`, algorithm unchanged from this proposal.
