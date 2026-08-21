@@ -9,6 +9,7 @@ selectable.
 
 ## Context
 * [Agent Plugins index](../../agent-plugins.md) - root index for this repo
+* [Doc Search & Retrieval — Feature](../../design/doc-search-and-retrieval/doc-search-and-retrieval-feature.md) - the Feature this use case is bundled into
 * [UC-003 — Index A Path](UC-003-index-a-path.md) - produces what this reads
 * [UC-006 — Extract Document Content](UC-006-extract-document-content.md) - consumes this use case's pointer output
 * [The Architect's Assistant](../user-personas/architects-assistant.md) - primary actor
