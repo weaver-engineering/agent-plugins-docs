@@ -373,9 +373,16 @@ are now checksummed as current. Regenerating is agent work; asserting the result
 becomes the agent's to grant itself.
 
 * **Regenerated result matches what's recorded** — the design is still sound for this behavior. Refresh the
-  checksums, leave its `reviewed` entry exactly as it was, done. No human touch: nothing about what was
-  previously approved has actually changed, only bookkeeping needed refreshing, and manufacturing a fresh review
-  for a provably-unchanged result would just be re-litigating a decision nobody's disagreed with.
+  checksums either way. What happens next depends on whether this behavior already carried a genuine prior
+  `reviewed_by`/`reviewed_at` that §7.1's own invalidation walk just cleared (a real, once-confirmed approval
+  this pass is re-verifying) or has never been reviewed at all (first time reaching §7.2, whether or not it's
+  ever matched before): only the first case skips human touch — restore `reviewed` to what it was, done, since
+  nothing about what was previously approved has actually changed and manufacturing a fresh review for a
+  provably-unchanged result would just be re-litigating a decision nobody's disagreed with. The second case
+  still needs a real first review: present it via the normal path below — a match here only means there's no
+  disconnect to resolve first, not that presentation and genuine confirmation can be skipped. On a Feature's
+  first pass through §7.2 project-wide, every behavior is necessarily this second case — nothing has shipped yet
+  for anything to have been previously approved.
 * **Regenerated result doesn't match** — the design no longer produces the agreed behavior. Flag
   `//REDESIGN_REQUIRED` on the behavior (Specific Behavior Template), recording the actual disconnect found — what
   regenerated versus what's recorded, and why — not just the fact that one exists, so a cold session doesn't have
@@ -634,17 +641,23 @@ gets its own explicit bar (an unambiguous question, an unqualified affirmative) 
 scrutiny the accept/reject choice already carries — the two aren't the same weight of decision even though both
 resolve `//REDESIGN_REQUIRED`.
 
-**Why a regeneration that matches the recorded result doesn't need fresh human review.** §7.2's whole
-invalidation mechanism exists to catch cases where the design genuinely no longer produces what was agreed — not
-to manufacture review work every time a dependency's checksum merely changes. If tracing a behavior's entry state
-through the current, checksummed design reproduces exactly what's already recorded, nothing about the actual,
-previously-approved outcome has changed — only bookkeeping needed refreshing. Regenerating and confirming the
-match is squarely mechanical work the agent can do itself; asking a human to re-bless a result that's provably
-identical to what they already blessed would be re-litigating a decision nobody has disagreed with, for the sake
-of a checksum that happened to move. `reconciliation-checksum-utility`'s own `write` mode already reflects this —
-it refreshes checksums without touching `reviewed` on a clean pass — this section just makes explicit what that
-implementation choice depends on: that a real regenerate-and-compare step ran first and found a match, not that
-checksums matching alone is sufficient.
+**Why a regeneration that matches the recorded result doesn't need fresh human review — only when it's re-verifying
+an actual prior approval.** §7.2's whole invalidation mechanism exists to catch cases where the design genuinely
+no longer produces what was agreed — not to manufacture review work every time a dependency's checksum merely
+changes. If tracing a behavior's entry state through the current, checksummed design reproduces exactly what's
+already recorded, and this behavior already carried a real, human-granted `reviewed_by`/`reviewed_at` that §7.1's
+invalidation walk just cleared, nothing about the actual, previously-approved outcome has changed — only
+bookkeeping needed refreshing. Regenerating and confirming the match is squarely mechanical work the agent can do
+itself there; asking a human to re-bless a result that's provably identical to what they already blessed would be
+re-litigating a decision nobody has disagreed with, for the sake of a checksum that happened to move.
+`reconciliation-checksum-utility`'s own `write` mode already reflects this — it refreshes checksums without
+touching `reviewed` on a clean pass — this section just makes explicit what that implementation choice depends
+on: that a real regenerate-and-compare step ran first and found a match *against an already-approved baseline*,
+not that checksums matching alone is sufficient. A behavior that has never carried `reviewed_by`/`reviewed_at` at
+all — reaching §7.2 for the first time, as every behavior does on a Feature's first pass through it — has no
+prior human judgement to re-litigate in the first place; a match there says the recorded content is technically
+consistent with current design state, nothing about whether anyone has actually looked at it and agreed it's
+right. That first look is never something a match result can stand in for.
 
 **Why §7.2 runs project-wide (§1 step 9), not scoped to the Feature being worked on.** §7.1's own invalidation
 walk (above) doesn't stop at this Feature's boundary — a changed function can reach any behavior whose call tree
