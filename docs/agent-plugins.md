@@ -57,4 +57,5 @@ built — every other phase but its own (§4.1's cascading-invalidation lookup) 
 
 * [Design Assistant](sub-agents/design-assistant/design-assistant.md) — drives the Design The Feature workflow
   step (WVR-119), built and dogfooded to completion against
-  [WVR-95](https://linear.app/weaver-engineering/issue/WVR-95/design-the-doc-search-and-retrieval-mcp-server)
+  [WVR-95](https://linear.app/weaver-engineering/issue/WVR-95/design-the-doc-search-and-retrieval-mcp-server) —
+  see its own [Architect's Guide](sub-agents/design-assistant/architect-guide.md) for how to actually work with it
