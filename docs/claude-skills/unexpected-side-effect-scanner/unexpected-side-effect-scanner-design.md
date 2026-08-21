@@ -68,3 +68,9 @@ always manual.
 * Should repeated instances of the same unexpected side effect, across multiple behaviors sharing an operation,
   be de-duplicated into one finding, or surfaced per-behavior since each is technically a separate reconciliation
   pass?
+
+# Built And Deployed
+
+Built and deployed to `~/.claude/skills/unexpected-side-effect-scanner/`. Reads a behavior's own recorded call
+tree from `reconciliation.behaviors.{id}.call_tree` in the `SB-NNN`'s YAML frontmatter (WVR-130/133), not an
+inline body block as originally proposed — otherwise unchanged. Ran clean against real WVR-95 data throughout.
