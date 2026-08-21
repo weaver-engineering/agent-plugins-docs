@@ -43,11 +43,14 @@ Extracts significant words per node (the document itself, plus each section/figu
 `extract_words(structure: ParsedStructure) -> WordIndex`
 
 Calls `WordReducer.reduce_words` per node's own text, then records the result against that node (documentation
-standard §4).
+standard §4). Skips this entirely for any heading `mark_protected_headings` (`IC-001 §3`) marks — `# Appendix`/
+`# Rationale` *and any subsection nested under one* are never word-extracted (HLD §3.1's two addenda), keeping
+the word index focused on meaningful content, even though those headings are still visible in `.sections.yaml`.
 
 ```yaml
 calls:
   - "IC-006 §1"
+  - "IC-001 §3"
 called_from:
   - "IC-000 §2"
 ```

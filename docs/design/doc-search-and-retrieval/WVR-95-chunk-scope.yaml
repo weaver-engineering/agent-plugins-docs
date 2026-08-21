@@ -1,0 +1,105 @@
+feature: doc-search-and-retrieval
+hld: docs/design/doc-search-and-retrieval/doc-search-and-retrieval-hld.md
+delivers: [UC-002, UC-003, UC-005, UC-006]
+modifies: {}
+behaviors:
+  - address: "SB-001 §1"
+    status: new
+  - address: "SB-001 §1.1"
+    status: new
+  - address: "SB-001 §2"
+    status: new
+  - address: "SB-001 §3"
+    status: new
+  - address: "SB-001 §4"
+    status: new
+  - address: "SB-002 §1"
+    status: new
+  - address: "SB-002 §1.1"
+    status: new
+  - address: "SB-002 §1.2"
+    status: new
+  - address: "SB-002 §1.3"
+    status: new
+  - address: "SB-002 §2"
+    status: new
+  - address: "SB-002 §3"
+    status: new
+  - address: "SB-002 §4.1"
+    status: new
+  - address: "SB-002 §4.2"
+    status: new
+  - address: "SB-002 §5.1"
+    status: new
+  - address: "SB-002 §5.2"
+    status: new
+  - address: "SB-002 §5.3"
+    status: new
+  - address: "SB-003 §1"
+    status: new
+  - address: "SB-003 §1.1"
+    status: new
+  - address: "SB-003 §1.2"
+    status: new
+  - address: "SB-003 §2"
+    status: new
+  - address: "SB-003 §2.1"
+    status: new
+  - address: "SB-003 §3"
+    status: new
+  - address: "SB-003 §4"
+    status: new
+  - address: "SB-003 §4.1"
+    status: new
+  - address: "SB-003 §4.2"
+    status: new
+  - address: "SB-003 §5"
+    status: new
+  - address: "SB-003 §6"
+    status: new
+  - address: "SB-004 §1"
+    status: new
+  - address: "SB-004 §1.1"
+    status: new
+  - address: "SB-004 §1.2"
+    status: new
+  - address: "SB-004 §1.3"
+    status: new
+  - address: "SB-004 §1.4"
+    status: new
+  - address: "SB-004 §1.4.1"
+    status: new
+  - address: "SB-004 §1.4.2"
+    status: new
+  - address: "SB-004 §1.4.3"
+    status: new
+  - address: "SB-004 §1.4.3.1"
+    status: new
+  - address: "SB-004 §1.4.3.2"
+    status: new
+  - address: "SB-004 §1.4.4"
+    status: new
+  - address: "SB-004 §1.4.5"
+    status: new
+  - address: "SB-004 §1.4.6"
+    status: new
+  - address: "SB-004 §1.4.7"
+    status: new
+  - address: "SB-004 §1.4.8"
+    status: new
+  - address: "SB-004 §1.4.9"
+    status: new
+  - address: "SB-004 §1.5"
+    status: new
+  - address: "SB-004 §1.5.1"
+    status: new
+  - address: "SB-004 §1.5.2"
+    status: new
+  - address: "SB-004 §2"
+    status: new
+  - address: "SB-004 §3"
+    status: new
+  - address: "SB-004 §4"
+    status: new
+  - address: "SB-004 §5"
+    status: new

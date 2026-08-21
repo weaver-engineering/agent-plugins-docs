@@ -11,21 +11,18 @@
 
 ## 1 Scope
 
-This design covers the Doc Search & Retrieval MCP server: the four documentation tools already analysed as
-standalone use cases —
-[UC-002](../../analysis/use-cases/UC-002-auto-number-document-sections.md) (auto-numbering),
-[UC-003](../../analysis/use-cases/UC-003-index-a-path.md) (indexing),
-[UC-005](../../analysis/use-cases/UC-005-search-documentation.md) (search), and
-[UC-006](../../analysis/use-cases/UC-006-extract-document-content.md) (extraction) — bundled and hosted
-together as one MCP server rather than shipped as four bare tools, per the Architecture Definition Document's
-§1 default-to-MCP model.
-
-It explicitly excludes: why these four capabilities exist and what each does (already-written analysis, linked
-above, immutable once its Technical Interpretation is derived below — not re-opened by this design); the
-capability catalog entry itself (`docs/architecture/capability-catalog.md`, already present, not duplicated
-here); and the mechanics of achieving parity between Claude Code and OpenCode for any given capability
-(`docs/design/cross-platform-capability-parity.md`, WVR-94, a separate placeholder document this design does
-not resolve).
+* [Feature doc-search-and-retrieval](doc-search-and-retrieval-feature.md) — explicitly excludes: why these four
+  capabilities exist and what each does (already-written analysis, linked below, immutable once its Technical
+  Interpretation is derived — not re-opened by this design); the capability catalog entry itself
+  (`docs/architecture/capability-catalog.md`, already present, not duplicated here); and the mechanics of
+  achieving parity between Claude Code and OpenCode for any given capability
+  (`docs/design/cross-platform-capability-parity.md`, WVR-94, a separate placeholder document this design does
+  not resolve)
+  - Design Task: WVR-95
+    + [UC-002](../../analysis/use-cases/UC-002-auto-number-document-sections.md)
+    + [UC-003](../../analysis/use-cases/UC-003-index-a-path.md)
+    + [UC-005](../../analysis/use-cases/UC-005-search-documentation.md)
+    + [UC-006](../../analysis/use-cases/UC-006-extract-document-content.md)
 
 ## 2 Solution Overview
 
@@ -70,6 +67,72 @@ start/end lines. UC-002 (`auto_number_document`) reads `pseudo_numbers` and `ref
 (`index_path`)'s `parse_structure` step reads `start_end_lines`. Neither caller narrows the interface to only
 its own fields.
 
+**Extended while deriving `SB-002`'s specific behaviors (Design Feature Instructions §5.1):** `# Appendix` and
+`# Rationale` headings must be locatable — `.sections.yaml` needs their existence and line range so a reader can
+still be pointed at and shown one on request (UC-006) — but excluded from `.words.yaml`, to keep the word index
+focused on meaningful content. `parse_markdown_structure` now includes Appendix/Rationale headings in its own
+`headings` output (previously excluded entirely, alongside Context). `# Context` stays excluded from `headings`
+entirely, unlike Appendix/Rationale — nothing needs to locate or extract it the way UC-006 needs to for the
+other two.
+
+One alternative was considered and discarded: giving `PathIndexer` its own separate, narrower Appendix/
+Rationale heading detector, leaving `parse_markdown_structure` untouched. Discarded because it reintroduces
+exactly the duplicate-walk concern this Key Decision's original two-separate-parsers candidate was rejected
+over — a second, independent detector that has to change in lockstep with the first every time the documentation
+standard's own heading rules do, for no interface benefit over extending the one shared parse.
+
+**Corrected while deriving `SB-004`'s specific behaviors (Design Feature Instructions §5.1):** the first version
+of this addendum tagged each `Heading` with a `kind: "body" | "appendix" | "rationale"` field so a consumer could
+tell Appendix/Rationale apart from ordinary body headings. That field only ever existed on the *in-memory*
+`ParsedStructure` a fresh `parse_markdown_structure` call produces — fine for `extract_words`/`compute_numbering`/
+`rewrite_headings`, which always run against a fresh parse, but useless to `resolve_target_range` (`IC-008 §2`),
+which runs later against the *persisted* `.sections.yaml` (documentation-standards.md §4, a shared cross-project
+standard whose own documented shape has no room for a `kind` field, and isn't something this design process
+edits directly). `Heading.kind` (§4.1) is removed; a new function, `is_reserved_section(title: string) -> bool`
+(`IC-001 §2`), replaces it — a single shared predicate checking a title against the two reserved, fixed names
+`"Appendix"`/`"Rationale"` (documentation-standards.md §3 — always exactly those titles, never arbitrary),
+called directly by every consumer that needs the distinction: `extract_words`, `compute_numbering` (against a
+heading's own title in `ParsedStructure` — `rewrite_headings` needs no separate call, since it only ever numbers
+what `compute_numbering`'s own `Numbering` map already includes), `preview_content` (`IC-007 §4`), and
+`resolve_target_range` (against a title key in `sections.yaml`, read via `IC-005 §6`) — deliberately *not*
+`find_closest_section`, whose own job is typo-correction for a failed `§section` reference, where Appendix/
+Rationale are still legitimate candidates (`IC-008`'s own `# Rationale`). One rule, one place it lives, checked
+by title wherever a heading actually occurs — not a `kind` computed once and unable to survive
+past the process that computed it. The alternative — keeping `kind` for the in-memory consumers and giving
+`resolve_target_range` its own separate title check — was discarded: it's the exact shape of duplication
+`WordReducer` (§3.10) already exists to prevent, just for a different pair of functions.
+
+**Corrected again, same session:** `# Appendix`/`# Rationale` are *protected headings*, not just individually
+excluded ones — the reason to exclude them from word-extraction in the first place (guiding an agent to the
+document's own distilled truth, not its justification) applies just as much to whatever's nested *underneath*
+one, and a document may reasonably give its own Appendix real substructure (`## 1 Config Reference`, etc.). A
+per-heading `is_reserved_section` check alone doesn't cover this: `parse_markdown_structure` walks every
+heading regardless of nesting, so a subsection inside an Appendix would otherwise be word-extracted normally,
+polluting search with exactly the supporting material the exclusion exists to keep out — while still correctly
+appearing in `.sections.yaml`, since being locatable and extractable is the whole benefit worth keeping (an
+agent that's read "the truth" can still be pointed at its own supporting detail on request). `extract_words` and
+`compute_numbering` now track *protected zones*, not single headings: a heading matching `is_reserved_section`
+opens a zone at its own depth; every subsequent heading deeper than that stays inside the zone (skipped, same as
+the opening heading itself) until one appears at that depth or shallower, which closes it. A new shared
+function, `mark_protected_headings(headings: [Heading]) -> {[id: string]: "appendix" | "rationale"}` (`IC-001
+§3`), maps every `Heading.id` (§4.1) that falls inside a zone to *which* reserved name opened it — computed
+once, called by both consumers, rather than each independently re-deriving the same depth-tracking walk (the
+zone name itself, not just a flat membership list, is what `write_index_files` needs to populate `SectionIndex`'s
+own `zone` field — §3.9's later addendum — `extract_words`/`compute_numbering` only ever check membership,
+ignoring which zone). `preview_content`/`resolve_target_range` don't need it — their own "whole document ends
+before the first protected heading" boundary only ever cares about *where the first zone starts*, which
+`is_reserved_section` alone already finds correctly walking headings in order.
+
+Scoping note, not a capability claim: the walk itself doesn't care how many `# Appendix`/`# Rationale` headings
+exist or where — it would exclude words correctly under any of them, wherever they sit. That's an incidental
+property of a simple depth-tracking algorithm, not a design decision to support more than the conventional
+shape (documentation-standards.md §3's own framing is singular — "Optional `# Appendix`," "Optional
+`# Rationale`," each at most one, typically last). Multiple same-titled Appendix/Rationale headings scattered
+through a document — the distributed-addressing idea dropped while deriving `SB-004` — would still collide in
+`.sections.yaml`'s own title-keyed scheme the moment a second one existed; nothing here fixes that. The zone
+mechanism only ever needs to correctly exclude *whichever* Appendix/Rationale headings a document actually has —
+it isn't what makes having more than one of either a supported shape.
+
 ### 3.2 Delivery Surface: CLI Now, MCP Later
 
 This Feature ships as a command-line tool now, not an MCP tool — the ADD's own MCP-hosting default (§1) is
@@ -88,6 +151,30 @@ Split into two functions rather than one. `resolve_scope_single(specifier)` reso
 — UC-005 only — calls `resolve_scope_single` once per specifier and combines the results; UC-006 has no path to
 it at all, so its own scope exclusion (no `@{slug}@{slug}` chaining) is enforced by which function exists for
 it to call, not left to caller discipline.
+
+**Extended while deriving `SB-003`'s specific behaviors (Design Feature Instructions §5.1):** how `@{slug}`
+(and `@docs`, which is just the reserved slug `docs`) actually resolves to a concrete filesystem root was never
+decided — assuming every docs repo lives under a fixed `weaver-engineering/` workspace layout was considered
+and rejected by the architect directly: there's no guarantee every docs repo sits under a directory literally
+named `weaver-engineering`. Resolved instead via an explicit registry file, `.weaver-docs.yaml`: starting from
+cwd, `resolve_scope_single` walks upward through parent directories until it finds one (the same discovery
+pattern `.git`/`.nvmrc` already use in this ecosystem), then reads it as a YAML mapping of slug to docs root:
+```yaml
+agent-plugins: AgentPlugins/agent-plugins-docs/docs
+docs: docs
+```
+Each path is relative to `.weaver-docs.yaml`'s own directory unless it's already absolute — both forms are
+supported, so a registry entry can point anywhere on disk, not only within the tree the registry file itself
+lives in. `@all` is a reserved specifier, recognized *before* any registry lookup — it enumerates every entry in
+the registry directly, never attempting to look up a slug literally named `"all"`, and combines them the same
+way `resolve_chained_scope` combines several `resolve_scope_single` calls. (A project actually registered under
+the slug `all` would be permanently unreachable via `@{slug}` — the registry format doesn't itself prevent that
+collision; worth the architect's own awareness, not resolved here.) Not designed here: how `.weaver-docs.yaml`
+itself gets created or kept up to date as projects are added — that's a workspace-setup concern outside this
+Feature's own scope;
+`resolve_scope_single` only needs to be able to find and read one, not maintain it. Failure to find a
+`.weaver-docs.yaml` anywhere up the tree, or a slug absent from the one that's found, is a real failure mode
+this decision surfaces but doesn't resolve — left to `SB-003`'s own unhappy-path derivation.
 
 ### 3.4 Filesystem Is Not An External Dependency
 
@@ -118,6 +205,33 @@ gracefully on a partial match (Extension 2a's empty wildcard result) rather than
 Extension 3a's `§section`-not-found case, which *does* fail, because a missing section is a wrong reference
 entirely, not a partially-satisfiable range.
 
+**Refined while deriving `SB-004`'s specific behaviors (Design Feature Instructions §5.1):** clamping only
+covers a range with *some* genuine overlap with valid content — `start` itself inside bounds, `end` running
+past them. Two further cases have no valid overlap at all, and clamping them would produce nonsense rather than
+a partial answer, so both fail instead, raising `invalid_range`: `start` after `end` (a malformed range,
+regardless of bounds), and `start` itself already past the target's own real end. For a `§section[{start}-{end}]`
+reference, "the target's own real end" is that section's own `end_line`. For a bare `[{start}-{end}]` (no
+`§section` — the whole document), it's the same whole-document boundary `resolve_target_range`'s own §3.9
+addendum already established — the point before any `# Appendix`/`# Rationale`, not the file's physical last
+line — so a `start` that only exists because of Appendix/Rationale content still fails, the same as one past the
+literal end of file.
+
+**`find_closest_section`'s real mechanism, settled the same session:** an initial framing treated `section_not_found`'s
+own recovery as fuzzy title matching (`§Apendix` → `§Appendix`) — wrong. It's a *numeric-hierarchy* walk, and
+only ever applies to a `§section` reference that's a valid pseudo-number: strip the reference's own last
+dot-separated segment (`"1.2.3"` → `"1.2"`) and check whether *that* number exists; repeat if it still doesn't,
+one segment shorter each time. The first existing ancestor found is the returned pointer — not a guess based on
+how similar any title looks, an exact number that's simply less specific than what was asked for. A
+title-shaped reference that matches nothing has no hierarchy to walk at all — it stays a plain
+`section_not_found`, no pointer, no fallback. If the walk exhausts every segment and even the top-level number
+doesn't exist either, there's no ancestor left to point to at all — at that point `extract_content` doesn't fail:
+it falls all the way back to the whole document (the same range §1's own whole-document extraction computes,
+Appendix/Rationale excluded per §3.9's own addendum) and returns that content directly, a success, not a
+failure-plus-pointer. `IC-000 §4`'s own bound pseudocode is revised accordingly: `find_closest_section` (`IC-008
+§3`) returns either a `Heading` (an existing ancestor found) or nothing at all (exhausted) — the former still
+returns `failure, closest`; the latter calls `resolve_target_range` again with `reference.section` cleared and
+returns that content as success instead.
+
 ### 3.8 UC-005 Algorithm Selection And Details-Mode Defaults
 
 Three independent flags, not one bundled together: `--calc <name>` selects the scoring algorithm (default
@@ -147,6 +261,84 @@ UC-002 §7 deferred it explicitly. Elicited directly from the architect while de
 behaviors (Design Feature Instructions §5): a structured diff, one entry per change, the same data in both
 `human_readable` and `machine_consumable` mode (§3.5) — the two differ only in rendering. See §4.6.
 
+**Corrected while deriving `SB-003 §1`'s specific behavior (Design Feature Instructions §5.2):** UC-005 MSS
+step 4 requires "a document-level score alongside each section's," and documentation-standards.md §4 already
+treats the document root as its own node with its own scoped word count, on equal footing with a section — but
+`load_word_index` (`IC-005 §5`) only ever searched sections, and its own return type, `MatchingSection` (§4.34),
+typed `section` as a non-nullable `string`, with no shape for a document-root match at all, even though
+`score_nodes`'s own output type, `ScoredNode` (§4.36), already had `section: string|null` with `null` meaning
+exactly a document-level score — a score nothing upstream could ever actually produce. `load_word_index` now
+also checks a document's own root `WordCounts` (the `document` key of `WordIndex`, §4.16) for a match,
+alongside its sections; `MatchingSection.section` (§4.34) is now `string|null` to match, `null` meaning the same
+thing it already means on `ScoredNode`. Without this, a document whose only content is root-level prose (no
+headings at all — the shape `SB-002 §1.3` derives) would have been entirely invisible to search.
+
+**Corrected while deriving `SB-003 §4`'s specific behavior (Design Feature Instructions §5.2):** what "a
+document's/section's own content" means for `preview_content` (`IC-007 §4`) was never actually specified beyond
+"first `--preview-lines` lines," and the architect corrected an initial, wrong assumption (that a document-level
+match's preview was scoped to just its own root/preamble text, mirroring how word-extraction scopes the
+document root). The real rule: a **document**-level preview is the first N lines of the *whole document* —
+spanning every section and subsection in document order — **excluding** any `# Appendix`/`# Rationale` content
+(§3.1's own later correction: computed via `is_reserved_section`, `IC-001 §2`, checked against each section
+title `IC-005 §6` returns, not a `kind` field — the whole-document range runs from line 1 up to, but not
+including, the first heading `is_reserved_section` matches, or end of file if there is none). A **section**-level
+preview is the first N lines of that section specifically, including any subsections it contains — a section's
+own `start_line`/`end_line` (§4.1) already spans through its subsections by construction, so no separate
+handling is needed there — capped by the section's own content length, never spilling into a sibling section.
+This is also why `# Appendix`/`# Rationale` can never appear as a search result at all: they carry no word
+counts (§3.1 addendum) to ever match a query in the first place — the only way to see one is
+`extract_content`'s (UC-006) explicit `§Appendix`/`§Rationale` reference, direct and deliberate, not a side
+effect of search. `preview_content` now also calls `IC-005 §6`/`IC-001 §2` itself (§5's own `calls:` list below,
+updated) to determine the boundary — it wasn't declared to call anything before this correction, because the
+need for it wasn't yet known.
+
+**Corrected the same way for `resolve_target_range` (`IC-008 §2`, UC-006):** a whole-document reference (no
+`§section` given) resolves to the document's content excluding `# Appendix`/`# Rationale`, the same boundary
+`preview_content` now uses, via the same `is_reserved_section` (`IC-001 §2`) call — retrieving either of those
+two sections is only possible by naming it explicitly (`§Appendix`/`§Rationale`), the ordinary
+`section_not_found` path (§3 of this document) if it doesn't exist. Recorded here even though `SB-004` (UC-006)
+hasn't been fully derived yet, so this doesn't need rediscovering later.
+
+**A general fix, surfaced but not limited to Appendix/Rationale, while deriving `SB-004`:** `.sections.yaml` keyed
+by title (documentation-standards.md §4) collides the moment any two headings anywhere in a document share a
+title — an entirely ordinary, expected document shape (a repeated subsection name like "Overview" or "Examples"
+under two different parents), not an edge case. `read_section_index`'s own `SectionIndex` (§4.33) is re-keyed by
+each heading's own stable `id` (`Heading.id`, §4.1 — already unique by construction) instead; `title` moves from
+being the key to being a field within each entry, alongside the `number`/`type`/`start_line`/`end_line` it
+already carries. This is a correction to `.sections.yaml`'s own documented shape
+(`weaver-engineering/docs`'/documentation-standards.md's, not something this design process edits directly —
+flagged for that repo's own follow-up) — legitimate for this design to define, since this Feature's own
+`IndexStore` is the first real tool ever writing that file for real, per documentation-standards.md's own
+Rationale ("existing hand-written `.index/` files... will get corrected... once the indexing tool itself exists
+and does a real pass").
+
+Resolving a `§{section}` reference (`resolve_target_range`, `IC-008 §2`) now tries two things instead of one
+direct key lookup: if the reference matches a valid pseudo-number pattern (documentation-standards.md §3's own
+regex), resolve against whichever entry's `number` field equals it — inherently unique, since `compute_numbering`
+never assigns the same number twice. Otherwise, treat it as a title and match against entries' `title` fields —
+case-insensitively (elicited while deriving `SB-004 §1.4.1`: `§aPpeNdix` resolves the same as `§Appendix`),
+consistent with `is_reserved_section`'s own case-insensitive check (§3.1's own later addendum) so the two never
+quietly disagree about what a given heading actually is: exactly one match resolves normally; zero matches is
+the existing `section_not_found` path (§3 above); *more than one* match is new — raises `ambiguous_section`,
+mirroring Extension 2b's own shape (wildcard matches more than one document → fail, return the candidate list)
+at the section level instead of the document level, so a caller can retry using one candidate's own `number` to
+disambiguate. A section without a `number` (Appendix/Rationale, or any hidden-`0` heading) that also collides on
+title has no fallback address to retry with — a real but narrow gap this doesn't fully close, left as a known
+limitation rather than solved by inventing a synthetic identifier no caller would ever type.
+
+**A third resolution path, found while deriving `SB-004 §1.4.5`'s own follow-on:** a `§{section}` reference can
+also be zone-qualified — `§rationale.1.2` / `§appendix.1.2` (case-insensitive on the zone name, matching
+`is_reserved_section`'s own case-insensitivity) — addressing a number *within* that specific protected zone
+rather than globally. Necessary because Appendix/Rationale subsections keep whatever numbers their author typed
+(`mark_protected_headings` only ever stops them being auto-*renumbered*, HLD §3.1's second addendum) with no
+coordination against the main body's own numbering — `"1"` inside a Rationale and `"1"` in the body are
+independent numbering scopes that can legitimately collide. Resolution: split on the first `.`, check the first
+segment against `is_reserved_section`; if it matches, resolve the remainder as a number *scoped to entries whose
+own `zone` field equals it* (§4.33) — otherwise fall through to the existing two paths (plain number, then
+title) unchanged. A bare, unqualified number (`§1.2`) still only ever resolves against `zone: null` (ordinary
+body) entries — it was never ambiguous with anything inside a protected zone to begin with, since those simply
+aren't candidates for an unqualified lookup.
+
 ### 3.10 `WordReducer` As Its Own Component
 
 `extract_words` (`PathIndexer`) and `reduce_query` (`Searcher`) both need the documentation standard's own §4
@@ -156,6 +348,21 @@ with") without anything actually enforcing it: two independent implementations t
 aren't mechanically guaranteed to stay equivalent as either one changes. Extracted into its own component,
 `WordReducer`, with one function (`reduce_words`) both `extract_words` and `reduce_query` call directly — the
 rule now lives in exactly one place, and staying consistent is structural, not a maintained-by-hand invariant.
+
+**Extended while deriving `SB-002 §1.1`'s specific behavior (Design Feature Instructions §5.2):** `reduce_words`
+recognizes a TODO-marker pattern (any of the six recognized spellings — `//`/`#` prefix × `TODO`/`TO-DO`/
+`TO_DO`, case-insensitive) *wherever it occurs in the input text*, not only where the line-start rule
+(documentation-standards.md §4) would also make it a genuine `extract_todos` marker, and canonicalizes every
+occurrence to the single literal token `"//todo"` — one occurrence, one token, regardless of which of the six
+spellings was actually used. This is deliberate, not an artifact of the ordinary tokenization rule (`/` merely
+staying inside a token, §3.1's original reasoning for `"//todo"` surviving as a token at all, undersold what was
+actually wanted): it's what lets a query for any one spelling (`reduce_query` calling the same `reduce_words`)
+match every TODO occurrence in scope regardless of which spelling the author happened to use, a single canonical
+search term for "there's outstanding work here" — the same reasoning documentation-standards.md's own stopword
+list already applies (a root form blocking all its inflections) turned around: here, distinct *surface forms*
+of the same marker concept collapse to one indexed term instead of one root blocking several forms. The rest of
+a marker line — the description text after the marker — stays excluded from word-extraction as before; only the
+marker pattern itself contributes the canonical token.
 
 ## 4 Data Types
 
@@ -186,8 +393,17 @@ Heading = {
 }
 ```
 
-`id` is the parser's own stable per-node identifier (document position + depth) — not yet the renumbered `§M`
-id UC-002 computes (§4.18). `find_closest_section` (`IC-008 §3`) returns one `Heading` directly, not a new type.
+`id` is the parser's own stable per-node identifier — concretely, `string(start_line)` (settled while answering
+a question raised against `documentation-standards.md`'s own retrofit of this Feature's `SectionIndex`
+correction, §3.9): a heading's own `start_line` is already unique within one document (two headings can't share
+a line) and already computed as part of parsing, so it needs no separate scheme of its own. Not yet the
+renumbered `§M` id UC-002 computes (§4.18). `find_closest_section` (`IC-008 §3`) returns one `Heading` directly
+when it finds an ancestor, `null` when it doesn't (§3.7's later correction) — not a new type either way. Whether
+a given heading is `# Appendix`/`# Rationale` isn't a field here — `is_reserved_section`
+(`IC-001 §2`, §3.1's own later correction) checks a heading's own `title` directly, since that's the one piece
+of information guaranteed to survive from a fresh parse all the way to the persisted `.sections.yaml` a later
+read has to work from. `# Appendix`/`# Rationale` get an `id` the exact same way any other heading does — no
+special-casing needed, since `id` was never derived from numbering or depth-in-the-body-sequence to begin with.
 
 ### 4.2 `Figure` (§3.1)
 
@@ -549,10 +765,38 @@ DocumentMatches = [path]
 ### 4.33 `SectionIndex` (§3.9)
 
 `read_section_index`'s (`IC-005 §6`) own output — one document's own `.sections.yaml` content, read directly
-(added while binding `ContentExtractor`, §4.3 addendum below §3.9).
+(added while binding `ContentExtractor`, §4.3 addendum below §3.9). Keyed by each heading/figure's own stable
+`id` (§3.9's later general-fix addendum), not by title — two entries can share a title without colliding, since
+`title` is now a field, not the key. `zone` records which protected zone (§3.1's second addendum) the entry
+falls inside, if any — `null` for ordinary body content — added while deriving `SB-004 §1.4.5`'s own follow-on:
+Appendix/Rationale's own numbering is never coordinated with the main body's (`mark_protected_headings` skips
+numbering it, §3.1), so a subsection inside either can legitimately share a bare number with an unrelated body
+section (both a `## 1 Config Reference` inside `# Rationale` and a `## 1 Getting Started` in the body can be
+`"1"`) — `zone` is what lets `§rationale.1.2`/`§appendix.1.2` resolve *within* the right one instead of
+colliding globally.
 
 ```
-SectionIndex = { [heading_title: string]: { number: string, type: "section", start_line: int, end_line: int } }
+SectionIndex = { [id: string]: { title: string, number: string|null, type: "section" | "code-block", start_line: int, end_line: int, zone: "appendix" | "rationale" | null } }
+```
+
+### 4.33.1 `SectionCandidate` (§3.9)
+
+One element of `SectionCandidates` (§4.33.2) — enough for a caller to retry a disambiguated reference.
+
+```
+SectionCandidate = {
+  title: string,
+  number: string|null
+}
+```
+
+### 4.33.2 `SectionCandidates` (§3.9)
+
+`resolve_target_range`'s (`IC-008 §2`) own output on an `ambiguous_section` failure — every entry sharing the
+referenced title, so the caller can retry with one candidate's own `number` (where it has one).
+
+```
+SectionCandidates = [SectionCandidate]
 ```
 
 ### 4.34 `MatchingSection` (§3.8, §3.9)
@@ -562,11 +806,14 @@ One element of `MatchingIndex` (§4.35).
 ```
 MatchingSection = {
   document: path,
-  section: string,
+  section: string|null,
   matched_words: Words,
   total_word_count: int
 }
 ```
+
+`section: null` means the match is against the document's own root `WordCounts` (`WordIndex.document`, §4.16),
+not any of its sections — the same meaning `ScoredNode.section` (§4.36) already gives `null` (§3.9 addendum).
 
 ### 4.35 `MatchingIndex` (§3.8, §3.9)
 
@@ -658,18 +905,30 @@ Feature.
   * `parse_markdown_structure` — **new** — decided (§3.1) as one shared component satisfying both UC-002's and
     UC-003's parsing needs, superseding the separately-named `parse_document`/`parse_structure` candidates Gap
     Analysis originally surfaced. Used by UC-002, UC-003.
+  * `is_reserved_section` — **new** — added while deriving `SB-004` (§3.1 addendum): a shared predicate checking
+    a title against the two reserved section names, `"Appendix"`/`"Rationale"`, called by anything needing a
+    single heading's own status — `Searcher` (`preview_content`), and `ContentExtractor` (`resolve_target_range`
+    only — `find_closest_section` deliberately doesn't call it; see its own note below). Used by UC-005, UC-006.
+  * `mark_protected_headings` — **new** — added the same session (§3.1's second addendum): returns every heading
+    id inside a *protected zone* — a reserved heading and everything nested under it — via `is_reserved_section`
+    plus a depth-tracking walk, since word-extraction/numbering need the whole subtree excluded, not just the
+    reserved heading itself. Called by `PathIndexer` (`extract_words`) and `AutoNumberer` (`compute_numbering`
+    only — `rewrite_headings` needs no separate call). Used by UC-002, UC-003.
 * [`ScopeResolver`](../../architecture/components/IC-002-scope-resolver.md) — new
   * `resolve_scope_single` — **new** — decided (§3.3) as a split interface. Used by UC-005, UC-006.
   * `resolve_chained_scope` — **new** — calls `resolve_scope_single` once per specifier and combines results.
     Used by UC-005 only — UC-006 has no path to it at all (§3.3). Supersedes the single `resolve_scope`
     candidate Gap Analysis originally surfaced.
 * [`AutoNumberer`](../../architecture/components/IC-003-auto-numberer.md) — new
-  * `compute_numbering` — **new** — fresh numbering by document position and heading depth. Used by UC-002.
+  * `compute_numbering` — **new** — fresh numbering by document position and heading depth; skips every heading
+    `MarkdownParser` (`mark_protected_headings`) marks — `# Appendix`/`# Rationale` and their own nested
+    subsections alike. Used by UC-002.
   * `build_id_map` — **new** — old→new id map keyed by pseudo-number and title; raises `duplicate_identity`
     (Extension 3b). Used by UC-002.
   * `find_surviving_references` — **new** — same-document references whose old id survives into the map,
     evaluated against the original document (MSS step 4). Used by UC-002.
-  * `rewrite_headings` — **new** — applies computed numbering to headings/figures. Used by UC-002.
+  * `rewrite_headings` — **new** — applies computed numbering to headings/figures; only ever asked to number
+    what `compute_numbering` already skipped Appendix/Rationale for. Used by UC-002.
   * `rewrite_references` — **new** — rewrites the surviving reference set. Used by UC-002.
   * `format_report` — **new** — human-readable or machine-consumable per `invoked_by`/`--json` (§3.5). Used by
     UC-002. Not (yet) shared with the other three use cases' own output — each currently formats its own
@@ -679,7 +938,9 @@ Feature.
     (§5's own note below on why this isn't one flat document list). Used by UC-003.
   * `resolve_documents_in_unit` — **new** — one unit's own immediate `.md` documents. Used by UC-003.
   * `extract_words` — **new** — significant words per node: calls `WordReducer.reduce_words` per node's own
-    text, then records the result against that node (documentation standard §4 rules). Used by UC-003.
+    text, then records the result against that node (documentation standard §4 rules); skips every heading
+    `MarkdownParser` (`mark_protected_headings`) marks — `# Appendix`/`# Rationale` and their own nested
+    subsections alike. Used by UC-003.
   * `extract_todos` — **new** — `//TODO`-style markers with text/section/line/ref. Used by UC-003.
 * [`IndexStore`](../../architecture/components/IC-005-index-store.md) — new
   * `write_index_files` — **new** — persists `sections`/`words`/`todo` `.index/` files for one document; omits
@@ -708,15 +969,21 @@ Feature.
   * `score_nodes` — **new** — document- and section-level relevance scores together (§3.8, §7's own open
     question about algorithm selection). Used by UC-005.
   * `select_top_n` — **new** — top `--max-results` results (§3.8). Used by UC-005.
-  * `preview_content` — **new** — first `--preview-lines` lines per result in details mode (§3.8). Used by
-    UC-005.
+  * `preview_content` — **new** — first `--preview-lines` lines per result in details mode (§3.8); for a
+    document-level result, the whole document excluding `# Appendix`/`# Rationale` — calls `IndexStore`
+    (`read_section_index`) and `MarkdownParser` (`is_reserved_section`) to find that boundary (§3.9 addendum).
+    Used by UC-005.
 * [`ContentExtractor`](../../architecture/components/IC-008-content-extractor.md) — new
   * `resolve_document` — **new** — exact path or `**{slug}` wildcard match; cardinality covers Extensions
     2a/2b. Used by UC-006.
-  * `resolve_target_range` — **new** — whole document, `§section`, line range, or both; raises
-    `section_not_found` (Extension 3a); calls `IndexStore` (`read_section_index`). Used by UC-006.
+  * `resolve_target_range` — **new** — whole document, `§section`, line range, or both; a whole-document
+    reference excludes `# Appendix`/`# Rationale` (§3.9 addendum) — either is still reachable by naming it
+    explicitly; raises `section_not_found` (Extension 3a); calls `IndexStore` (`read_section_index`) and
+    `MarkdownParser` (`is_reserved_section`). Used by UC-006.
   * `find_closest_section` — **new** — nearest matching section on a `section_not_found` failure; also calls
-    `IndexStore` (`read_section_index`). Used by UC-006.
+    `IndexStore` (`read_section_index`) — deliberately *doesn't* call `is_reserved_section`, unlike
+    `resolve_target_range` above: this is typo-correction for a failed reference, where Appendix/Rationale are
+    still legitimate candidates, not a default to exclude them from. Used by UC-006.
   * `read_source_text` — **new** — reads verbatim source text at a resolved range, clamped to actual bounds
     (§3.7), never reconstructed from index data. Used by UC-006.
 
