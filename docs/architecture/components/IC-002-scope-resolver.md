@@ -17,9 +17,16 @@ Resolves exactly one scope specifier.
 
 `resolve_scope_single(specifier: string) -> Scope`
 
-Accepts `@{slug}` (`-docs` suffix optional), `@docs` (`weaver-engineering/docs`), `@all` (every
-weaver-engineering docs repo), or a filesystem path, optionally narrowed by `/{path}`. Defaults to cwd if
-omitted.
+Accepts `@{slug}` (`-docs` suffix optional), `@docs` (the reserved slug `docs`), `@all` (every registered docs
+repo), or a filesystem path, optionally narrowed by `/{path}`. Defaults to cwd if omitted.
+
+`@{slug}`/`@docs`/`@all` resolve via `.weaver-docs.yaml` (HLD §3.3 addendum): starting from cwd, walk upward
+through parent directories until one is found, then read it as a YAML mapping of slug to docs root — each path
+relative to the registry file's own directory unless already absolute. `@all` is recognized *before* any
+registry lookup and combines every entry in the registry directly — it never looks up a slug literally named
+`"all"`. Raises `weaver_docs_yaml_not_found` if no `.weaver-docs.yaml` is found anywhere up the tree from cwd
+(`SB-003 §6`), or `unknown_scope_slug` if one is found but doesn't list the requested slug (`SB-003 §2.1`) — both
+uncaught here, propagating to this function's own caller.
 
 ```yaml
 calls: []

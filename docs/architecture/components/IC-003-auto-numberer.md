@@ -13,12 +13,16 @@ UC-002's own Main Success Scenario, called directly by `IC-000 §1`, not chained
 
 ## 1 `compute_numbering`
 
-Computes fresh numbering by document position and heading depth.
+Computes fresh numbering by document position and heading depth. Skips every heading `mark_protected_headings`
+(`IC-001 §3`) marks — `# Appendix`/`# Rationale` and their own nested subsections alike are never numbered (HLD
+§3.1's two addenda; UC-002's own Technical Interpretation step 1 already excludes them, unchanged since
+`parse_markdown_structure` started including them in `headings`).
 
 `compute_numbering(parsed: ParsedStructure) -> Numbering`
 
 ```yaml
-calls: []
+calls:
+  - "IC-001 §3"
 called_from:
   - "IC-000 §1"
 ```
@@ -53,7 +57,8 @@ called_from:
 
 ## 4 `rewrite_headings`
 
-Applies computed numbering to headings/figures.
+Applies computed numbering to headings/figures. Only ever asked to number what `compute_numbering` (§1) actually
+produced a number for — `# Appendix`/`# Rationale` headings, having no entry in `Numbering`, are left as-is.
 
 `rewrite_headings(parsed: ParsedStructure, numbering: Numbering) -> string`
 

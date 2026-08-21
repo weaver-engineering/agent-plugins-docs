@@ -19,7 +19,11 @@ Reduces any given text to its significant word tokens.
 
 Case-folds; keeps `-`, `_`, `.`, `:`, `/` inside a token; treats every other character as a break, except `@`,
 which starts a verbatim `@{repo-slug}/{path}[/§M.N]` token; reduces plurals/possessives to their root; drops
-stopwords (`stopwords.yaml`).
+stopwords (`stopwords.yaml`). Recognizes any of the six TODO-marker spellings (`//`/`#` × `TODO`/`TO-DO`/
+`TO_DO`, case-insensitive) anywhere in the text — not only where it would also qualify as a genuine
+`extract_todos` marker (documentation-standards.md §4's own line-start rule doesn't gate this) — and emits one
+canonical `"//todo"` token per occurrence, regardless of which spelling was actually used (HLD §3.10 addendum);
+the rest of a marker line stays excluded from word-extraction as before.
 
 ```yaml
 calls: []

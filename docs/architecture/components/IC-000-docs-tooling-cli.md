@@ -18,6 +18,10 @@ CLI entry for UC-002 (Auto-Number Document Sections).
 
 `auto_number_document(document: path, invoked_by: "architect" | "assistant") -> (string, NumberingReport)`
 
+Raises `duplicate_identity` (from `IC-003 §2`), uncaught — the CLI's own caller sees it directly (found during
+§7.1 Mechanical Reconciliation's own exception sweep: this was never declared at this level before, only on
+`IC-003 §2` itself).
+
 ```yaml
 calls:
   - "IC-001 §1"
@@ -48,7 +52,7 @@ pseudocode: |
 used_by_steps:
   - "UC-002 steps 1-8"
 used_by_behaviors:
-  - "SB-001 (behaviors not yet derived)"
+  - "SB-001"
 ```
 
 ## 2 `index_path`
@@ -90,7 +94,7 @@ pseudocode: |
 used_by_steps:
   - "UC-003 steps 1-6"
 used_by_behaviors:
-  - "SB-002 (behaviors not yet derived)"
+  - "SB-002"
 ```
 
 ## 3 `search_documentation`
@@ -98,6 +102,9 @@ used_by_behaviors:
 CLI entry for UC-005 (Search Documentation).
 
 `search_documentation(query: string, scope: string, mode: "list" | "details") -> Scores | (TopResults, Previews)`
+
+Raises `weaver_docs_yaml_not_found`/`unknown_scope_slug` (from `IC-002 §1`), uncaught (§7.1's own exception
+sweep — same gap as `§1`'s, neither was declared at this level before).
 
 ```yaml
 calls:
@@ -130,14 +137,22 @@ pseudocode: |
 used_by_steps:
   - "UC-005 steps 1-5"
 used_by_behaviors:
-  - "SB-003 (behaviors not yet derived)"
+  - "SB-003"
 ```
 
 ## 4 `extract_content`
 
 CLI entry for UC-006 (Extract Document Content).
 
-`extract_content(reference: Reference, scope_hint: string?) -> string | DocumentMatches | (failure, Heading)`
+`extract_content(reference: Reference, scope_hint: string?) -> string | DocumentMatches | (failure, Heading | SectionCandidates)`
+
+Also raises `weaver_docs_yaml_not_found`/`unknown_scope_slug` (from `IC-002 §1`, whenever `scope_hint` is an
+`@{slug}` form — §7.1's own exception sweep found this call site was missed: no `SB-004` behavior currently
+exercises it, unlike the parallel case `SB-003 §6`/`§2.1` already cover for search; flagged rather than silently
+assumed low-risk).
+
+Raises `ambiguous_section`/`invalid_range` (from `IC-008 §2`), uncaught — `section_not_found` is caught locally
+(the `ON FAILURE` branch below), so only these two propagate (§7.1's own exception sweep).
 
 ```yaml
 calls:
@@ -162,14 +177,26 @@ pseudocode: |
     target_range <-- [IC-008 §2: resolve_target_range - reference, document]
       ON FAILURE (section_not_found):
         closest <-- [IC-008 §3: find_closest_section - reference, document]
-        RETURN failure, closest
+        IF closest IS NOT null:
+          RETURN failure, closest
+        whole_document_range <-- [IC-008 §2: resolve_target_range - reference WITH section CLEARED, document]
+        content <-- [IC-008 §4: read_source_text - document, whole_document_range]
+        RETURN content
+      ON FAILURE (ambiguous_section):
+        candidates <-- (returned directly by IC-008 §2)
+        RETURN failure, candidates
+      ON FAILURE (invalid_range):
+        RAISE invalid_range
     content <-- [IC-008 §4: read_source_text - document, target_range]
     RETURN content
 used_by_steps:
   - "UC-006 steps 1-4"
 used_by_behaviors:
-  - "SB-004 (behaviors not yet derived)"
+  - "SB-004"
 ```
+(revised §7.1 Mechanical Reconciliation: this had drifted from `SB-004`'s own bound pseudocode block, which
+already carried the corrected `ambiguous_section`/`invalid_range` branches and the `find_closest_section`
+whole-document fallback — this copy simply hadn't been updated to match)
 
 # Rationale
 
