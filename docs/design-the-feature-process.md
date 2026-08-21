@@ -383,9 +383,15 @@ becomes the agent's to grant itself.
   three-way, not two:
   * **Accept the new behavior.** The design's evolution is correct, and the prior agreement is what's stale.
     Update the recorded content in place (§8) to the regenerated result, then present it fresh — `//REVIEW`, not
-    straight back to approved, since what's now recorded was never itself confirmed. Record it as `mutated` in
-    the design task's own chunk scope (Chunk Scope) at the same time — an existing, already-shipped behavior's
-    expected result just changed, which is exactly what that status means.
+    straight back to approved, since what's now recorded was never itself confirmed. Whether this needs its own
+    chunk scope entry depends on whose work is being revised: if the current design task's own chunk scope
+    already has a `new` entry for this address (this task derived it and hasn't shipped it yet — nothing has,
+    until `Chunk The Design` runs), nothing further is recorded; it stays `new`, since `Chunk The Design` only
+    ever sees this task's final delivered state, not how many times it was revised internally before then. Only
+    if this address has no entry in the current task's own chunk scope — meaning it belongs to a *different*,
+    already-completed design task, and this task's own function change is what invalidated it — record it as
+    `mutated` in *this* task's own chunk scope: an existing, already-shipped behavior's expected result just
+    changed, which is exactly what that status means.
   * **Reject it.** Push the design back (§8) to evolve the function further, until it satisfies whatever prompted
     the change *and* this behavior regenerates to match its original, already-agreed content again. Nothing
     about the recorded behavior itself has changed, so nothing gets recorded in chunk scope for this resolution.
@@ -395,8 +401,12 @@ becomes the agent's to grant itself.
     needed — but the decision itself carries at least as much weight as accept or reject, arguably more, since
     it's irreversible. It needs its own explicit bar, not a routine "does this look right" nod folded in with
     everything else being presented: ask the architect an unambiguous yes/no question naming exactly what's being
-    removed, and require an unqualified affirmative in response before deleting anything. Record it as `deleted`
-    in the design task's own chunk scope before or alongside the deletion itself.
+    removed, and require an unqualified affirmative in response before deleting anything. The same same-task/
+    cross-task test as Accept (above) applies: if this address only has a `new` entry in the *current* design
+    task's own chunk scope, it was never shipped — remove that entry entirely rather than adding a `deleted` one,
+    since there's nothing for `Chunk The Design` to ever have seen. Only an address belonging to a different,
+    already-completed design task gets a genuine `deleted` entry recorded in *this* task's own chunk scope,
+    before or alongside the deletion itself.
   Accept and reject both resolve through a fresh `//REVIEW` — never straight back to approved, because what gets
   confirmed next is, in both branches, not the thing that was invalidated. Remove has no further `//REVIEW`: once
   confirmed, the behavior is simply gone.
