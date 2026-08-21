@@ -11,7 +11,66 @@ Assistant end to end against a real Feature ([WVR-95](https://linear.app/weaver-
 not anticipated in advance. Where it disagrees with an earlier assumption, this guide reflects what actually
 happened.
 
-## 1 Starting Or Resuming A Design Task
+## 1 Installing It — There's No Releasable Plugin Yet
+
+Cross-platform capability packaging (WVR-94) is still a placeholder — there's no build step that produces an
+installable plugin for Claude Code, OpenCode, or anything else. Today, getting Design Assistant and its skill
+family onto a machine is a manual copy from `agent-plugins`'s own canonical source into `~/.claude/`. This is a
+real, standing gap, not a temporary inconvenience to work around silently — if you're setting up a new machine,
+expect to repeat these steps by hand, and expect them to need repeating again every time the canonical source
+changes.
+
+**Prerequisite**: Node ≥22.6 with TypeScript type-stripping (every skill's own `check.ts` runs directly, no
+build step of its own — `agent-plugins` itself pins Node 24 via `.nvmrc`). `gh` authenticated, for the
+tracking-PR check (§3 below) to work at all.
+
+### 1.1 The Sub-Agent Itself
+
+The canonical source (`agent-plugins/sub-agents/design-assistant/design-assistant.md`) is body content only —
+no YAML frontmatter. The deployed copy (`~/.claude/agents/design-assistant.md`, for Claude Code specifically)
+needs that body plus a frontmatter header prepended once:
+
+```yaml
+---
+name: design-assistant
+description: Drives the Design The Feature workflow step for a given project's design directory - Technical Interpretation through Design Review - following next-unit-of-work-detector's own live, per-phase instructions. Invoke explicitly by name to work on a Feature's design; not for general-purpose delegated work.
+tools: Read, Edit, Write, Bash, Grep, Glob, TaskCreate, TaskUpdate, AskUserQuestion
+---
+```
+
+Re-sync whenever the canonical source changes — not automatically on every push, only on your own explicit
+decision to pull a given PR's changes forward (this file's own header comment on both the canonical and deployed
+copy documents this convention already).
+
+### 1.2 The Skill Family
+
+Each skill is a self-contained directory (`check.ts`, its own tests, `SKILL.md` with its own frontmatter already
+included — no transformation needed, unlike the sub-agent above). Deploy by copying each one wholesale:
+
+```
+cp -r agent-plugins/claude-skills/{slug}/. ~/.claude/skills/{slug}/
+```
+
+...for every skill directory: `behavior-regeneration-checker`, `call-tree-reconciler`, `chunk-scope-utility`,
+`gap-classifier`, `next-unit-of-work-detector`, `pseudocode-subset-checker`, `pseudocode-substitution-checker`,
+`reconciliation-checksum-utility`, `specific-behavior-presenter`, `thin-shim-consistency-checker`,
+`unexpected-side-effect-scanner`, `unhandled-undeclared-exception-sweep` — twelve, as of this writing (see the
+[Agent Plugins index](../../agent-plugins.md) §5 for the current, authoritative list; `called-from-backward-walker`
+is designed but not yet built, so has nothing to deploy).
+
+`next-unit-of-work-detector`'s own directory also carries `instructions/{phase}.md` — the per-phase text it
+attaches to its own output live. These deploy as part of the same `cp -r`, not a separate step.
+
+### 1.3 Verifying It Landed Correctly
+
+```
+node ~/.claude/skills/next-unit-of-work-detector/check.ts <any-real-design-dir>
+```
+
+...should run and return a real phase/reason (or `complete: true`), not a "command not found" or a module-resolution
+error. If it does, the rest of the family is almost certainly fine too, since they all deploy the same way.
+
+## 2 Starting Or Resuming A Design Task
 
 Invoke it with either a fresh assignment ("design UC-002, UC-003 for the {feature-slug} Feature") or, to
 resume, just the ticket ref alone ("continue designing WVR-95") — it doesn't need the Feature slug or use case
@@ -24,7 +83,7 @@ source of truth, by design (this is what makes it resumable across a runtime res
 hand-off from a different session entirely — all three happened during WVR-95's own dogfooding, and it picked
 up cleanly every time).
 
-## 2 The Review Flow — What To Expect
+## 3 The Review Flow — What To Expect
 
 Design Assistant stops and asks at named human-judgement points, never resolving one on its own:
 per-gap ideation's "how might we" choice, the §5.1/§5.2 sanity checks on a freshly-derived behavior, an
@@ -51,7 +110,7 @@ re-litigating the same decision N times. Even then, Design Assistant asked befor
 it — expect it to ask you too, and treat a request to batch as something to actually weigh (has it verified each
 one individually first, or is it just similar-looking?), not rubber-stamp.
 
-## 3 Setting Up And Maintaining The Tracking PR
+## 4 Setting Up And Maintaining The Tracking PR
 
 A design task's own branch needs a currently *open* PR against `main` at all times — this is how you watch
 design docs change as they happen, and lock in progress by squashing whenever it feels sensible, rather than
@@ -68,7 +127,7 @@ conflicting file is simply an earlier, superseded snapshot of the branch's own p
 earlier commit on the branch itself is the fastest way to confirm) — if so, a `git merge -X ours` (or resolving
 each file explicitly to the branch's own version) is usually correct, verified file-by-file rather than assumed.
 
-## 4 Chunk Scope's `new` vs. `mutated`
+## 5 Chunk Scope's `new` vs. `mutated`
 
 `mutated`/`deleted` only apply when the behavior being revised belongs to a *different*, already-shipped design
 task — something that went through `Chunk The Design` previously and is now being invalidated by *this* task's
@@ -78,7 +137,7 @@ matters concretely on a Feature's first design task specifically: nothing in the
 so nothing that task's own internal revisions touch can genuinely be `mutated` — if you see a `mutated` entry
 show up for a behavior this same task derived, that's worth a second look, not an automatic accept.
 
-## 5 Unexpected Skill Behavior Is A Hard Stop, Not A Bug Report To Ignore
+## 6 Unexpected Skill Behavior Is A Hard Stop, Not A Bug Report To Ignore
 
 Design Assistant is instructed to stop immediately — not retry, not silently work around it — the moment a
 skill's output looks wrong, crashes, or produces a visible false positive/negative. Treat this exactly as
@@ -88,7 +147,7 @@ hadn't exercised. If it reports one, the right response is usually: confirm the 
 ticket the bug, get it fixed and redeployed, then tell it explicitly it's clear to retry — not "just work around
 it for now."
 
-## 6 Working Through A Relay vs. Directly
+## 7 Working Through A Relay vs. Directly
 
 Both patterns work; which one fits depends on how much you want to see firsthand. Early in WVR-95's own
 dogfooding, a separate supervising session relayed Design Assistant's findings and confirmations back and
