@@ -25,6 +25,7 @@ The Loom runs.
 
 * [Cross-Platform Capability Parity](design/cross-platform-capability-parity.md) — how capability parity between Claude Code and OpenCode is achieved (placeholder, WVR-94)
 * [CI/CD Pipeline & Branch Protection](design/ci-cd-pipeline.md) — the existing GitHub Actions workflows and rulesets for both repos
+* [Design The Feature — Process](design-the-feature-process.md) — the detailed process definition and rationale design-assistant executes, and the source the per-phase agent instruction files shipped with next-unit-of-work-detector are authored from
 
 ## 4 Architecture
 
