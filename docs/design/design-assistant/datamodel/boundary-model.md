@@ -203,6 +203,17 @@ publishing it as a standalone Library. That is a different operation: containmen
 addresses re-root into the Library's own namespace ([Data Model](DATA-MODEL.md) §5.1.1), because a published
 Library's addresses must be the same for every consumer rather than relative to whoever first contained it.
 
+**Relocation** is the same operation with a different destination: the target moves under a *different*
+container rather than out of containment altogether — a business domain leaving its service for a library of
+business domains. Containment is severed and re-established elsewhere, the original container gains a
+`dependsOn` if it still uses it, and the addresses re-path through the new containment, into the new
+container's namespace where that differs.
+
+The three are worth separating because only promotion leaves addresses alone. Promotion changes a boundary's
+**type** in place; extraction and relocation change its **position**, and position is what an address is
+derived from ([Data Model](DATA-MODEL.md) §5.1). Whether the destination is a namespace of its own or another
+container decides where the addresses land, not whether they move.
+
 **Promotion should cost no human review.** The containing design's traces must be re-run, because they now
 stop at the promoted target instead of walking into it — but they should regenerate to the *same* expected
 effects, since the design itself has not changed, only where the trace terminates. Every affected behavior

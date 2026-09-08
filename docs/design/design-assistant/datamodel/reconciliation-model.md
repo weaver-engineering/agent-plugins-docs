@@ -106,6 +106,7 @@ forgotten. It is the model's own record of what is wrong.
 | Kind | Raised when |
 |---|---|
 | `unparsed-document` | a document within the design's scope whose contents have not been assessed for their contribution to the design ([Data Model](DATA-MODEL.md) §1.1) |
+| `conflicting-claim` | two contributions state differing values for one attribute, or for one entry of one collection ([Serialization](../serialization/parse-contract.md) §3) |
 | `uncovered-cell` | a valid leaf cell has no behavior |
 | `unexplained-exclusion` | a cell is excluded by the architect with no recorded reason |
 | `unresolved-type` | a signature names a type the dictionary does not define |
@@ -144,6 +145,7 @@ therefore ignorable.
 | Kind | Raised when |
 |---|---|
 | `duplicate-metric-emitter` | more than one function emits the same metric ([Function And Call Graph](function-and-call-graph.md) §6.2) |
+| `duplicate-claim` | two contributions state the same value for one attribute, or for one entry of one collection ([Serialization](../serialization/parse-contract.md) §3) |
 
 Advisory findings exist for patterns that are usually wrong and legitimately right often enough that a gate
 would be worse than a note. They are not a softer severity for things nobody got round to enforcing: a finding
@@ -172,6 +174,39 @@ instance-level record leaves every future occurrence still to be judged.
 
 An acknowledgement carries provenance like any derived-from record: if the condition that raised the finding
 changes, the acknowledgement no longer applies to what is now there, and the finding is raised again unanswered.
+
+The condition may also **disappear** rather than change — the duplication is removed, by a decision that had
+nothing to do with the finding — and that case has no finding to raise. An acknowledgement whose condition no
+longer arises is **spent, and is deleted**. This is the treatment a satisfied change request already gets
+([Decision Model](decision-model.md) §4.1), for the same reason: it says nothing about the present, and a
+reader who finds one has to work out whether it still matters, where the answer is always no. Deletion is
+mechanical and needs none of the confirmation removing a behavior does (§6.3), because nothing re-examinable is
+lost — the instance the acknowledgement was about is gone, so there is nothing left to re-examine.
+
+If the same condition later recurs, its finding is raised unanswered and judged afresh. That follows from
+acknowledgement being scoped to the instance: a duplication removed and later reintroduced is a new occurrence,
+and answering it from a record made about the old one is exactly the blanket suppression instance-scoping
+exists to prevent.
+
+A `Review` needs no equivalent rule, because it is composed into the behavior it reviews and dies with it. An
+acknowledgement has no such parent — findings are not stored ([Serialization](../serialization/parse-contract.md)
+§7) — so it is held against the finding's subject, and outlives its condition unless this rule removes it.
+
+**Matching therefore runs in both directions.** Computing the findings and looking up each one's acknowledgement
+is only half the check, and it is the half that can never see an orphan. The same pass must also walk the
+recorded acknowledgements and confirm each still has a finding to answer — the same shape as the
+`calls`/`calledFrom` reverse check (§3), and needed for the same reason: an index cannot detect what it has no
+entry for.
+
+The two directions have different outcomes. A finding with no acknowledgement may be work. An acknowledgement
+with no finding is spent and is removed without surfacing anything, because there is no judgement left for
+anyone to make about a record whose subject matter has gone.
+
+Retirement requires a **complete** determination, and an unmatched acknowledgement is not on its own evidence of
+one. The finding that would have matched it may simply not have been computable — its subject sitting in a
+document that has not been assessed, so nothing about that document is yet known. `unparsed-document` already
+reports exactly that state, so while one stands the model is known-incomplete and no acknowledgement is retired.
+This needs no condition of its own; it is the existing finding being allowed to mean what it says.
 
 ## 4 Invalidation
 
@@ -220,6 +255,11 @@ absence of findings that block it.
 | `M3 Traced` | every behavior has a fixture set, a trace, a call tree and expected effects; no `missing-fixture`, `mock-inconsistency`, `call-declaration-mismatch`, `calls-index-mismatch`, `undeclared-exception` |
 | `M4 Reconciled` | every behavior's expected effects satisfy its required effects; no `unpredicated-effect`, `satisfaction-failure`, `unexpected-side-effect`, `nfr-conflict`, `unauthorized-change`, `stale-provenance`, `redesign-required`; every advisory finding corrected or acknowledged (§3.1); no outstanding `ChangeRequest` (§5.1); every behavior approved (§6) |
 | `M5 Deployable` | every runtime manifest setting stated or exempted — no `unassessed-manifest-setting`; every perimeter vector declared or exempted — no `unassessed-perimeter-vector`; archetype set; an OpenSLO `SLI` object defined for every delivery dimension the archetype requires, each validating against its pinned `specVersion` and backed by metrics the design emits — no `invalid-sli-definition`, no `unbacked-sli` ([Deployable Model](deployable-model.md) §5) |
+
+One kind is absent from the table because it has no fixed level. A `conflicting-claim` blocks the checkpoint at
+which the **contested attribute** becomes required: contradictory statements of a boundary's purpose block
+`M0`, of an SLI block `M5`. The gate is the general rule this table enumerates — the absence of every finding
+whose `blocks` names that level — so nothing further is needed to make it bite.
 
 A `SpecifiableBoundary` is complete at `M4`; a `DeployableBoundary` at `M5`. A containing boundary is at the
 lowest level any boundary it contains is at — a service is not reconciled while one of its domains is not.
@@ -356,6 +396,13 @@ disconnect at all.
 re-derived and re-examined if the decision was wrong. Removal leaves nothing to re-examine, and the cell it
 frees is indistinguishable from a cell nobody ever reached. That asymmetry justifies a different standard of
 confirmation, not merely more care within the same one.
+
+**Why a spent acknowledgement is deleted rather than left inert.** An orphaned acknowledgement costs nothing
+until the same condition recurs — and then it matches again, and answers a finding nobody has looked at from a
+record made about an instance that no longer exists. That is the blanket suppression instance-scoping exists to
+rule out, arrived at by accident, and it is silent: the finding never surfaces, so nothing prompts anyone to
+notice it was answered on their behalf. Deleting it makes a recurrence cost one judgement, which is what keeps
+the detector honest. No reasoning is lost either way — it is in the history of the document that held it.
 
 **Why a containing boundary's maturity is the minimum of what it contains.** Any other rule would let a
 service claim to be reconciled while one of its domains was not, which is exactly the state the verification

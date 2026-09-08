@@ -9,6 +9,7 @@
 * [Reconciliation Model](reconciliation-model.md) - provenance, invalidation, findings, and the maturity gates
 * [Deployable Model](deployable-model.md) - what a Deployable boundary carries that a Specifiable one does not
 * [Decision Model](decision-model.md) - open design questions and the key decisions that close them
+* [Serialization](../serialization/SERIALIZATION.md) - how this model is written to and read from documents, which §1 deliberately leaves out
 * [Glossary](../../../glossary.md) - one-line definitions of every term this model introduces
 * @docs/design-the-feature-process.md - the process this model is intended to support, and which this work may revise
 
@@ -293,7 +294,7 @@ The base types used throughout:
 | `Text` | a short literal string that is not human prose — a route, a protocol name |
 | `Literal` | a concrete value of whatever type the context defines |
 | `Int`, `Bool` | as usual |
-| `<Type>[]` | an ordered collection |
+| `<Type>[]` | an unordered collection (§5.6) |
 
 **Composite types shared across documents** are defined once, in the document that owns the concern, and used
 freely elsewhere. Where to find each:
@@ -311,6 +312,35 @@ freely elsewhere. Where to find each:
 Anything else named in a type position is an enumeration, defined where it is first used. An attribute whose
 `Required by` column reads `derived` is computed from other attributes and never authored; one reading a
 checkpoint is authored and required to reach it; one reading `—` is optional at every checkpoint.
+
+### 5.6 Collections
+
+**Every collection in this model is unordered, and order is never implied by sequence.** Wherever the order of
+something is significant, that order is itself an attribute: a parameter has a `position`, a call tree node its
+order among its siblings ([Behavior Model](behavior-model.md) §4), a condition dimension its rank, an enum
+value its ordinal. A collection is a set of entries, and reordering it changes nothing.
+
+This is a rule about how the model is written, not a claim about what happens to be in it. A future collection
+whose order matters records that order in its entries, exactly as these do; it does not become an ordered
+collection.
+
+What must therefore be decidable about every collection is **which entries are the same entry**. Every entry
+type has an identity, by these defaults:
+
+| Entry type | Identified by |
+|---|---|
+| one carrying an `address`, and every `<Entity>Ref` | that address |
+| one carrying a `slug` or a `name` | that slug or name |
+| anything else | all of its attributes together |
+
+A type none of these fits declares its own identity where it is defined; whatever the identity does not cover
+is payload. Two entries agreeing on the identity and differing on payload are one entry disagreeing with itself,
+which is a contradiction to be reported rather than two entries to be kept.
+
+Identity matters because the model is **assembled from independently-authored contributions** rather than
+written in one place ([Serialization](../serialization/SERIALIZATION.md) §2): without it, one entry stated
+twice is indistinguishable from two entries. Serializing order is what makes that assembly safe, since a
+collection whose meaning survives reordering cannot be corrupted by the order its contributions were read in.
 
 ## 6 The Model At A Glance
 
@@ -427,6 +457,21 @@ authority, and the number itself carries no information — `IC-004` says nothin
 A derived path is self-describing and needs no allocator. The cost is that a move re-addresses everything
 downstream, which is only tolerable because the design assistant performs the move mechanically; a model
 maintained by hand would have to make the opposite trade.
+
+**Why order is serialized rather than declared per collection.** The obvious alternative lets a collection say
+that its order is significant, and merges such collections whole rather than entry-wise. It works, and it puts
+a silent failure mode permanently within reach: misjudge one collection and the assembled order is decided by
+which document happened to be read first, with every individual entry correct and nothing to detect the
+mistake. Requiring order to be an attribute removes the category instead of managing it — there is no ordered
+collection to misjudge, reordering is never meaningful, and the fold is order-independent unconditionally
+rather than because each case was classified correctly. The model already did this everywhere order mattered;
+this only stops the exception from being available.
+
+**Why identity is declared at all, when order is not.** The two are not symmetric. Order can be pushed into the
+entries, because an entry can carry its own position. Identity cannot: whether two entries are the same entry
+is a fact *about the pair*, not about either one, so no attribute can encode it and some rule has to say what
+it is. Defaults carry almost every case, which is why this costs a table rather than an annotation per
+collection.
 
 **Why external documents are held as a ref plus a checksum, and never parsed.** The design assistant must
 detect that a use case changed, because that invalidates the behaviors realizing it. It must not own use
