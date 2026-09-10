@@ -103,19 +103,27 @@ forgotten. It is the model's own record of what is wrong.
 | `status` | `FindingStatus` | `open` or `resolved`, with the resolution |
 | `acknowledgement` | `Acknowledgement` | for an advisory finding accepted as intended (§3.1) |
 
+**The kinds below are the default check set, not the complete set of things that can be wrong.** A finding
+kind exists because some check produces it, and which checks run against a design is that design's own
+configuration (§5). Adding a check adds a kind and extends what a design records; removing one removes those
+positions from what the design can claim, which is a legitimate configuration rather than a gap. What is
+fixed is the shape of a `Finding` and the rule that a gate is the absence of the findings blocking it.
+
 | Kind | Raised when |
 |---|---|
 | `unparsed-document` | a document within the design's scope whose contents have not been assessed for their contribution to the design ([Data Model](DATA-MODEL.md) §1.1) |
 | `conflicting-claim` | two contributions state differing values for one attribute, or for one entry of one collection ([Serialization](../serialization/parse-contract.md) §3) |
 | `uncovered-cell` | a valid leaf cell has no behavior |
 | `unexplained-exclusion` | a cell is excluded by the architect with no recorded reason |
+| `unsourced-condition-dimension` | an authored condition dimension, or an authored condition value, carries no `Sourcing` ([Condition Model](condition-model.md) §2.3) |
+| `invalid-behavior` | a behavior does not reconcile with the dimensions of its cell's condition space or with its fixtures ([Behavior Model](behavior-model.md) §1.1) |
 | `unresolved-type` | a signature names a type the dictionary does not define |
-| `signature-nonconformance` | an operation's signature and its realizing function's do not conform |
+| `signature-nonconformance` | an operation's signature and its realizing function's are not compatible ([Boundary Model](boundary-model.md) §6.1.1) |
 | `orphan-function` | a function is neither reachable from an operation nor called by anything |
 | `shim-inconsistency` | a dependency boundary's shim is not a one-for-one translation of a depended-on operation |
 | `build-manifest-conflict` | a contained design target's build manifest contradicts rather than tightens what it inherits (Boundary Model §3.3.1) |
 | `invalid-sli-definition` | an SLI definition does not validate against the OpenSLO revision its `specVersion` names ([Deployable Model](deployable-model.md) §5.2.1) |
-| `unbacked-sli` | an SLI's metric queries reference a metric no function in the design emits ([Deployable Model](deployable-model.md) §5.3) |
+| `unbacked-sli` | an SLI's metric queries reference a metric no function in the design emits, or one the SLI's own operation cannot reach ([Deployable Model](deployable-model.md) §5.3) |
 | `unassessed-manifest-setting` | a manifest setting is neither stated, inherited, nor exempted ([Boundary Model](boundary-model.md) §3.3) |
 | `unassessed-perimeter-vector` | a perimeter vector has neither declared endpoints nor a recorded exemption ([Deployable Model](deployable-model.md) §3.1) |
 | `unassessed-nfr-rule` | a rule in the design's scope is neither applied by a cross-cutting boundary nor explicitly exempted ([Boundary Model](boundary-model.md) §7.3) |
@@ -126,15 +134,16 @@ forgotten. It is the model's own record of what is wrong.
 | `calls-index-mismatch` | the materialized `calledFrom` index disagrees with the `calls` declarations it is built from |
 | `undeclared-exception` | an exception is neither caught by the caller nor declared in its `raises` |
 | `missing-fixture` | a condition value that needs one has no fixture at `M3` |
+| `no-suitable-fixtures` | a cell's possible fixture set is empty — nothing exposes the combination of values it selects ([Behavior Model](behavior-model.md) §3.2) |
 | `unpredicated-effect` | an effect has no checkable predicate at `M4` |
 | `satisfaction-failure` | a required effect has no corresponding expected effect |
 | `unexpected-side-effect` | an expected dependency interaction is anticipated by no required effect |
 | `stale-provenance` | a derived element's sources no longer checksum to what is recorded |
 | `redesign-required` | regeneration produced a result that does not match what was reviewed (§6.2) |
 
-`unexpected-side-effect` and `redesign-required` are the two that never resolve mechanically. Every other kind
-either self-clears when the underlying condition is corrected, or is closed by a decision recorded in the
-model.
+`unexpected-side-effect`, `redesign-required` and `invalid-behavior` are the three that never resolve
+mechanically. Every other kind either self-clears when the underlying condition is corrected, or is closed by
+a decision recorded in the model.
 
 ### 3.1 Advisory Findings
 
@@ -208,6 +217,35 @@ document that has not been assessed, so nothing about that document is yet known
 reports exactly that state, so while one stands the model is known-incomplete and no acknowledgement is retired.
 This needs no condition of its own; it is the existing finding being allowed to mean what it says.
 
+### 3.2 `invalid-behavior`
+
+A behavior must reconcile with the dimensions of its cell's condition space and with its fixtures
+([Behavior Model](behavior-model.md) §1.1). This finding is the one check in the model that compares an
+**authored** artefact against the **structure** it depends on, which is the gap provenance cannot reach by
+construction: a required effect carries `Sourcing`, not `Provenance`, so no checksum ties it to the cell it
+was judged at, and nothing goes stale when that cell's condition moves beneath it.
+
+What it catches, concretely:
+
+* a required effect judged against a condition the cell **no longer expresses** — a value's predicate
+  narrowed, a dimension inserted above it;
+* a behavior whose **fixtures no longer expose** the values its cell selects — the neighbouring case to
+  `no-suitable-fixtures` (§3), which is where nothing could;
+* a behavior at a cell that has **ceased to exist**, pruned by a validity rule added later. This is the one
+  variant where re-expression is not available and removal is the only resolution.
+
+**It is a different condition from `redesign-required`, and both can hold at once.** That one says
+regeneration no longer matches what was approved: the design moved. This one says the behavior is not
+supported by its own condition space: the requirement's context moved. They resolve differently (§6.3), which
+is why collapsing them would lose the distinction.
+
+**It blocks `M1`** — the checkpoint at which a behavior's own content becomes required, where every valid leaf
+must have a behavior with at least one required effect (§5).
+
+**It does not also raise `uncovered-cell`.** The cell is effectively uncovered, so the two overlap — but
+reporting both for one situation is noise, and `invalid-behavior` is the more informative: it says there is
+something here to re-express, where `uncovered-cell` says only that there is nothing.
+
 ## 4 Invalidation
 
 ### 4.1 The Rule
@@ -247,19 +285,39 @@ punish exactly the mechanical hygiene it depends on.
 A boundary is at a level when every gate up to and including it passes. A gate is a conjunction of the
 absence of findings that block it.
 
+**A gate is therefore the conjunction of the checks registered at that level**, and the levels below it. The
+kinds named in the table are the **default** check set rather than the possible one: a design is assessed
+against the checks its own configuration names, so what a gate demands follows from that configuration and
+not from this document. Two designs both at `M4` under different configurations are not making the same
+assertion, which is exactly why the configuration has to be stated for the claim to be falsifiable at all
+([Data Model](DATA-MODEL.md) §3).
+
+**Not every check sits on a level.** A **global** check finds real work and touches no maturity: it reports
+something that says nothing about whether the design is complete or accurate. A check registered *at* a level
+resets a design to that level when it finds something. Whether a check is global or levelled is part of its
+registration, not a property this document can enumerate — the diagram-freshness and document-granularity
+checks the layout standard defines are global for exactly this reason, and neither is in the table below.
+
 | Level | Gate |
 |---|---|
 | `M0 Identified` | every document in scope has been assessed — no `unparsed-document`; boundary has slug, name, purpose, kind (if contained), and at least one operation |
-| `M1 Behavioral` | every operation has a condition space with ranked dimensions and a pruned cell tree; every valid leaf has a behavior with at least one required effect; every rule in scope is applied or exempted; no `uncovered-cell`, `unexplained-exclusion`, `unassessed-nfr-rule` |
+| `M1 Behavioral` | every operation has a condition space with ranked dimensions and a pruned cell tree; every authored dimension and value carries `Sourcing`; every valid leaf has a behavior with at least one required effect, and that behavior reconciles with its cell; every rule in scope is applied or exempted; no `uncovered-cell`, `unexplained-exclusion`, `invalid-behavior`, `unassessed-nfr-rule` |
 | `M2 Structured` | every build manifest setting is stated, inherited or exempted — no `unassessed-manifest-setting` ([Boundary Model](boundary-model.md) §3.3); every function has a boundary, visibility, interface (if perimeter) and a conforming signature; every crossing type is in the dictionary; every cross-cutting boundary's selector resolves to real functions; no `unresolved-type`, `signature-nonconformance`, `orphan-function`, `shim-inconsistency`, `build-manifest-conflict` |
-| `M3 Traced` | every behavior has a fixture set, a trace, a call tree and expected effects; no `missing-fixture`, `mock-inconsistency`, `call-declaration-mismatch`, `calls-index-mismatch`, `undeclared-exception` |
+| `M3 Traced` | every behavior has a fixture set chosen from a non-empty possible set, a trace, a call tree and expected effects; no `missing-fixture`, `no-suitable-fixtures`, `mock-inconsistency`, `call-declaration-mismatch`, `calls-index-mismatch`, `undeclared-exception` |
 | `M4 Reconciled` | every behavior's expected effects satisfy its required effects; no `unpredicated-effect`, `satisfaction-failure`, `unexpected-side-effect`, `nfr-conflict`, `unauthorized-change`, `stale-provenance`, `redesign-required`; every advisory finding corrected or acknowledged (§3.1); no outstanding `ChangeRequest` (§5.1); every behavior approved (§6) |
-| `M5 Deployable` | every runtime manifest setting stated or exempted — no `unassessed-manifest-setting`; every perimeter vector declared or exempted — no `unassessed-perimeter-vector`; archetype set; an OpenSLO `SLI` object defined for every delivery dimension the archetype requires, each validating against its pinned `specVersion` and backed by metrics the design emits — no `invalid-sli-definition`, no `unbacked-sli` ([Deployable Model](deployable-model.md) §5) |
+| `M5 Deployable` | every runtime manifest setting stated or exempted — no `unassessed-manifest-setting`; every perimeter vector declared or exempted — no `unassessed-perimeter-vector`; archetype set; every operation's `critical` stated with its sourcing; for **every operation flagged `critical`**, an OpenSLO `SLI` object defined for every delivery dimension the archetype requires, each naming its operation, validating against its pinned `specVersion` and backed by metrics that operation reaches — no `invalid-sli-definition`, no `unbacked-sli` ([Deployable Model](deployable-model.md) §5) |
 
-One kind is absent from the table because it has no fixed level. A `conflicting-claim` blocks the checkpoint at
-which the **contested attribute** becomes required: contradictory statements of a boundary's purpose block
-`M0`, of an SLI block `M5`. The gate is the general rule this table enumerates — the absence of every finding
-whose `blocks` names that level — so nothing further is needed to make it bite.
+Two kinds are absent from the table because they have no fixed level, and both fall out of the general rule
+the table enumerates — the absence of every finding whose `blocks` names that level — so neither needs a row.
+
+A `conflicting-claim` blocks the checkpoint at which the **contested attribute** becomes required:
+contradictory statements of a boundary's purpose block `M0`, of an SLI block `M5`.
+
+An `unsourced-condition-dimension` blocks the checkpoint at which **that dimension or value** becomes
+required ([Condition Model](condition-model.md) §2.3): a `payload` or `parameter` dimension and its values at
+`M1`; a `dependency-state` dimension's own values at `M3`, since the dimension cannot exist before the call
+tree does; a `cross-cutting` dimension's values whenever its rule's selector resolves, `M2`–`M3`. That is
+what keeps accretion intact — a dimension arriving at `M3` is not retrospectively unsourced at `M1`.
 
 A `SpecifiableBoundary` is complete at `M4`; a `DeployableBoundary` at `M5`. A containing boundary is at the
 lowest level any boundary it contains is at — a service is not reconciled while one of its domains is not.
@@ -294,6 +352,14 @@ Every behavior carries a review state:
 `approved` is the only state a human can put a behavior into, and the design assistant can never grant it to
 itself. Everything else about review is mechanical.
 
+**An approved behavior that becomes invalid does not silently keep its approval.** An open `invalid-behavior`
+(§3.2) returns the behavior to `pending`. What the human agreed to was a behavior at a cell that supported
+it, and the cell no longer does — so nothing currently recorded has been confirmed, which is the same
+reasoning that stops every resolution of `redesign-required` returning straight to `approved` (§6.3).
+
+That is deliberately **not** a fourth review state. The finding already carries the detail and the resolution
+paths; the review state has only to record that nothing stands confirmed, which `pending` already says.
+
 ```mermaid
 stateDiagram-v2
     direction LR
@@ -302,6 +368,7 @@ stateDiagram-v2
     pending --> approved : human confirms
     approved --> regenerating : provenance went stale (§4)
     pending --> regenerating : provenance went stale (§4)
+    approved --> pending : invalid-behavior raised (§3.2)
 
     regenerating --> approved : matches, was approved
     regenerating --> pending : matches, never approved
@@ -347,7 +414,23 @@ Removal is irreversible in a way the other two are not: accept and reject both l
 on record, removal leaves nothing. It requires an unambiguous confirmation naming exactly what is being
 removed, not a general nod at a batch.
 
-### 6.4 Scope
+### 6.4 Resolving `invalid-behavior`
+
+Two resolutions, both human, and which one is right is a judgement rather than a derivation:
+
+* **Re-express** — the requirement still holds, stated against the condition the cell now expresses. The
+  behavior returns to `pending`.
+* **Remove** — the cell no longer supports a behavior at all, or has ceased to exist. The behavior is
+  deleted, and its cell either prunes with a reason or raises `uncovered-cell`.
+
+Removal inherits the **higher bar** §6.3 already sets: an unambiguous confirmation naming exactly what is
+being removed, never a general nod at a batch. The reason is the same one, and it bites harder here — the cell
+a removal frees is indistinguishable from a cell nobody ever reached, and here the cell may itself be gone.
+
+Re-expression never returns straight to `approved`, for the reason §6.3 gives: what is now recorded has not
+itself been confirmed.
+
+### 6.5 Scope
 
 Review is **project-wide and a fixed point**, not a pass over the boundary currently being worked on. A
 function change reaches behaviors in any boundary whose call tree names it (§4.2), including boundaries whose
@@ -403,6 +486,29 @@ record made about an instance that no longer exists. That is the blanket suppres
 rule out, arrived at by accident, and it is silent: the finding never surfaces, so nothing prompts anyone to
 notice it was answered on their behalf. Deleting it makes a recurrence cost one judgement, which is what keeps
 the detector honest. No reasoning is lost either way — it is in the history of the document that held it.
+
+**Why `invalid-behavior` exists when invalidation already covers staleness.** The invalidation rule is
+complete over *derived* elements: change something, and everything whose provenance names it goes stale. A
+required effect is authored, so it has no provenance and cannot go stale — deliberately, because sourcing asks
+who is responsible for a fact nobody derived, which is a different question from whether a derivation is
+current. That leaves a real hole. Narrow a value's predicate, or insert a dimension above it, and the
+requirement standing at that cell was judged against a condition that no longer obtains while every checksum
+in sight still matches. This is the only check in the model that compares an authored artefact against the
+structure it sits in, which is exactly why it could not be folded into `stale-provenance`.
+
+**Why approval does not survive invalidity.** Approval records that a person took responsibility for what the
+code will be made to do at a particular entry condition. When that condition moves beneath it, the
+responsibility was taken for something no longer being claimed — so keeping the approval would let a design
+reach `M4` on a confirmation nobody actually gave. Returning to `pending` is the treatment
+`redesign-required` already gets, for the same reason, and reusing it avoids a fourth review state that would
+carry no information the finding does not.
+
+**Why the gates are the checks registered at a level rather than a fixed conjunction.** Enumerating them as
+fixed conjunctions of named kinds reads as though this document owned the complete set of things that can be
+wrong, and that inverts the architecture: a check defines the positions it requires, so the schema is the
+union of what the configured checks need. The reading matters practically, not just presentationally — a
+reader who believes the model is the closed authority will come to the model to extend the schema when they
+want a further NFR assessed, which is the expensive path and the one the inversion exists to avoid.
 
 **Why a containing boundary's maturity is the minimum of what it contains.** Any other rule would let a
 service claim to be reconciled while one of its domains was not, which is exactly the state the verification

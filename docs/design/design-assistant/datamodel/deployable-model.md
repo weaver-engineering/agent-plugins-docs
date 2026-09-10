@@ -57,7 +57,9 @@ classDiagram
         +Text address
         +Direction direction
     }
-    class Operation
+    class Operation {
+        +Bool critical
+    }
     class Metric {
         +Slug slug
         +MetricKind kind
@@ -66,6 +68,7 @@ classDiagram
     }
     class SLI {
         +Slug slug
+        +OperationRef operation
         +SLIDimension dimension
         +OpenSLODocument definition
         +MetricRef[] combines
@@ -79,6 +82,7 @@ classDiagram
     InterfacePerimeter *-- "5" PerimeterVector
     PerimeterVector *-- "0..*" Endpoint
     Endpoint --> "0..1" Operation : exposes
+    SLI --> "1" Operation : measures
     SLI --> "1..*" Metric : combines
 ```
 
@@ -201,15 +205,30 @@ The archetype is not descriptive. It determines which dimensions of service deli
 | `batch` | coverage, correctness, freshness, throughput |
 | `storage` | durability, throughput, latency |
 
-`M5` requires an SLI for every dimension the archetype demands. This is what makes observability a mechanical
-completeness check rather than an intention.
+**Two things decide what is required, and they answer different questions.** The archetype decides **which
+delivery dimensions** need an SLI. Criticality decides **which operations** need one at all
+([Boundary Model](boundary-model.md) §6.2).
+
+So `M5` requires an SLI for every dimension the archetype demands, **for every operation flagged
+`critical`** — a product over operations and dimensions, not a single per-boundary check. This is what makes
+observability a mechanical completeness check rather than an intention.
+
+**Service levels are per operation because that is what a consumer depends on.** Every service has
+operations, those are the points a consumer interacts with, and they are what requires a service contract. A
+request/response service does not have one latency SLI; it has a latency SLI per operation a consumer depends
+on. For `batch` and `storage` the product usually collapses to close to a per-boundary check anyway, since
+those typically have a single entry point — but that is a property of those archetypes rather than a different
+rule.
+
+Requiring a full set of SLIs on *every* operation would over-reach, which is what `critical` is for: an
+operation no journey depends on needs correct behavior, not a service level.
 
 ### 5.2 SLIs
 
 A `Metric` is defined by the **function** that emits it, and is specified in
 [Function And Call Graph](function-and-call-graph.md) §6 rather than here — measurement is something code
 does. An `SLI` is declared on a `DeployableBoundary` and turns metrics into a measurement of one delivery
-dimension.
+dimension **of one operation**.
 
 **An SLI is defined as an OpenSLO `SLI` object.** The model does not invent a notation for service level
 indicators; it requires the open standard.
@@ -217,10 +236,17 @@ indicators; it requires the open standard.
 | Attribute | Type | Required by | Meaning |
 |---|---|---|---|
 | `slug` | `Slug` | `M5` | stable identifier |
+| `operation` | `OperationRef` | `M5` | the operation whose delivery this measures (§5.1) |
 | `dimension` | `SLIDimension` | `M5` | which of the archetype's required delivery dimensions this serves (§5.1) |
 | `definition` | `OpenSLODocument` | `M5` | an OpenSLO object with `kind: SLI` |
 | `specVersion` | `Text` | `M5` | the OpenSLO specification version the definition is validated against, e.g. `openslo/v1` |
 | `combines` | `MetricRef[]` | derived | the design's own metrics its queries draw on (§5.3) |
+
+**The operation is held as a reference, and the SLI stays at `DeployableBoundary`.** Nesting an SLI's address
+beneath its operation would read naturally and would put it structurally inside an entity that exists at
+`SpecifiableBoundary` — where an SLI has no referent at all, because a Library delivers nothing on its own
+(§1). Keeping the SLI on the deployed boundary and naming its operation says both facts without weakening
+either: which operation this measures, and that only a deployed process can measure it.
 
 #### 5.2.1 Conformance Is Checked, Not Asserted
 
@@ -244,10 +270,15 @@ concept this model does not otherwise have.
 
 ### 5.3 What The Model Adds To The Standard
 
-Two things, both linkage the standard has no reason to carry:
+Three things, all of them linkage the standard has no reason to carry:
 
-* **`dimension`** ties the SLI to the delivery dimension its archetype requires (§5.1). That is what turns
-  "an SLI exists" into "every dimension this archetype demands has one".
+* **`operation`** ties the SLI to the operation whose delivery it measures (§5.1). Without it, "which
+  operation is this SLI about" would be unrepresentable, and the only place the fact could live is which
+  document somebody happened to put it in — and documents are not entities
+  ([Serialization](../serialization/SERIALIZATION.md) §2), so it would evaporate on parse.
+* **`dimension`** ties the SLI to the delivery dimension its archetype requires (§5.1). Together with
+  `operation`, that is what turns "an SLI exists" into "every dimension this archetype demands has one, on
+  every operation a consumer depends on".
 * **`combines`** is derived by reading the metric queries in the `definition` and resolving them against the
   metrics the design's own functions emit ([Function And Call Graph](function-and-call-graph.md) §6). An SLI
   whose queries reference a metric no function emits is an `unbacked-sli` finding
@@ -267,6 +298,11 @@ the process.
 A `DeployableBoundary`'s SLIs therefore combine metrics emitted by functions anywhere inside it, including in
 contained boundaries and contained design targets it did not author. That is the intended direction — the
 service is what is measured, whoever emitted the numbers.
+
+Being scoped to an operation narrows which of those metrics an SLI has any business drawing on: the ones
+emitted by the functions **that operation reaches**, which is what its behaviors' call trees record
+([Behavior Model](behavior-model.md) §4). `combines` resolving to a metric the operation cannot reach is the
+same defect as resolving to one nothing emits, and `unbacked-sli` covers both.
 
 Emitted metrics are **required effects on behaviors** ([Behavior Model](behavior-model.md) §2). A metric that
 the design says is emitted but which no behavior's effects account for is not observable in any sense the
@@ -350,6 +386,23 @@ documents are held as references rather than parsed ([Data Model](DATA-MODEL.md)
 performed belongs to the tooling, and pinning it here would bind the model to one implementation. The model's
 whole contribution is the obligation and the linkage: that validation happens, against a named revision, and
 that the metrics an SLI queries are ones this design emits.
+
+**Why an SLI belongs to an operation rather than to the boundary as a flat set.** An earlier form declared
+SLIs on the `DeployableBoundary` with no reference to an operation, and gated `M5` on one SLI per delivery
+dimension. That does not match how service levels work: a consumer depends on an operation, so a
+request/response service has a latency SLI per operation a consumer depends on rather than one for the
+service. Worse, "which operation is this about" was unrepresentable, so the fact could only live in which
+document somebody filed it under — and since documents are not entities, it would have evaporated on parse.
+Naming the operation makes the completeness check a product over operations and dimensions, which is what the
+gate was always meant to assert.
+
+**Why criticality scopes it rather than every operation carrying a full SLI set.** Requiring availability,
+latency and quality on every operation of a service over-reaches: plenty of operations exist that no
+consumer's journey depends on, and manufacturing three SLIs for each would make the gate expensive and
+meaningless at once. Technically the operations that need service levels are those on a critical user
+journey, which is Analysis's determination — so the flag sits on the operation with sourcing either way
+([Boundary Model](boundary-model.md) §6.2), keeping the gate mechanical without making design wait for
+analysis.
 
 **Why the archetype determines required SLI dimensions rather than being a label.** "Observability is
 important" is not checkable. Google's service archetypes exist precisely because each one has a known set of

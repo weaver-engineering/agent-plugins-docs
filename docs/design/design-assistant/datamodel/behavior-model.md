@@ -16,7 +16,8 @@ cell's: `bnd/order-service/op/create-order/cell/1.2.3`.
 | `cell` | `ConditionCellRef` | `M1` | the leaf condition cell this behavior occupies |
 | `realizes` | `ExternalRef[]` | — | the use case steps this behavior satisfies, where any exist |
 | `requiredEffects` | `RequiredEffect[]` | `M1` | what must happen (§2) |
-| `fixtures` | `Fixture[]` | derived | the fixture set for this cell, from its ancestors' values (§3) |
+| `possibleFixtures` | `Fixture[]` | derived | the fixtures that expose every value this cell selects (§3.2) |
+| `fixtures` | `Fixture[]` | `M3` | the set chosen from those, and traced against (§3.2) |
 | `trace` | `Trace` | `M3` | the derivation: call tree and expected effects (§4) |
 | `expectedEffects` | `ExpectedEffect[]` | `M3` | what the design actually produces (§2) |
 | `review` | `Review` | `M4` | the match record, provenance and review state ([Reconciliation Model](reconciliation-model.md)) |
@@ -27,6 +28,26 @@ its cell does not, which is what keeps coverage and description from drifting ap
 
 Behaviors exist only at leaves. A non-leaf cell's outcome is not determined by its own partial condition —
 that is what having children means.
+
+### 1.1 Validity Is A Property Of Fit, Not Only Of Contents
+
+A behavior is **valid** when it reconciles with the dimensions of its cell's condition space and with its
+fixtures. One that does not is **invalid** — whether or not its own parts agree with each other, and
+**irrespective of whether a human approved it**. Approval is not a substitute for validity: a person can
+approve a behavior that the space it sits in no longer supports.
+
+This needs saying because the ordinary invalidation rule cannot reach it by construction. A behavior's
+`Trace`, `CallTree` and `ExpectedEffect`s are derived and name the cell's dimension values among their
+sources, so a change there makes them stale and regeneration follows
+([Reconciliation Model](reconciliation-model.md) §4.1). A `RequiredEffect` is **authored**: it carries
+`Sourcing`, not `Provenance` (§2.1), because sourcing asks who is responsible for a fact nobody derived. So
+there is no checksum tying a required effect to the cell it sits at, and nothing goes stale when that cell's
+condition moves beneath it. Narrow a value's predicate, or insert a dimension above it, and the requirement
+was judged against a condition that no longer obtains — while every provenance in sight is still fresh.
+
+`invalid-behavior` ([Reconciliation Model](reconciliation-model.md) §3.2) is the check that fills that hole: a
+consistency check between an **authored** artefact and the **structure** it depends on, rather than a
+freshness check over a derivation.
 
 ## 2 Effects
 
@@ -68,6 +89,7 @@ classDiagram
     }
     class ConditionCell
     class ConditionValue
+    class SpecifiableBoundary
     class ExternalRef
     class NfrRule
 
@@ -84,7 +106,8 @@ classDiagram
     CallTreeNode *-- "0..*" CallTreeNode : children
     RequiredEffect --> "0..1" ExternalRef : from
     RequiredEffect --> "0..1" NfrRule : from
-    ConditionValue *-- "0..*" Fixture
+    SpecifiableBoundary *-- "0..*" Fixture
+    ConditionValue --> "0..*" Fixture : exposedBy
     Behavior --> "0..*" Fixture
 ```
 
@@ -167,15 +190,28 @@ test against.
 | Attribute | Type | Required by | Meaning |
 |---|---|---|---|
 | `slug` | `Slug` | `M3` | stable identifier |
-| `forValue` | `ConditionValueRef` | `M3` | the `ConditionValue` this fixture realizes |
 | `kind` | `FixtureKind` | `M3` | `seed` (state a dependency is preloaded with), `stub` (a canned response), or `mock` (a stub plus an expectation) |
 | `standsFor` | `OperationRef` | `M3` for `stub`/`mock` | the operation of the design target or depended-on boundary whose result this fixture declares |
 | `content` | `Literal` | `M3` | the concrete data or response |
 
-A fixture attaches to a **condition value**, not to a cell. A cell's fixture set is then the union of the
-fixtures on every value selected from the root down to it. A dependency-state value like
-`product: no-longer-available` needs one fixture, defined once, and every cell selecting it gets it — rather
-than the same canned response being restated in every leaf of a subtree.
+A fixture belongs to the design target, and it attaches to **condition values**, not to a cell. A
+dependency-state value like `product: no-longer-available` needs one fixture, defined once, and every cell
+selecting that value can use it — rather than the same canned response being restated in every leaf of a
+subtree.
+
+**The relationship is many-to-many, and `ConditionValue.fixtures` is the authored direction**
+([Condition Model](condition-model.md) §2.1). One concrete artefact exhibits several characteristics at once:
+a single sample order payload simultaneously realizes `order-value >= 1000`, `customer: exists` and
+`payment-method: card` — three values across three dimensions. And one value is exposed by several fixtures.
+So each condition value claims the set of fixtures that expose it, the sets overlap, and a fixture named by
+two values is stated once as content and named twice.
+
+The fixture therefore carries no pointer back. This is the shape `Function.interface` versus
+`Interface.members` already uses ([Function And Call Graph](function-and-call-graph.md) §3.1), and
+`calls`/`calledFrom` after it: author the direction that can be required and enforced, and derive or omit the
+weaker one, rather than holding both and adding a check for their disagreement. A fixture pointing at one
+value could not express reuse at all — the same payload would have to be restated once per value it happens
+to exhibit, with nothing keeping the copies identical.
 
 Fixtures are required from `M3` and not before. Their dominant kind stands in for `dependency-state`
 dimensions, which do not exist until a call tree does ([Condition Model](condition-model.md) §2.2) — and
@@ -205,6 +241,30 @@ insulate anything from it.
 
 Where the fixture stands for an unmodelled `dependsOn` boundary there is nothing to reconcile against, and the
 fixture is simply authored. The check applies where the other side exists in the model, and not otherwise.
+
+### 3.2 The Possible Set And The Chosen Set
+
+A cell has two fixture sets, and they are different things.
+
+* The **possible** set is derived: the fixtures that expose **every** value the cell selects, taken per
+  fixture role. One payload fixture has to exhibit all of that cell's payload values at once — not one of
+  them each.
+* The **chosen** set is a selection from the possible set, and it is what the trace actually runs against
+  (§4): one fixture for the payload, one for the output, and one per dependency the cell's condition puts in
+  a state.
+
+The possible set de-duplicates by **fixture identity**, not by value ([Data Model](DATA-MODEL.md) §5.6): two
+values one cell selects may name the same fixture, and it appears once.
+
+**A cell whose possible set is empty has no concrete state it could be traced against**, which is a
+`no-suitable-fixtures` finding ([Reconciliation Model](reconciliation-model.md) §3), blocking `M3`.
+
+That is a different condition from `missing-fixture`, and both are needed. `missing-fixture` is the
+value-level check: a value that needs a fixture has none. `no-suitable-fixtures` is the combination-level one,
+and it can fire while every value is individually covered — `order-value >= 1000` and
+`payment-method: crypto` may each have fixtures of their own while no single payload exhibits both. A
+combination nothing realizes is a combination the design cannot be checked against, whatever the values
+beneath it have.
 
 ## 4 Trace
 
@@ -309,6 +369,30 @@ cell of the subtree beneath it — often dozens. Attaching the fixture to the ce
 canned response once per leaf, with no mechanism keeping the copies identical, and would make changing that
 state a bulk edit. Attaching it to the value means it is defined exactly once, in the same place the value it
 realizes is defined, and a cell's fixture set is derived by walking its own ancestry.
+
+**Why the value claims its fixtures rather than the fixture naming its value.** An earlier form held both
+directions and disagreed with itself: the condition model gave a value many fixtures while this document gave
+a fixture one value, so the relationship was many-to-one read one way and one-to-one read the other. What
+settles it is that the many-to-many reading is what actually happens — one payload exhibits a value of
+`order-value`, of `customer-state` and of `payment-method` simultaneously, and fixtures are reused across
+behaviors *precisely because* they carry the same characteristics. A single `forValue` cannot express that
+reuse: the same artefact has to be restated once per value it exhibits. Authoring the direction that can be
+required, and leaving the fixture with no pointer back, removes the disagreement rather than adding a check
+for it — and a value naming its fixtures is also what tells a test harness which fixture exercises a given
+axis.
+
+**Why the possible and chosen fixture sets are distinguished.** Collapsing them loses the finding that
+matters. If a cell's set is just the union of what its values expose, then a cell is untraceable only when
+some value has no fixture at all — which `missing-fixture` already reports. The interesting failure is a
+combination nothing realizes while every value in it is individually covered, and that is only visible if the
+possible set is the fixtures exposing the whole combination and the chosen set is what was picked from it.
+
+**Why validity is stated as a property of a behavior's fit with its cell.** Every other check in this model is
+either a comparison between required and expected effects or a freshness check over a derivation, and neither
+can see this one: the required effect is authored, so it carries sourcing rather than provenance, and no
+checksum ties it to the cell it was judged against. Without stating validity separately, narrowing a value's
+predicate would leave a requirement standing against a condition that no longer obtains, with every
+provenance fresh and nothing to report.
 
 **Why the call tree is the concrete walk rather than a reference into the call graph.** Invalidation needs to
 know which behaviors actually reached a changed function under their own entry condition. The abstract graph
