@@ -217,6 +217,24 @@ classification attribute on `DataType` is one way to express it — the rule pre
 but only one, and the sharper question is what a selector should be able to range over: a type, a field, a
 field's classification, or a path through a structure.
 
+**Closing it reaches three places, not one.** The selector is the obvious one; the other two are consequences
+of it, and the last is easy to miss:
+
+* the **rule**, which gains the applicability selector above;
+* the **condition space**, because such a rule discriminates on payload directly. Presenting a rule's
+  behaviors relies on ignoring payload variation that does not cause *different functions on that rule's
+  boundary* to be reached — two payload values reaching the same boundary functions are indistinguishable for
+  that rule, so they present as one. A rule about card numbers breaks that: the values it distinguishes reach
+  the same functions, so the collapse stops being sound;
+* **fixture selection**, because a fixture set chosen to reach every function a rule governs need not
+  exercise both sides of a data predicate, and nothing currently requires it to. "Card numbers must never
+  reach the log stream" is only exercised by a condition carrying a card number **and** a condition carrying
+  none. Covering a boundary's functions and satisfying a data predicate are different objectives, and one
+  selection would have to serve both.
+
+The third looks like a presentation concern and is actually a **coverage** one: a rule nothing exercises on
+both sides is a rule the design has not really been checked against, however complete its cells look.
+
 The model is deliberately not extended for it now. No design built with this model yet needs finer-grained
 applicability, so a mechanism invented here would have nothing to exercise it, and its shape is far easier to
 get right against a real case than an imagined one. Uniform applicability stands until one presents itself;

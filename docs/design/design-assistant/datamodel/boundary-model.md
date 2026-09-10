@@ -376,6 +376,7 @@ boundary's perimeter functions are simply functions with `perimeter` visibility
 | `signature` | `Signature` | `M1` | the contract: parameters, return, declared exceptions |
 | `conditionSpace` | `ConditionSpace` | `M1` | the entry conditions this operation must be defined over ([Condition Model](condition-model.md)) |
 | `realizedBy` | `FunctionRef` | `M2` | the `Function` that implements it |
+| `critical` | `Bool` | `M5` | whether a consumer depends on this operation achieving a service contract, and it therefore needs SLIs (§6.2) |
 | `exposedBy` | `EndpointRef[]` | `M5` | the `Endpoint`s exposing it, on a Deployable target ([Deployable Model](deployable-model.md)) |
 
 An **Operation is not an Endpoint**. An operation is the abstract invocable point; an endpoint is a
@@ -386,7 +387,64 @@ over REST and gRPC — and a Library's operations are exposed by no endpoints at
 
 At `M2`, `realizedBy` names a function contained by this target, transitively, and not inside a contained
 design target. Where the target contains an `interface`-kind boundary, the realizing function must be on it.
-The operation's signature and the realizing function's signature must conform; a mismatch is a finding.
+
+**One function may realize several operations.** `realizedBy` is not exclusive. A single perimeter function
+can serve several operations, each exposing a different part of that function's parameter space — one
+exposing a capture mode the others fix, one exposing a caller identity the others take from context. The
+operation's signature is what a consumer is offered; the function's is what the code takes, and the two are
+not the same question.
+
+#### 6.1.1 Conformance Is Compatibility
+
+The operation's signature and the realizing function's signature must **conform**. Conformance is
+**compatibility, not identity**, and it is three rules:
+
+* **Parameters.** Every parameter of the operation corresponds to a parameter of the function, of the same
+  type. The function may declare **more**.
+* **Return.** The function returns the operation's return type.
+* **Exceptions.** The two declare the **same set**. An exception the function lets escape reaches the
+  operation's consumer, so the operation must declare it; and an operation declaring one the function cannot
+  produce promises a failure mode the design does not have.
+
+**The surplus parameters are the point.** They are the translation layer's own — a correlation id, a context,
+a capture mode this operation fixes and another exposes. A function obliged to match its operation exactly
+could realize exactly one operation, and an `interface`-kind boundary whose whole job is translation and
+validation would have nothing left to translate: a translating function whose signature is identical to its
+operation's is not translating anything.
+
+The exception rule is identity rather than compatibility because the realizing function *is* the perimeter.
+Whatever it declares in `raises` ([Function And Call Graph](function-and-call-graph.md) §2.1) escapes to the
+consumer, so there is no room for a surplus to be absorbed; a function that must not surface a domain failure
+catches it and declares its own translation instead.
+
+The return rule is identity for a narrower reason: **the dictionary has no subtype relation**
+([Data Dictionary](data-dictionary.md) §2), so "the operation's type, or narrower" is not a question this
+model can decide. If a subtype relation is ever added, this is the rule that relaxes — recorded here so the
+extension starts from a stated limitation rather than a rediscovered one.
+
+Anything failing the three rules is a `signature-nonconformance` finding
+([Reconciliation Model](reconciliation-model.md) §3), blocking `M2`.
+
+### 6.2 Criticality
+
+`critical` says whether a consumer depends on this operation achieving a service contract. It is what decides
+which operations need SLIs at all ([Deployable Model](deployable-model.md) §5.1) — an operation nobody's
+journey depends on needs a correct behavior, not a service level.
+
+It is an **authored** fact and carries `Sourcing` ([Decision Model](decision-model.md) §5), either way round:
+
+* a **critical user journey** naming the operation, held as an `ExternalRef` with a checksum like any other
+  document source — a critical user journey is a kind of use case, and an operation on one has to achieve a
+  contract for the journey to hold;
+* the **architect's own assertion**, recorded as an elicited fact like any other.
+
+Which operations are on a critical journey is Analysis's determination, and **Analysis does not block design**
+([Behavior Model](behavior-model.md) §2.1). So the flag sits on the operation and is answerable either way,
+which keeps the `M5` gate mechanical without design waiting on analysis to have happened — and makes the
+judgement falsifiable later rather than leaving it unrecorded.
+
+Required by `M5`, which self-scopes it: `M5` applies only to a `DeployableBoundary`, and a Library has no
+service level to state, so a Library's operations never need the flag.
 
 ## 7 Cross-Cutting Boundaries
 
@@ -538,6 +596,34 @@ neighbour altering it would be making a decision it has no standing to make and 
 review would never see. Raising a change request and blocking makes the dependency visible and schedulable.
 It also gives the model an honest terminal state — blocked, incomplete, not failing — instead of forcing a
 design either to overreach or to pretend it is finished.
+
+**Why signature conformance is compatibility rather than identity.** Identity is the tempting reading, and it
+makes the second signature redundant — if the realizing function's signature simply *is* the operation's, then
+one of the two facts should be derived from the other. What rules it out is that a single function on a
+boundary can serve several operations, each exposing a different parameter space and none of them exposing the
+rest. Under identity that function would have to be duplicated once per operation, with the copies kept in
+step by hand, which is the shape the model rejects everywhere else. Compatibility also matches what an
+`interface`-kind boundary is for: its functions exist to translate and validate, and a function whose
+signature is identical to its operation's is not translating anything.
+
+**Why conformance is defined here rather than left to the finding that reports it.**
+`signature-nonconformance` was stated before the agreement test was, which made it a finding no checker could
+implement — there was no way to tell a legitimate translation from a mismatch. A finding naming a condition
+the model never defines is worse than no finding, because it reads as covered.
+
+**Why the two signatures are two facts rather than one.** They are different entities at different addresses,
+so nothing competes and no `duplicate-claim` arises ([Serialization](../serialization/parse-contract.md) §3).
+More decisively, the operation's signature cannot be derived from the function's: it is required a whole
+checkpoint earlier, at `M1`, because the operation's contract is settled as part of stating what is
+*required*, while the function is part of deciding how that is *satisfied*. An attribute authored at `M1` and
+becoming derived at `M2` would be worse than two facts that must agree.
+
+**Why criticality sits on the operation rather than being read from analysis when needed.** Which operations
+are on a critical user journey is Analysis's determination, and a design that had to consult analysis to
+decide whether its `M5` gate was met would be blocked on analysis having happened. Recording the flag locally,
+with sourcing that says whether a journey named it or the architect asserted it, keeps the gate mechanical and
+keeps the judgement falsifiable — an unrecorded assumption about criticality is one nobody can later find and
+disagree with.
 
 **Why cross-cutting rules are separated from the associations that apply them.** The same rule genuinely
 applies in several places: a service's auth rule and a promoted domain's auth rule are the same requirement

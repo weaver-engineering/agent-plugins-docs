@@ -46,9 +46,11 @@ The model's state is therefore not read *from* a document. It is the **fold of e
 Serialization operates over a **design directory**: a directory, and its subdirectories, excluding any
 subdirectory that is itself a design directory.
 
-A design directory is marked by a **`DESIGN.yaml`** at its root, which declares the namespace
-([Data Model](../datamodel/DATA-MODEL.md) §5.1.1) the design's addresses are rooted in. It may carry further
-attributes its product requires; those are outside this contract.
+A design directory is marked by a **`DESIGN.yaml`** at its root, which declares two things: the namespace
+([Data Model](../datamodel/DATA-MODEL.md) §5.1.1) the design's addresses are rooted in, and the **check
+configuration** the design is assessed against ([Data Model](../datamodel/DATA-MODEL.md) §1) — stated inline,
+inherited from the design containing this one, or named by pointer. It may carry further attributes its
+product requires; those are outside this contract.
 
 Discovery is a directory walk and nothing more:
 
@@ -61,6 +63,14 @@ defined over a scope, so a scope inferred from parsed content would be circular.
 and is not a source of design content — the parse contract treats it as a support file (§4). It is read to
 establish where and what the design is, which is a question that has to be answered before there is anything to
 parse.
+
+**Both declarations are circular in the same way, which is why neither can be a claim.** The namespace is what
+every claim's address resolves against, so a claim declaring it would need an address in the namespace that
+same claim is establishing. The configuration determines which checks run, and the checks are what give
+positions their meaning, so a claim declaring the configuration would sit at a position the configuration has
+not yet licensed. A directory that declares no configuration is consequently not a design with a finding
+against it: it is a directory that cannot be assessed, the same category of problem as a missing
+`DESIGN.yaml`.
 
 The name follows the UPPERCASE manifest convention that @docs/standards/documentation-standards.md §2.1 already
 uses for a concept accumulating satellite artifacts — `PRODUCT.md`, `SERVICE.md`, `FEATURE.md` — and a design

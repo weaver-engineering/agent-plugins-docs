@@ -31,6 +31,20 @@ The model exists to make one claim decidable by machine:
 Everything in this model is either a term in that claim or a mechanism for keeping the claim honest as the
 design evolves.
 
+**What this document describes is the schema the *default* check set requires.** The set is configurable: a
+design is assessed against the checks its own configuration names — stated inline, or inherited from the
+design containing it, or by pointer to its Product's or the organisation's
+([Serialization](../serialization/SERIALIZATION.md) §3). A design directory that does not say what it is
+checked against cannot be assessed at all, which is a **failure rather than a default**.
+
+The dependency runs the way round that is easy to read backwards. **A check defines the positions it
+requires**, so the schema is the union of what the configured checks need — not a closed schema with
+verification hung off it. Adding a check extends what a design records; removing one removes those positions
+from what the design can claim, which is a legitimate configuration rather than a gap.
+
+That is what makes the model extensible where it matters: an additional NFR to assess, or any other design
+attribute a project wants covered, is added by **defining a check**, not by editing this model.
+
 ### 1.1 Applying It To A Design It Did Not Author
 
 The model is not restricted to designs written through it. **Any design written as markdown prose, at any state
@@ -87,7 +101,8 @@ Stated over the model's own terms, for a boundary `B`:
    recording the walk that produced it.
 3. **Matched** — for every behavior, its expected effects satisfy its required effects.
 4. **Sound** — no open finding stands against any element: no undeclared exception, no unexpected external
-   side effect, no call tree node absent from its caller's declared calls, no orphan.
+   side effect, no call tree node absent from its caller's declared calls, no orphan, and no behavior left
+   standing at a cell its condition space no longer supports.
 5. **Fresh** — every derived element's provenance checksums still match the content they were derived from.
 6. **Approved** — every behavior carries a human review that has not been invalidated.
 7. **Sufficient** — `B` has reached the maturity level its kind requires (§5.2): `M4 Reconciled` for a
@@ -95,6 +110,12 @@ Stated over the model's own terms, for a boundary `B`:
 
 Claims 1–5 are fully mechanical. Claim 6 is mechanical to *check* and never mechanical to *grant*. Claim 7 is
 the conjunction of the gates in [Reconciliation Model](reconciliation-model.md) §5.
+
+**The claim is made against a stated check set** (§1). "Complete, reconciled and sound" is decidable relative
+to the checks a design is configured with, and is not a well-formed question without them — two designs both
+at `M4` under different configurations are not asserting the same thing. Naming the set is what makes the
+claim falsifiable, not what weakens it: the alternative is an absolute-sounding claim whose real content
+nobody can recover.
 
 The claim is made **per design target**, and a design target's traces stop at the design targets it contains
 ([Boundary Model](boundary-model.md) §3). Claims 2–5 are therefore bounded: they are about this design's own
@@ -117,7 +138,7 @@ on it.
 |---|---|
 | `FunctionalBoundary` | identity, purpose, boundary kind, containment, dependency references, its functions with their signatures, descriptions, calls and emitted metrics, its interfaces, the data types it defines |
 | `SpecifiableBoundary` | a **design target**: build manifest, operations, condition spaces, behaviors, required effects, cross-cutting boundaries, call trees, expected effects, fixtures, reconciliation, maturity, key decisions, open design questions, change requests — plus the function catalog and data dictionary as views scoped to its own design |
-| `DeployableBoundary` | runtime manifest extending the build manifest, the five-vector interface perimeter, endpoints, service archetype, SLIs |
+| `DeployableBoundary` | runtime manifest extending the build manifest, the five-vector interface perimeter, endpoints, service archetype, SLIs — each naming the operation whose delivery it measures |
 
 The split is **content** versus **requirements**, not structure versus substance. A `FunctionalBoundary` holds
 real content: shared logic inside a service has functions, signatures, descriptions, an interface its consumers
@@ -136,7 +157,10 @@ consideration is part of specification; a Library declares its own, and a rule's
 design target (Boundary Model §7.4). **Metrics** are defined by the functions that emit them
 ([Function And Call Graph](function-and-call-graph.md) §6) while **SLIs** are Deployable: measurement is
 something code does, so any function may emit one, while judging whether the numbers are acceptable is a
-statement about delivery only a deployed process makes ([Deployable Model](deployable-model.md) §5.2).
+statement about delivery only a deployed process makes ([Deployable Model](deployable-model.md) §5.2). An SLI
+is **scoped to an operation** — a consumer depends on an operation, so that is what has a service level — and
+holds it as a reference rather than nesting beneath it, which keeps the SLI at `DeployableBoundary` where it
+belongs rather than inside an entity a Library also has ([Deployable Model](deployable-model.md) §5.2).
 
 The model's floor is a `SpecifiableBoundary` with an identity and nothing else. Purpose, operations, behaviors,
 functions and the rest accrete from there. Nothing higher in the table requires anything lower to exist; the
@@ -220,10 +244,16 @@ incomplete** rather than rejecting one that has only just started.
 | `M2 Structured` | functions are catalogued, assigned to a boundary and an interface, with conforming signatures; every shape crossing a boundary is in the data dictionary |
 | `M3 Traced` | every behavior has a fixture set, a trace, a call tree and derived expected effects; the call graph reconciles; every emitted metric is defined |
 | `M4 Reconciled` | required and expected effects match for every behavior; no open blocking findings; provenance fresh; review complete; nothing blocked on a change request |
-| `M5 Deployable` | runtime manifest, endpoints across every populated perimeter vector, archetype, and an SLI for every dimension the archetype requires |
+| `M5 Deployable` | runtime manifest, endpoints across every populated perimeter vector, archetype, and — for every operation flagged `critical` — an SLI for every dimension the archetype requires |
 
-This table is a summary. [Reconciliation Model](reconciliation-model.md) §5 states each gate precisely, as the
-conjunction of findings that must be absent, and is authoritative where the two differ.
+This table is a summary. [Reconciliation Model](reconciliation-model.md) §5 states each gate precisely and is
+authoritative where the two differ.
+
+**A gate is the conjunction of the checks registered at that level.** The finding kinds named in either
+document are the default set rather than the possible set (§1): a check registered at a level resets a design to that
+level when it finds something, while a **global** check finds real work without touching maturity at all. So
+what a checkpoint demands of a particular design follows from that design's check configuration, and these
+levels are the frame the checks are registered into rather than a fixed list of requirements.
 
 **Design starts before `M0`.** `M0` is simply the first checkpoint — the first point at which enough is
 settled to assert anything about the boundary. The work of arriving there is real design work: eliciting what
@@ -381,6 +411,7 @@ classDiagram
     SpecifiableBoundary *-- "0..*" Operation
     SpecifiableBoundary *-- "0..*" CrossCuttingBoundary
     SpecifiableBoundary *-- "0..*" KeyDecision
+    SpecifiableBoundary *-- "0..*" Fixture
 
     Operation *-- "1" ConditionSpace
     Operation --> "0..1" Function : realizedBy
@@ -426,6 +457,17 @@ looked and correctly concluded it contributes nothing. Only the first is work. N
 symptom would make the model demand frontmatter on documents that should not have it, and would put the model
 in the business of distinguishing the two — which is serialization's problem and depends on how it chooses to
 record an assessment that found nothing.
+
+**Why the model is described as the configured check set's schema rather than as the authority.** An earlier
+framing said the model records facts about a boundary and that everything in it is either a term in the
+verification claim or a mechanism for keeping that claim honest. Read cold, that is a closed schema with
+verification hung off it, and readers took it that way — which is a property of the prose rather than of the
+readers, since these documents are deliberately persuasive. The real dependency is the inverse: a check
+defines the positions it requires, so the schema is the union of what the configured checks need, and the
+maturity gates are a frame checks are registered into rather than a fixed list. The distinction is not
+cosmetic, because it decides where someone goes to add coverage of an NFR nothing currently assesses — to a
+check definition, cheaply, or to this model, expensively. Nothing about any entity, attribute, relationship
+or finding changed when this was corrected; only what the document claims to be.
 
 **Why the model is stated independently of serialization.** The design assistant reads and writes markdown and
 frontmatter, and it would have been possible to define the model as "the schema of those documents." That

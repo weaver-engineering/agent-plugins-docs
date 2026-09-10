@@ -198,6 +198,12 @@ provenance of each of its Given conditions: which document defined it, whether t
 whether it was inferred and on what basis. An inferred condition presented as though it came from a use case
 is the failure mode this exists to prevent.
 
+Both halves of an entry condition carry it: a `ConditionDimension`'s sourcing says how the fact that these are
+the behavior-affecting variations entered the model, and a `ConditionValue`'s says how the bucketing did,
+which is the part that is pure judgement ([Condition Model](condition-model.md) §2.3). An authored dimension
+or value carrying none is an `unsourced-condition-dimension` finding, so the presentation this paragraph
+describes cannot quietly become a presentation of facts with no recorded basis.
+
 `inferred` is the only kind an agent may assign to itself, and it is the weakest. A design at `M4` may hold
 inferred facts; it may not hold inferred facts nobody has looked at, because approval is what converts an
 inference into something the architect has taken responsibility for.

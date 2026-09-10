@@ -117,6 +117,12 @@ into the data dictionary ([Data Dictionary](data-dictionary.md)); at `M2` a bare
 it is raised. This is a contract, not a summary of the implementation: an exception a function propagates
 without declaring is precisely what §5 detects.
 
+Because it is a contract, it is what signature conformance reads against
+([Boundary Model](boundary-model.md) §6.1.1). A function realizing an operation *is* the perimeter, so
+whatever it declares here escapes to that operation's consumer: the two must declare the same set of
+exceptions, where parameters may legitimately differ. A function that must not surface a callee's failure
+catches it and declares its own translation instead.
+
 ### 2.2 Description
 
 A function's description is what the design actually says it does, and it is what a behavior is traced
