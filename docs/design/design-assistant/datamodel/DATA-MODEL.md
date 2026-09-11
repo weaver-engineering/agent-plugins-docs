@@ -10,6 +10,8 @@
 * [Deployable Model](deployable-model.md) - what a Deployable boundary carries that a Specifiable one does not
 * [Decision Model](decision-model.md) - open design questions and the key decisions that close them
 * [Serialization](../serialization/SERIALIZATION.md) - how this model is written to and read from documents, which §1 deliberately leaves out
+* [Design A Specifiable Boundary](../workflow/WORKFLOW.md) - the check configuration that declares the
+  maturity levels themselves (§5.2 below defers to it)
 * [Glossary](../../../glossary.md) - one-line definitions of every term this model introduces
 * @docs/design-the-feature-process.md - the process this model is intended to support, and which this work may revise
 
@@ -237,6 +239,17 @@ Maturity levels are **checkpoints**, not phases and not entry points. Every attr
 the checkpoint at which it becomes required, which is what lets the model hold a design that is **valid but
 incomplete** rather than rejecting one that has only just started.
 
+**The levels themselves are declared by the design's own check configuration, not fixed by this model.** A
+`MaturityLevel` carries a `slug`, a `name`, a statement of what reaching it **asserts**, and a `rank` that
+makes the levels sequential ([Design A Specifiable Boundary](../workflow/WORKFLOW.md) §4). Where the line
+falls between "requirement settled" and "solution structured" is a judgement a project may reasonably draw
+elsewhere — or into four levels, or seven — so the configuration states it rather than this document owning
+it. `Finding.blocks` ([Reconciliation Model](reconciliation-model.md) §3) and `FunctionalBoundary.maturity`
+(§6) both reference a level the design's configuration declares, not a value from a closed enum here.
+
+`M0 Identified` through `M5 Deployable`, below, are **the default configuration's own levels** (§1) — what we
+currently think the right set of checkpoints is — not this document's fixed list:
+
 | Level | Reached when |
 |---|---|
 | `M0 Identified` | the boundary has an identity, a purpose, a kind, and named operations |
@@ -246,14 +259,30 @@ incomplete** rather than rejecting one that has only just started.
 | `M4 Reconciled` | required and expected effects match for every behavior; no open blocking findings; provenance fresh; review complete; nothing blocked on a change request |
 | `M5 Deployable` | runtime manifest, endpoints across every populated perimeter vector, archetype, and — for every operation flagged `critical` — an SLI for every dimension the archetype requires |
 
-This table is a summary. [Reconciliation Model](reconciliation-model.md) §5 states each gate precisely and is
-authoritative where the two differ.
+This table is a summary of the default configuration. [Reconciliation Model](reconciliation-model.md) §5
+states each gate precisely and is authoritative where the two differ, over whatever configuration a design
+actually names.
 
-**A gate is the conjunction of the checks registered at that level.** The finding kinds named in either
-document are the default set rather than the possible set (§1): a check registered at a level resets a design to that
-level when it finds something, while a **global** check finds real work without touching maturity at all. So
-what a checkpoint demands of a particular design follows from that design's check configuration, and these
-levels are the frame the checks are registered into rather than a fixed list of requirements.
+**A gate is the conjunction of two things, not one: every check registered at that level and below having
+completed, and none of them reporting a finding that blocks it.** Absence of findings alone is not enough — a
+check that never ran because something it required did not complete reports no findings trivially, and a
+design must not be able to climb a level whose checks were never asked. What "completed" means for a check is
+the workflow's own concept ([Design A Specifiable Boundary](../workflow/WORKFLOW.md) §2.3–§2.4); this model
+states the other half, in [Reconciliation Model](reconciliation-model.md) §5. The finding kinds named in
+either document are the default set rather than the possible set (§1): a check registered at a level resets a
+design to that level when it finds something, while a **global** check finds real work without touching
+maturity at all. So what a checkpoint demands of a particular design follows from that design's check
+configuration, and these levels are the frame the checks are registered into rather than a fixed list of
+requirements.
+
+**Three things are not configurable, and are model facts rather than the configuration's:**
+
+1. Levels are **sequential**, and a design climbs them — `M3` is not a question a design without an `M1`
+   condition space can answer.
+2. A gate is the two-part conjunction stated above, in every configuration, whatever the levels are named or
+   how many there are.
+3. A `SpecifiableBoundary` is complete at `M4`; a `DeployableBoundary` at `M5` — a fact about what the two
+   boundary **kinds** are, not about how any configuration defines its levels.
 
 **Design starts before `M0`.** `M0` is simply the first checkpoint — the first point at which enough is
 settled to assert anything about the boundary. The work of arriving there is real design work: eliciting what
@@ -277,9 +306,10 @@ solution separable, and what lets the architect settle a boundary's obligations 
 Fixtures are not required until `M3`, because the dependency-state dimensions they stand in for are not known
 until a call tree exists — and reconciliation is not meaningfully possible before them.
 
-A Specifiable boundary is complete at `M4`. `M5` applies only to a Deployable boundary. A design **blocked** on
-a change request against another design target ([Reconciliation Model](reconciliation-model.md) §5.1) sits
-below the level that request blocks, and is not failing.
+A design **blocked** on a change request against another design target
+([Reconciliation Model](reconciliation-model.md) §5.1) sits below the level that request blocks, and is not
+failing — and is not the same as a check having failed to complete, even though both leave a level
+unreached (point 2, above).
 
 ### 5.3 Provenance
 
@@ -338,6 +368,7 @@ freely elsewhere. Where to find each:
 | `ConditionSpace`, `ConditionDimension`, `ConditionValue`, `ConditionCell`, `NfrRule` | [Condition Model](condition-model.md) |
 | `Effect`, `Trace`, `CallTreeNode`, `Fixture` | [Behavior Model](behavior-model.md) |
 | `RuntimeManifest`, `InterfacePerimeter`, `Endpoint`, `SLI` | [Deployable Model](deployable-model.md) |
+| `MaturityLevel` | [Design A Specifiable Boundary](../workflow/WORKFLOW.md) §4 — the one type in this table this model references but does not own; a check configuration declares its `slug`, `name`, `asserts` and `rank` (§5.2) |
 
 Anything else named in a type position is an enumeration, defined where it is first used. An attribute whose
 `Required by` column reads `derived` is computed from other attributes and never authored; one reading a
@@ -493,6 +524,14 @@ declare what it needs.
 always in exactly one. Neither holds here: design work happens between checkpoints, several parts of a design
 sit at different points at once, and a design can fall back when something upstream is invalidated. A
 checkpoint only ever asserts what is true now, which is the only claim the model can actually make.
+
+**Why the levels are the configuration's own list rather than this document's.** The same reasoning that moved
+the finding kinds out of a closed table applies to what they gate. Fixing `M0`–`M5` here, with their
+assertions settled by this document, would mean a project that draws the line between "requirement settled"
+and "solution structured" differently has to fork this model rather than write a configuration — exactly the
+expensive path the check-set inversion (§1) exists to avoid. What has to stay a model fact regardless — levels
+are sequential, and a `SpecifiableBoundary` and a `DeployableBoundary` complete at different ones — follows
+from what a boundary and its kinds *are*, not from any level's own name or assertion.
 
 **Why addressing is path-derived rather than a flat `NNN` registry.** A flat registry needs an allocation
 authority, and the number itself carries no information — `IC-004` says nothing about where the component sits.
