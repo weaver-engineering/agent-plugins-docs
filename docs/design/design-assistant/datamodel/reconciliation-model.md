@@ -5,6 +5,9 @@
 * [Behavior Model](behavior-model.md) - the traces and effects this concern keeps fresh and matched
 * [Condition Model](condition-model.md) - the coverage the gates assert over
 * [Function And Call Graph](function-and-call-graph.md) - the reverse index invalidation walks
+* [Design A Specifiable Boundary](../workflow/WORKFLOW.md) - the check configuration this document's finding
+  kinds and gates are the default set for; declares the maturity levels themselves and the check that raises
+  each finding
 
 ## 1 What Reconciliation Is
 
@@ -49,6 +52,8 @@ classDiagram
         +Prose detail
         +MaturityLevel blocks
         +FindingStatus status
+        +Slug raisedBy
+        +Checksum condition
     }
     class Review {
         +ReviewState state
@@ -102,6 +107,8 @@ forgotten. It is the model's own record of what is wrong.
 | `blocks` | `MaturityLevel` | the checkpoint this finding prevents; absent for an advisory finding (§3.1) |
 | `status` | `FindingStatus` | `open` or `resolved`, with the resolution |
 | `acknowledgement` | `Acknowledgement` | for an advisory finding accepted as intended (§3.1) |
+| `raisedBy` | `Slug` | the `id` of the check that produced this finding, from the design's own check configuration ([Design A Specifiable Boundary](../workflow/WORKFLOW.md) §3.1). What gathers a check's whole finding set as one unit of work, and what a re-run resolves against (§2.3 there of the same document) |
+| `condition` | `Checksum` | computed: a digest of the condition that produced this finding. What a soft resolution keys onto alongside `kind` and `subject` ([Design A Specifiable Boundary](../workflow/WORKFLOW.md) §2.5) — so a boundary spend of 1, once acknowledged, stops matching once the spend becomes 2 |
 
 **The kinds below are the default check set, not the complete set of things that can be wrong.** A finding
 kind exists because some check produces it, and which checks run against a design is that design's own
@@ -112,16 +119,22 @@ fixed is the shape of a `Finding` and the rule that a gate is the absence of the
 | Kind | Raised when |
 |---|---|
 | `unparsed-document` | a document within the design's scope whose contents have not been assessed for their contribution to the design ([Data Model](DATA-MODEL.md) §1.1) |
+| `unstated-required-attributes` | a position the running check requires is unclaimed. Plural, and scoped to that check: it does not assert that an entity has every attribute it will eventually need, only that the positions *this* check requires are absent ([Design A Specifiable Boundary](../workflow/WORKFLOW.md) §2.3) |
 | `conflicting-claim` | two contributions state differing values for one attribute, or for one entry of one collection ([Serialization](../serialization/parse-contract.md) §3) |
 | `uncovered-cell` | a valid leaf cell has no behavior |
 | `unexplained-exclusion` | a cell is excluded by the architect with no recorded reason |
+| `non-partitioning-dimension` | a dimension's values are not exhaustive and mutually exclusive over what they partition |
 | `unsourced-condition-dimension` | an authored condition dimension, or an authored condition value, carries no `Sourcing` ([Condition Model](condition-model.md) §2.3) |
+| `unsourced-fact` | any other authored fact required to carry `Sourcing` — other than a condition dimension or value — carries none |
 | `invalid-behavior` | a behavior does not reconcile with the dimensions of its cell's condition space or with its fixtures ([Behavior Model](behavior-model.md) §1.1) |
 | `unresolved-type` | a signature names a type the dictionary does not define |
+| `invalid-realization` | `realizedBy` names a function outside this target, inside a contained one, or off the interface boundary |
 | `signature-nonconformance` | an operation's signature and its realizing function's are not compatible ([Boundary Model](boundary-model.md) §6.1.1) |
 | `orphan-function` | a function is neither reachable from an operation nor called by anything |
 | `shim-inconsistency` | a dependency boundary's shim is not a one-for-one translation of a depended-on operation |
+| `unresolved-selector` | a cross-cutting boundary's selector resolves to no real function in this design's scope |
 | `build-manifest-conflict` | a contained design target's build manifest contradicts rather than tightens what it inherits (Boundary Model §3.3.1) |
+| `missing-sli` | a critical operation has no SLI for a delivery dimension its archetype requires ([Deployable Model](deployable-model.md) §5.1) |
 | `invalid-sli-definition` | an SLI definition does not validate against the OpenSLO revision its `specVersion` names ([Deployable Model](deployable-model.md) §5.2.1) |
 | `unbacked-sli` | an SLI's metric queries reference a metric no function in the design emits, or one the SLI's own operation cannot reach ([Deployable Model](deployable-model.md) §5.3) |
 | `unassessed-manifest-setting` | a manifest setting is neither stated, inherited, nor exempted ([Boundary Model](boundary-model.md) §3.3) |
@@ -139,11 +152,28 @@ fixed is the shape of a `Finding` and the rule that a gate is the absence of the
 | `satisfaction-failure` | a required effect has no corresponding expected effect |
 | `unexpected-side-effect` | an expected dependency interaction is anticipated by no required effect |
 | `stale-provenance` | a derived element's sources no longer checksum to what is recorded |
+| `stale-reference` | an authored claim's `ExternalRef` ([Data Model](DATA-MODEL.md) §5.4) no longer checksums to what is recorded. The authored counterpart to `stale-provenance` — a document-sourced fact carries `Sourcing`, not `Provenance`, so nothing about the design's own invalidation walk (§4) reaches it |
+| `unresolved-nfr-scope` | the walk outward from the design finds no Product, or a Product with no NFR rule pointer ([Boundary Model](boundary-model.md) §7.2) |
 | `redesign-required` | regeneration produced a result that does not match what was reviewed (§6.2) |
+| `unapproved-behavior` | a behavior has no standing human approval (§6) |
 
 `unexpected-side-effect`, `redesign-required` and `invalid-behavior` are the three that never resolve
 mechanically. Every other kind either self-clears when the underlying condition is corrected, or is closed by
 a decision recorded in the model.
+
+**Five further kinds are raised before a model exists, and are deliberately absent from the table above.**
+`not-a-design-directory`, `undeclared-namespace`, `missing-check-configuration`, `invalid-check-configuration`
+and `malformed-document` are produced by non-model checks reading the directory, its files, and the
+configuration itself — none of which has a `subject: Address`, because no boundary has been identified yet
+for one to name. A `Finding` requires a subject; these arise before this model has one, and are registered
+and resolved in [Design A Specifiable Boundary](../workflow/WORKFLOW.md) §4.1, §6.1 instead.
+
+`unparsed-document` and `unresolved-nfr-scope` are **not** among those five, despite both being raised early.
+`unparsed-document`'s subject is the document's own path, which is addressable before anything else about the
+design is — parsing is what's blocked on assessing it, not the other way round ([Data Model](DATA-MODEL.md)
+§1.1). `unresolved-nfr-scope` is registered at `M1`, after `M0`'s identity checks
+([Design A Specifiable Boundary](../workflow/WORKFLOW.md) §4.2–§4.3), so a model already exists by the time it
+runs. Both keep a real subject and belong in this model like any other finding.
 
 ### 3.1 Advisory Findings
 
@@ -282,8 +312,19 @@ punish exactly the mechanical hygiene it depends on.
 
 ## 5 Maturity Gates
 
-A boundary is at a level when every gate up to and including it passes. A gate is a conjunction of the
-absence of findings that block it.
+A boundary is at a level when every gate up to and including it passes. **A gate has two conjuncts, not
+one:** every check registered at that level, and at every level below it, must have **completed** — run, and
+neither skipped for an unmet requirement nor blocked (§5.1) — **and** none of them reported a finding that
+blocks it.
+
+Absence of findings is not sufficient alone. A check that never ran because something it required did not
+complete reports no findings — trivially, because it never asked — so a design must not be able to climb a
+level whose checks were never performed. **What "completed" means for a check is the workflow's own concept**
+([Design A Specifiable Boundary](../workflow/WORKFLOW.md) §2.3–§2.4); this document states the other
+conjunct — the absence of blocking findings, given that completion. The `M4` row's "no outstanding
+`ChangeRequest`" condition below (§5.1) is already an instance of the completion conjunct, not a third
+condition beside it: a finding soft-resolved as blocked belongs to a check that did not complete, so it is
+covered by "every check ... completed" rather than needing a clause of its own.
 
 **A gate is therefore the conjunction of the checks registered at that level**, and the levels below it. The
 kinds named in the table are the **default** check set rather than the possible one: a design is assessed
@@ -291,6 +332,13 @@ against the checks its own configuration names, so what a gate demands follows f
 not from this document. Two designs both at `M4` under different configurations are not making the same
 assertion, which is exactly why the configuration has to be stated for the claim to be falsifiable at all
 ([Data Model](DATA-MODEL.md) §3).
+
+**The levels themselves are the default configuration's own, not a fixed list this document owns.** `M0`
+through `M5` below are what [Design A Specifiable Boundary](../workflow/WORKFLOW.md) §4 currently declares —
+each with a name and a statement of what reaching it asserts — and a project's configuration may draw the
+lines differently: four levels, or seven, or a different assertion for what `M2` currently means. What is
+**not** configurable is that levels are sequential, and that a `SpecifiableBoundary` is complete at `M4` and a
+`DeployableBoundary` at `M5` — a fact about boundary kinds, stated fully below.
 
 **Not every check sits on a level.** A **global** check finds real work and touches no maturity: it reports
 something that says nothing about whether the design is complete or accurate. A check registered *at* a level
@@ -301,23 +349,31 @@ checks the layout standard defines are global for exactly this reason, and neith
 | Level | Gate |
 |---|---|
 | `M0 Identified` | every document in scope has been assessed — no `unparsed-document`; boundary has slug, name, purpose, kind (if contained), and at least one operation |
-| `M1 Behavioral` | every operation has a condition space with ranked dimensions and a pruned cell tree; every authored dimension and value carries `Sourcing`; every valid leaf has a behavior with at least one required effect, and that behavior reconciles with its cell; every rule in scope is applied or exempted; no `uncovered-cell`, `unexplained-exclusion`, `invalid-behavior`, `unassessed-nfr-rule` |
-| `M2 Structured` | every build manifest setting is stated, inherited or exempted — no `unassessed-manifest-setting` ([Boundary Model](boundary-model.md) §3.3); every function has a boundary, visibility, interface (if perimeter) and a conforming signature; every crossing type is in the dictionary; every cross-cutting boundary's selector resolves to real functions; no `unresolved-type`, `signature-nonconformance`, `orphan-function`, `shim-inconsistency`, `build-manifest-conflict` |
+| `M1 Behavioral` | every operation has a condition space with ranked dimensions and a pruned cell tree, its values exhaustive and mutually exclusive; every authored dimension and value carries `Sourcing`; every valid leaf has a behavior with at least one required effect, and that behavior reconciles with its cell; every rule in scope is applied or exempted, resolved against a real NFR rule scope; no `uncovered-cell`, `unexplained-exclusion`, `invalid-behavior`, `non-partitioning-dimension`, `unassessed-nfr-rule`, `unresolved-nfr-scope` |
+| `M2 Structured` | every build manifest setting is stated, inherited or exempted — no `unassessed-manifest-setting` ([Boundary Model](boundary-model.md) §3.3); every function has a boundary, visibility, interface (if perimeter) and a conforming signature; every operation's `realizedBy` names a function within this target's own perimeter; every crossing type is in the dictionary; every cross-cutting boundary's selector resolves to real functions; no `unresolved-type`, `invalid-realization`, `signature-nonconformance`, `orphan-function`, `shim-inconsistency`, `unresolved-selector`, `build-manifest-conflict` |
 | `M3 Traced` | every behavior has a fixture set chosen from a non-empty possible set, a trace, a call tree and expected effects; no `missing-fixture`, `no-suitable-fixtures`, `mock-inconsistency`, `call-declaration-mismatch`, `calls-index-mismatch`, `undeclared-exception` |
-| `M4 Reconciled` | every behavior's expected effects satisfy its required effects; no `unpredicated-effect`, `satisfaction-failure`, `unexpected-side-effect`, `nfr-conflict`, `unauthorized-change`, `stale-provenance`, `redesign-required`; every advisory finding corrected or acknowledged (§3.1); no outstanding `ChangeRequest` (§5.1); every behavior approved (§6) |
-| `M5 Deployable` | every runtime manifest setting stated or exempted — no `unassessed-manifest-setting`; every perimeter vector declared or exempted — no `unassessed-perimeter-vector`; archetype set; every operation's `critical` stated with its sourcing; for **every operation flagged `critical`**, an OpenSLO `SLI` object defined for every delivery dimension the archetype requires, each naming its operation, validating against its pinned `specVersion` and backed by metrics that operation reaches — no `invalid-sli-definition`, no `unbacked-sli` ([Deployable Model](deployable-model.md) §5) |
+| `M4 Reconciled` | every behavior's expected effects satisfy its required effects; no `unpredicated-effect`, `satisfaction-failure`, `unexpected-side-effect`, `nfr-conflict`, `unauthorized-change`, `stale-provenance`, `stale-reference`, `redesign-required`, `unapproved-behavior` (§6); every advisory finding corrected or acknowledged (§3.1); no outstanding `ChangeRequest` (§5.1) |
+| `M5 Deployable` | every runtime manifest setting stated or exempted — no `unassessed-manifest-setting`; every perimeter vector declared or exempted — no `unassessed-perimeter-vector`; archetype set; every operation's `critical` stated with its sourcing; for **every operation flagged `critical`**, an OpenSLO `SLI` object defined for every delivery dimension the archetype requires, each naming its operation, validating against its pinned `specVersion` and backed by metrics that operation reaches — no `missing-sli`, `invalid-sli-definition`, `unbacked-sli` ([Deployable Model](deployable-model.md) §5) |
 
-Two kinds are absent from the table because they have no fixed level, and both fall out of the general rule
-the table enumerates — the absence of every finding whose `blocks` names that level — so neither needs a row.
+Four kinds are absent from the table because none has one fixed level, and each falls out of a general rule
+rather than needing a row of its own — the absence of every finding whose `blocks` names that level.
 
 A `conflicting-claim` blocks the checkpoint at which the **contested attribute** becomes required:
 contradictory statements of a boundary's purpose block `M0`, of an SLI block `M5`.
 
-An `unsourced-condition-dimension` blocks the checkpoint at which **that dimension or value** becomes
-required ([Condition Model](condition-model.md) §2.3): a `payload` or `parameter` dimension and its values at
-`M1`; a `dependency-state` dimension's own values at `M3`, since the dimension cannot exist before the call
-tree does; a `cross-cutting` dimension's values whenever its rule's selector resolves, `M2`–`M3`. That is
-what keeps accretion intact — a dimension arriving at `M3` is not retrospectively unsourced at `M1`.
+An `unsourced-condition-dimension` or an `unsourced-fact` blocks the checkpoint at which **that dimension,
+value, or fact** becomes required ([Condition Model](condition-model.md) §2.3 for the former): a `payload` or
+`parameter` dimension and its values at `M1`; a `dependency-state` dimension's own values at `M3`, since the
+dimension cannot exist before the call tree does; a `cross-cutting` dimension's values whenever its rule's
+selector resolves, `M2`–`M3`; any other authored fact requiring `Sourcing` at whatever checkpoint that fact
+itself becomes required. That is what keeps accretion intact — a dimension, value or fact arriving later is
+not retrospectively unsourced at a checkpoint it postdates.
+
+An `unstated-required-attributes` blocks the level of **whichever check raised it**. The same kind is produced
+by a dozen different checks across every level from `M0` to `M5`
+([Design A Specifiable Boundary](../workflow/WORKFLOW.md) §4), each requiring different attributes of the
+same or different entities at its own checkpoint — which is also why it is plural: it asserts only that the
+positions the raising check requires are unclaimed, never that some other check has certified the rest.
 
 A `SpecifiableBoundary` is complete at `M4`; a `DeployableBoundary` at `M5`. A containing boundary is at the
 lowest level any boundary it contains is at — a service is not reconciled while one of its domains is not.
@@ -509,6 +565,34 @@ wrong, and that inverts the architecture: a check defines the positions it requi
 union of what the configured checks need. The reading matters practically, not just presentationally — a
 reader who believes the model is the closed authority will come to the model to extend the schema when they
 want a further NFR assessed, which is the expensive path and the one the inversion exists to avoid.
+
+**Why a gate needs a completion conjunct, not only an absence of findings.** Stating a gate as the absence of
+blocking findings alone is sound only while every registered check actually runs. Once a check can be skipped
+because something it required did not complete, absence of findings becomes trivially satisfiable by not
+asking — a design could reach `M2` by having its `M2` checks skipped rather than passed. This document already
+half-knew it: the `M4` row has always demanded no outstanding `ChangeRequest`, which is a gate condition that
+is not a finding at all. Naming completion as an explicit conjunct makes that condition an instance of a
+general rule instead of a special case, and keeps a blocked design's later-level checks meaningful — they can
+run clean without the design reaching that level, because clean and complete are different claims.
+
+**Why the maturity levels are declared by the configuration rather than fixed by this document.** Where the
+line falls between "requirement settled" and "solution structured" is a judgement about what is worth
+asserting separately, and different projects reasonably draw it in different places — or want four levels, or
+seven. Fixing `M0`–`M5` here would make disagreeing with that judgement mean forking this document, the same
+cost a fixed finding-kind list would impose, and for the same reason it is avoided there: the opinion should
+be legible and replaceable, not dissolved into the model. What stays a model fact regardless of how a
+configuration draws its levels is that they are sequential and that a `SpecifiableBoundary` and a
+`DeployableBoundary` complete at different ones — because that follows from what the two boundary kinds
+*are*, not from any particular level's own definition.
+
+**Why `Finding` carries `raisedBy` and a `condition` digest.** A check's whole finding set is the unit of
+work, and resolution operates over that set — resolve one, re-run the check, resolve what it now reports —
+which is only expressible if a finding records which check produced it. Without `raisedBy` the alternative is
+a reporting cap, and that is the worse answer: findings from one check interact, and capping how many are
+shown hides work rather than bounding it. `condition` exists because a soft resolution
+([Design A Specifiable Boundary](../workflow/WORKFLOW.md) §2.5) keys onto more than a finding's kind and
+subject — a boundary spend of 1, once acknowledged, must stop matching once the
+spend becomes 2 — and nothing else in the model records what would have to change for that match to break.
 
 **Why a containing boundary's maturity is the minimum of what it contains.** Any other rule would let a
 service claim to be reconciled while one of its domains was not, which is exactly the state the verification
