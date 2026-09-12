@@ -92,7 +92,10 @@ business; that it is stable across runs given the same design is not.
 [Workflow](../WORKFLOW.md) §3.4's rule that changing a budget changes the condition does not hold, and an
 acknowledgement made against a budget of 15 goes on standing at 10.
 
-A change to the digest evaporates any soft resolution keyed on it; restoring the digest reinstates it.
+A change to the digest evaporates any soft resolution keyed on it, and a condition that later recurs is **judged
+afresh** rather than answered from the old record — acknowledgement is scoped to the instance, so answering a new
+occurrence from a judgement made about an old one is the blanket suppression that scoping exists to rule out
+([Reconciliation Model](../../datamodel/reconciliation-model.md) §3.1).
 
 **The check is not part of what an acknowledgement keys on.** What an architect acknowledges is the condition,
 not who noticed it — so where two checks produce findings agreeing on kind, positions *and* disambiguator, an
@@ -120,10 +123,13 @@ Two constraints keep that sound:
 * **Only a completed check falsifies.** A skipped or blocked check reports nothing trivially
   ([Workflow](../WORKFLOW.md) §2.3), so an acknowledgement belonging to one is unknown rather than unrequired, and
   is retained.
-* **Clearing is invoked, scoped and never implied.** Clearing unrequired acknowledgements — by check, by maturity
-  level, or across the design — removes only those whose check completed in that run and did not report them.
-  "Across the design" never means every acknowledgement, and the difference between those two readings is the
-  difference between a cleanup and irreversible data loss on a partial check set.
+* **Removal is mechanical, and scoped to what completed.** Deleting a spent acknowledgement needs no confirmation
+  and surfaces nothing, because nothing re-examinable is lost — the instance it was about is gone
+  ([Reconciliation Model](../../datamodel/reconciliation-model.md) §3.1). What is scoped is which
+  acknowledgements are even in question: only those a completed check could have reported. So a sweep by check,
+  by maturity level or across the design covers whatever completed in that run, and "across the design" never
+  means every acknowledgement — the difference between those two readings is the difference between a cleanup and
+  irreversible data loss on a partial check set.
 
 ## 3 The Evolution
 
@@ -327,9 +333,10 @@ obvious sweep has to distinguish "this condition is gone for good" from "this is
 finding of the same kind at the same address", and at parse time nothing can: the model holds conditions, not the
 judgements that would raise them. The check is the only thing that knows which conditions it currently reports, so
 asking it is the only way the question has an answer — which makes the sweep a check's output rather than a step in
-folding the model. Keeping it deliberate and scoped rather than automatic follows from the cost of being wrong:
-re-acknowledging is a minor annoyance, and deleting an acknowledgement belonging to a check that never ran is
-irreversible.
+folding the model. The rule itself is unchanged, and so is its justification: an acknowledgement retained past its
+condition matches again on recurrence and silently answers a finding nobody looked at. What changes is only that
+the trigger now exists. Scoping it to completed checks is what keeps it safe, since deleting an acknowledgement
+belonging to a check that never ran is irreversible where re-acknowledging is a minor annoyance.
 
 **Why the check is recorded on an acknowledgement but is not part of its key.** The two do different jobs. What is
 acknowledged is a condition, so the condition is what it keys on and an acknowledgement of one check's finding
