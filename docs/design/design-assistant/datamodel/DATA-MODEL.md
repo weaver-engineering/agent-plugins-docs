@@ -379,7 +379,12 @@ freely elsewhere. Where to find each:
 | `ConditionSpace`, `ConditionDimension`, `ConditionValue`, `ConditionCell`, `NfrRule` | [Condition Model](condition-model.md) |
 | `Effect`, `Trace`, `CallTreeNode`, `Fixture` | [Behavior Model](behavior-model.md) |
 | `RuntimeManifest`, `InterfacePerimeter`, `Endpoint`, `SLI` | [Deployable Model](deployable-model.md) |
-| `MaturityLevel` | [Design A Specifiable Boundary](../workflow/WORKFLOW.md) §4 — the one type in this table this model references but does not own; a check configuration declares its `slug`, `name`, `asserts` and `rank` (§5.2) |
+
+**`MaturityLevel` is deliberately not in that table.** It is declared by a check configuration
+([Design A Specifiable Boundary](../workflow/WORKFLOW.md) §4), which is read as configuration before parsing
+begins and is never a claim ([Serialization](../serialization/SERIALIZATION.md) §3). So it is never folded into
+the model, and a check derives a level rather than reading one — which makes it a type of the process that
+assesses a design, not of the design (§5.2).
 
 Anything else named in a type position is an enumeration, defined where it is first used. An attribute whose
 `Required by` column reads `derived` is computed from other attributes and never authored; one reading a
