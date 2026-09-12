@@ -139,7 +139,7 @@ on it.
 | Attaches at | What attaches |
 |---|---|
 | `FunctionalBoundary` | identity, purpose, boundary kind, containment, dependency references, its functions with their signatures, descriptions, calls and emitted metrics, its interfaces, the data types it defines |
-| `SpecifiableBoundary` | a **design target**: build manifest, operations, condition spaces, behaviors, required effects, cross-cutting boundaries, call trees, expected effects, fixtures, reconciliation, maturity, key decisions, open design questions, change requests — plus the function catalog and data dictionary as views scoped to its own design |
+| `SpecifiableBoundary` | a **design target**: build manifest, operations, condition spaces, behaviors, required effects, cross-cutting boundaries, call trees, expected effects, fixtures, reconciliation, key decisions, open design questions, change requests — plus the function catalog and data dictionary as views scoped to its own design |
 | `DeployableBoundary` | runtime manifest extending the build manifest, the five-vector interface perimeter, endpoints, service archetype, SLIs — each naming the operation whose delivery it measures |
 
 The split is **content** versus **requirements**, not structure versus substance. A `FunctionalBoundary` holds
@@ -244,8 +244,19 @@ incomplete** rather than rejecting one that has only just started.
 makes the levels sequential ([Design A Specifiable Boundary](../workflow/WORKFLOW.md) §4). Where the line
 falls between "requirement settled" and "solution structured" is a judgement a project may reasonably draw
 elsewhere — or into four levels, or seven — so the configuration states it rather than this document owning
-it. `Finding.blocks` ([Reconciliation Model](reconciliation-model.md) §3) and `FunctionalBoundary.maturity`
-(§6) both reference a level the design's configuration declares, not a value from a closed enum here.
+it. `Finding.blocks` ([Reconciliation Model](reconciliation-model.md) §3) references a level the design's
+configuration declares, not a value from a closed enum here.
+
+**Maturity is not an attribute of anything in this model.** No entity carries it, and nothing in a design
+claims it. It is computed, and it is computed **outside the model** — by the process that asks what the next
+unit of work is, which reports it as part of its answer. The model's contribution is the gates
+([Reconciliation Model](reconciliation-model.md) §5): what would have to hold for a level to have been
+reached. Whether it currently holds is not a fact about a boundary.
+
+What that process reports is keyed by **address** rather than by boundary. Addresses are a convention of this
+model that every design has (§5.1), while a boundary is a modelled concern — and the process is not entitled to
+a schema, so it names the thing every model has. Anything addressed can therefore carry a maturity, and nothing
+in the process layer has to know what kind of element it named.
 
 `M0 Identified` through `M5 Deployable`, below, are **the default configuration's own levels** (§1) — what we
 currently think the right set of checkpoints is — not this document's fixed list:
@@ -411,7 +422,6 @@ classDiagram
 
     class FunctionalBoundary {
         +BoundaryKind kind
-        +MaturityLevel maturity
     }
     class SpecifiableBoundary
     class DeployableBoundary
@@ -524,6 +534,24 @@ declare what it needs.
 always in exactly one. Neither holds here: design work happens between checkpoints, several parts of a design
 sit at different points at once, and a design can fall back when something upstream is invalidated. A
 checkpoint only ever asserts what is true now, which is the only claim the model can actually make.
+
+**Why maturity is not an attribute, when the checkpoints themselves are modelled.** Two diagrams in these
+documents used to carry a `maturity` attribute on a boundary, at two different levels, and no attribute table
+anywhere declared it — so nothing ever said it was computed, and the only reading available to a builder was
+stored state. It cannot be stored, and the decisive case is not an edit to the design at all: a
+`stale-reference` blocks `M4`, and an `ExternalRef`'s checksum moves when a document **outside** the design's
+scope changes ([Reconciliation Model](reconciliation-model.md) §3, §5.4). A recorded maturity would therefore
+become wrong while every claim in the design stayed exactly as it was, and no invalidation walk over this model
+could reach it. Marking it `derived` would have been enough to stop it being written and not enough to put it in
+the right place: what computes it is the process that assesses a design, so that is where it is reported, and
+this model keeps only the gates that say what reaching a level would require.
+
+**Why the process reports maturity against addresses rather than boundaries.** The question it answers — what is
+the next unit of work — is asked of a directory, not of a schema, and the schema is open by construction (§1).
+Naming a boundary in the answer would push a modelled concern into a process that is not entitled to one, and
+would be wrong for the first configuration whose checks assess something other than boundaries. An address is
+the one thing every design has whatever its checks require, so keying on it costs nothing and generalises
+without the process layer ever knowing what it named.
 
 **Why the levels are the configuration's own list rather than this document's.** The same reasoning that moved
 the finding kinds out of a closed table applies to what they gate. Fixing `M0`–`M5` here, with their
