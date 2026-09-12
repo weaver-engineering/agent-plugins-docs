@@ -93,10 +93,15 @@ For each registered check, in configured order:
 
 1. **If any required check did not complete, skip it.** A skipped check stays outstanding. A check that was
    blocked (§2.5) did not complete, so anything requiring it is skipped too.
-2. **Run it.** A check with no findings is complete; move on.
+2. **Run it.** A check answers with **every finding it raises, soft-resolved ones included** (§2.5), each
+   carrying the status that tells them apart. It costs nothing — a check computes each condition digest to
+   match a standing acknowledgement regardless, so reporting the matches is returning what was computed — and
+   it is what lets an architect see what has been accepted alongside what is outstanding. A check raising
+   nothing at all is complete; move on.
 3. **Findings, some workable** — those findings are the next unit of work. Report and stop.
-4. **Findings, none workable** — every finding is soft-resolved (§2.5). Report the check as blocked, and carry
-   on to the next check.
+4. **Findings, none workable** — every finding is soft-resolved. Where all of them are **acknowledged** the
+   check is complete, since an acknowledged finding blocks nothing; where any is **blocked** the check is
+   blocked, because a change request leaves the level unreachable. Either way, carry on to the next check.
 
 **A check's findings are one unit of work, however many there are.** There is no cap and no reporting limit:
 the unit is the check, not the finding. A `Finding` therefore records the check that raised it, and resolution
@@ -120,7 +125,8 @@ A design starts with **no maturity**. It is at level `L` when, for every level u
 
 * **every check registered there completed** — it ran, and was neither skipped for an incomplete requirement
   (§2.3) nor blocked (§2.5); **and**
-* **none of them reported findings.**
+* **none of them reported a finding that blocks it** — an acknowledged finding blocks nothing (§2.5), which is
+  the same formula [Reconciliation Model](../datamodel/reconciliation-model.md) §5 states.
 
 **Both conditions are needed, and the first is not implied by the second.** A skipped check reports no findings
 — trivially, because it never ran — so absence of findings alone would let a design climb past a level whose
@@ -171,8 +177,10 @@ the condition is different, the acknowledgement no longer matches, and the findi
 then resolved either way round — reduce the spend, or acknowledge the new one.
 
 An acknowledgement whose condition has gone entirely is spent and is deleted, mechanically and without
-surfacing anything (Reconciliation Model §3.1). That sweep is part of building the model, not a check: there is
-no judgement in it and nothing for anyone to do.
+surfacing anything (Reconciliation Model §3.1). There is no judgement in it and nothing for anyone to do — but
+it is **a check's output rather than a step in building the model**, because only the check that would raise a
+condition can say whether it still arises. So an acknowledgement whose check ran and did not report it is
+spent; one whose check was skipped or blocked is *unknown* rather than spent, and is kept.
 
 ### 2.6 The Run Is Stateless, And Stays Correct When It Is Not
 
@@ -231,6 +239,7 @@ classDiagram
         +Address subject
         +Prose detail
         +MaturityLevel blocks
+        +FindingStatus status
         +Checksum condition
     }
 
@@ -249,6 +258,20 @@ object — a package exports both together — so splitting them would add an in
 half of, and would give the model two names for one entity. Every relationship above is drawn once and is not
 restated as an attribute, which is the convention the data model already follows
 ([Data Model](../datamodel/DATA-MODEL.md) §5.5).
+
+**What a check answers with** is every finding it raises — open, acknowledged and blocked alike — each carrying
+the `status` that tells them apart (§2.3). A check does not filter its own soft-resolved findings out, because
+an acknowledgement is only falsifiable by the check that would otherwise raise it (§2.5), and because the
+architect needs to see what has been accepted at each level as well as what is still outstanding.
+
+**A check may also fail rather than answer.** Where the model's positions do not support a projection the check
+builds, and the inconsistency should already have been reported by an earlier check, it raises an **exceptional
+finding**: kindless, carrying a log of what was inconsistent. It has no kind because it is ambiguous by
+construction — either the design is inconsistent and nothing caught it, or a check is missing from the
+configuration — and those two resolve in different places, so triage is human. Having no kind it declares no
+resolution routes, so it is not soft-resolvable and needs no condition digest. A check that raises one **did not
+complete**, so §2.3's skip rule and §2.4's gate apply to it unchanged, and nothing in the runner is added to
+accommodate it. See [Evolving A Check](checks/evolving-checks.md) §3.3.
 
 ### 3.1 What A Check Declares
 

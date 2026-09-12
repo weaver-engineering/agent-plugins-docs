@@ -231,21 +231,28 @@ A `Review` needs no equivalent rule, because it is composed into the behavior it
 acknowledgement has no such parent — findings are not stored ([Serialization](../serialization/parse-contract.md)
 §7) — so it is held against the finding's subject, and outlives its condition unless this rule removes it.
 
-**Matching therefore runs in both directions.** Computing the findings and looking up each one's acknowledgement
-is only half the check, and it is the half that can never see an orphan. The same pass must also walk the
-recorded acknowledgements and confirm each still has a finding to answer — the same shape as the
-`calls`/`calledFrom` reverse check (§3), and needed for the same reason: an index cannot detect what it has no
-entry for.
+**Matching therefore runs in both directions**, and both belong to a **check** rather than to the building of
+the model — only the check that would raise a condition can say whether it still arises. Computing the findings
+and looking up each one's acknowledgement is the half that can never see an orphan; the other direction is what
+a check supplies by **answering with the findings it has soft-resolved as well as those it has open**
+([Design A Specifiable Boundary](../workflow/WORKFLOW.md) §2.3, §3). An acknowledgement the check did not report
+has no finding to answer. The need for both directions is the same shape as the `calls`/`calledFrom` reverse
+check (§3), and holds for the same reason: an index cannot detect what it has no entry for.
 
 The two directions have different outcomes. A finding with no acknowledgement may be work. An acknowledgement
 with no finding is spent and is removed without surfacing anything, because there is no judgement left for
 anyone to make about a record whose subject matter has gone.
 
 Retirement requires a **complete** determination, and an unmatched acknowledgement is not on its own evidence of
-one. The finding that would have matched it may simply not have been computable — its subject sitting in a
-document that has not been assessed, so nothing about that document is yet known. `unparsed-document` already
-reports exactly that state, so while one stands the model is known-incomplete and no acknowledgement is retired.
-This needs no condition of its own; it is the existing finding being allowed to mean what it says.
+one. The finding that would have matched it may simply not have been computable. So **only a check that
+completed falsifies an acknowledgement**: one skipped for an unmet requirement, or blocked, reports nothing
+trivially ([Design A Specifiable Boundary](../workflow/WORKFLOW.md) §2.3), and an acknowledgement belonging to
+it is unknown rather than spent and is kept.
+
+An `unparsed-document` is then the clearest instance of that rule rather than a condition of its own: while one
+stands the pre-parse stage is not clean, so nothing downstream of it has completed and nothing downstream can
+retire anything. The existing finding is being allowed to mean what it says, and the general rule is what makes
+it bite.
 
 ### 3.2 `invalid-behavior`
 
