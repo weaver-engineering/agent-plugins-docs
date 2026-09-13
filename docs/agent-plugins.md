@@ -1,11 +1,17 @@
 # Agent Plugins
 
-Skills and subagents that help weaver-engineering architects work
-productively with AI, outside the automated spec/test/build cycle that
+Canonically defined plugins — sub-agents, skills and tools — authored once
+and delivered as a product offering per platform (Claude Code, Codex,
+OpenCode, and others as they matter), helping weaver-engineering architects
+work productively with AI outside the automated spec/test/build cycle that
 The Loom runs.
 
 ## Context
 * [README](../README.md) - full project description
+
+## What Is Emerging From It
+
+* [Configurable Documentation Evolution](analysis/configurable-documentation-evolution.md) — the design assistant's tool is a configured check set and the next unit of work detector that runs it. The process those constitute is a product in its own right, and AgentPlugins is its genesis rather than its identity — this is what that process is, and why it is configurable
 
 ## 1 Use Cases
 
@@ -16,10 +22,12 @@ The Loom runs.
 
 ## 2 User Personas
 
-* [The Agent](analysis/user-personas/agent.md) — the general persona both assistants below specialize
-* [The Architect](analysis/user-personas/architect.md)
-* [The Architect's Assistant](analysis/user-personas/architects-assistant.md)
-* [The Design Assistant](analysis/user-personas/design-assistant.md)
+* [The Architect](analysis/user-personas/architect.md) — the human in charge of the agentic development, and the primary actor of every use case they appear in
+* [The Agent](analysis/user-personas/agent.md) — the general persona: memoryless, working within a finite context budget, doing what the Architect delegates
+  * [The Architect's Assistant](analysis/user-personas/architects-assistant.md) — specializes it for delegated documentation work
+    * [The Design Assistant](analysis/user-personas/design-assistant.md) — specializes that further, fixed to the `Design The Feature` step
+
+Each specialization states only what its narrower role adds; goals, frustrations and technical proficiency are inherited from the persona it indents under.
 
 ## 3 Design
 
