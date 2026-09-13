@@ -32,8 +32,12 @@ than a transformation. Regenerating a derivation is mechanical; deciding that an
 pattern, that a gap needs a key decision, that a fix belongs to another design target, or that a behavior is
 approved, is not.
 
-Approval is the sharpest case and worth stating separately: a human takes responsibility for a behavior, and it
-is the one thing the Assistant may never grant on its own behalf however confident it is.
+Approval is the sharpest case and worth stating separately: a human takes responsibility for a behavior, and
+the Assistant may never grant that on its own behalf however confident it is — wherever the design decided any
+part of what the behavior rests on. Where it decided none of it, because every fixture the behavior uses was
+authored outside the design and is merely referenced, there is nothing for the Assistant to be trusted with and
+the behavior is asserted mechanically. The line is not how sure the Assistant is; it is whether anything here
+was its to decide.
 
 ## 2 Goals
 

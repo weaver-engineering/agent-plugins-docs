@@ -192,12 +192,47 @@ test against.
 | `slug` | `Slug` | `M3` | stable identifier |
 | `kind` | `FixtureKind` | `M3` | `seed` (state a dependency is preloaded with), `stub` (a canned response), or `mock` (a stub plus an expectation) |
 | `standsFor` | `OperationRef` | `M3` for `stub`/`mock` | the operation of the design target or depended-on boundary whose result this fixture declares |
-| `content` | `Literal` | `M3` | the concrete data or response |
+| `content` | `Literal` | `M3` | the concrete data or response, where this design authored it (§3.0) |
+| `externalRef` | `ExternalRef` | `M3` | where it did not: the address and checksum of the fixture it uses (§3.0) |
 
-A fixture belongs to the design target, and it attaches to **condition values**, not to a cell. A
-dependency-state value like `product: no-longer-available` needs one fixture, defined once, and every cell
-selecting that value can use it — rather than the same canned response being restated in every leaf of a
-subtree.
+A fixture attaches to **condition values**, not to a cell. A dependency-state value like
+`product: no-longer-available` needs one fixture, defined once, and every cell selecting that value can use it —
+rather than the same canned response being restated in every leaf of a subtree.
+
+### Authored Here, Or Referenced
+
+A fixture is **either** authored by this design target, stating its `content`, **or** authored outside it and
+referenced by `externalRef` — exactly one of the two, never both.
+
+An external fixture is an address and a checksum, never parsed ([Data Model](DATA-MODEL.md) §5.4), and the
+design has no authority over it: it cannot edit it, and a change to it is not a change this design made. What
+that buys is already built. The checksum moving raises `stale-reference`
+([Reconciliation Model](reconciliation-model.md) §3), which invalidates every behavior traced against that
+fixture by the ordinary rule (§4) — so a fixture that its author revises reaches every design relying on it
+without anything here having to notice.
+
+Analysis is the expected author. A use case that states what a product must do for a given concrete input has
+already written the fixture; restating it here would duplicate a fact with nothing keeping the copies together,
+which is the same argument §3 already makes against restating one payload per value it exhibits. The design
+references it and traces against it.
+
+**Including fixtures for a dependency, where the requirement names the dependency.** A use case whose steps save
+a widget to the widget store and later fetch it from the widget store has named that store, and the states it
+can be in — holding the widget, not holding it, unreachable — are facts about the requirement rather than
+discoveries of the design. Analysis can reasonably be expected to supply those fixtures.
+
+The test is the one §2.1 already applies to required effects: a `document` sourcing means the fact is owned
+elsewhere, and changing it means change control against the owning document. A dependency the **design** chose —
+a cache, a retry queue, a particular client — was named nowhere outside, so nothing outside could have authored
+its fixtures, and they are this design's to write and to answer for.
+
+Read from the other side, that is the same question anticipation asks (§2.3). A behavior every one of whose
+dependency interactions is anticipated by a `document`-sourced required effect is one whose entry state the
+requirement already accounted for entirely — which is exactly when every fixture it needs could have come from
+outside. One interaction that only the design named, and one of its fixtures is local.
+
+This is also why the model does not say a fixture *belongs to* the design target. Some do; the ones that matter
+most for [Reconciliation Model](reconciliation-model.md) §6.1 do not.
 
 **The relationship is many-to-many, and `ConditionValue.fixtures` is the authored direction**
 ([Condition Model](condition-model.md) §2.1). One concrete artefact exhibits several characteristics at once:
