@@ -56,7 +56,6 @@ classDiagram
         +DataType[] dataTypes
     }
     class SpecifiableBoundary {
-        +MaturityLevel maturity
         +BuildManifest buildManifest
         +Operation[] operations
         +CrossCuttingBoundary[] crossCutting

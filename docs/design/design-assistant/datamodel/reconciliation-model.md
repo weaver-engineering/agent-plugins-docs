@@ -46,15 +46,7 @@ classDiagram
         +SourcingKind kind
         +Prose basis
     }
-    class Finding {
-        +FindingKind kind
-        +Address subject
-        +Prose detail
-        +MaturityLevel blocks
-        +FindingStatus status
-        +Slug raisedBy
-        +Checksum condition
-    }
+    class Finding
     class Review {
         +ReviewState state
         +Identity reviewedBy
@@ -96,19 +88,14 @@ case ever being parsed ([Data Model](DATA-MODEL.md) §5.4).
 
 ## 3 Findings
 
-A `Finding` is a detected violation, recorded against the element it is about rather than reported and
-forgotten. It is the model's own record of what is wrong.
+A `Finding` is a detected violation. **It is computed and never stored** — recomputed on every run from the
+model, rather than recorded against the element it is about
+([Parse Contract](../serialization/parse-contract.md) §7). What is durable is a soft resolution answering one
+(§3.1), and it keys onto the finding's condition precisely because the finding itself does not persist.
 
-| Attribute | Type | Meaning |
-|---|---|---|
-| `kind` | `FindingKind` | which check produced it (below) |
-| `subject` | `Address` | the element the finding is about |
-| `detail` | `Prose` | what was found, concretely — enough that a cold session need not re-derive it |
-| `blocks` | `MaturityLevel` | the checkpoint this finding prevents; absent for an advisory finding (§3.1) |
-| `status` | `FindingStatus` | `open` or `resolved`, with the resolution |
-| `acknowledgement` | `Acknowledgement` | for an advisory finding accepted as intended (§3.1) |
-| `raisedBy` | `Slug` | the `id` of the check that produced this finding, from the design's own check configuration ([Design A Specifiable Boundary](../workflow/WORKFLOW.md) §3.1). What gathers a check's whole finding set as one unit of work, and what a re-run resolves against (§2.3 there of the same document) |
-| `condition` | `Checksum` | computed: a digest of the condition that produced this finding. What a soft resolution keys onto alongside `kind` and `subject` ([Design A Specifiable Boundary](../workflow/WORKFLOW.md) §2.5) — so a boundary spend of 1, once acknowledged, stops matching once the spend becomes 2 |
+**`Finding`'s shape is stated in [Data Model](DATA-MODEL.md) §1.2.2 and not restated here.** It is one of the
+process shapes the data model authors, because no single concern owns it and a check computes findings without
+deciding what a finding is.
 
 **The kinds below are the default check set, not the complete set of things that can be wrong.** A finding
 kind exists because some check produces it, and which checks run against a design is that design's own
@@ -116,16 +103,18 @@ configuration (§5). Adding a check adds a kind and extends what a design record
 positions from what the design can claim, which is a legitimate configuration rather than a gap. What is
 fixed is the shape of a `Finding` and the rule that a gate is the absence of the findings blocking it.
 
+**The kinds that name no design content are not here either.** `unparsed-document`,
+`unstated-required-attributes`, `conflicting-claim`, `duplicate-claim`, `unsourced-fact`, `stale-provenance`,
+`stale-reference` and the five pre-parse kinds are about a claim, a document or the configuration rather than
+about anything a design contains, so they exist under every configuration and are authored in
+[Data Model](DATA-MODEL.md) §1.2.3. What follows is this concern's own: the kinds that name design content.
+
 | Kind | Raised when |
 |---|---|
-| `unparsed-document` | a document within the design's scope whose contents have not been assessed for their contribution to the design ([Data Model](DATA-MODEL.md) §1.1) |
-| `unstated-required-attributes` | a position the running check requires is unclaimed. Plural, and scoped to that check: it does not assert that an entity has every attribute it will eventually need, only that the positions *this* check requires are absent ([Design A Specifiable Boundary](../workflow/WORKFLOW.md) §2.3) |
-| `conflicting-claim` | two contributions state differing values for one attribute, or for one entry of one collection ([Serialization](../serialization/parse-contract.md) §3) |
 | `uncovered-cell` | a valid leaf cell has no behavior |
 | `unexplained-exclusion` | a cell is excluded by the architect with no recorded reason |
 | `non-partitioning-dimension` | a dimension's values are not exhaustive and mutually exclusive over what they partition |
 | `unsourced-condition-dimension` | an authored condition dimension, or an authored condition value, carries no `Sourcing` ([Condition Model](condition-model.md) §2.3) |
-| `unsourced-fact` | any other authored fact required to carry `Sourcing` — other than a condition dimension or value — carries none |
 | `invalid-behavior` | a behavior does not reconcile with the dimensions of its cell's condition space or with its fixtures ([Behavior Model](behavior-model.md) §1.1) |
 | `unresolved-type` | a signature names a type the dictionary does not define |
 | `invalid-realization` | `realizedBy` names a function outside this target, inside a contained one, or off the interface boundary |
@@ -151,8 +140,6 @@ fixed is the shape of a `Finding` and the rule that a gate is the absence of the
 | `unpredicated-effect` | an effect has no checkable predicate at `M4` |
 | `satisfaction-failure` | a required effect has no corresponding expected effect |
 | `unexpected-side-effect` | an expected dependency interaction is anticipated by no required effect |
-| `stale-provenance` | a derived element's sources no longer checksum to what is recorded |
-| `stale-reference` | an authored claim's `ExternalRef` ([Data Model](DATA-MODEL.md) §5.4) no longer checksums to what is recorded. The authored counterpart to `stale-provenance` — a document-sourced fact carries `Sourcing`, not `Provenance`, so nothing about the design's own invalidation walk (§4) reaches it |
 | `unresolved-nfr-scope` | the walk outward from the design finds no Product, or a Product with no NFR rule pointer ([Boundary Model](boundary-model.md) §7.2) |
 | `redesign-required` | regeneration produced a result that does not match what was reviewed (§6.2) |
 | `unapproved-behavior` | a behavior has no standing human approval (§6) |
@@ -184,7 +171,9 @@ therefore ignorable.
 | Kind | Raised when |
 |---|---|
 | `duplicate-metric-emitter` | more than one function emits the same metric ([Function And Call Graph](function-and-call-graph.md) §6.2) |
-| `duplicate-claim` | two contributions state the same value for one attribute, or for one entry of one collection ([Serialization](../serialization/parse-contract.md) §3) |
+
+`duplicate-claim` is advisory too and is authored in [Data Model](DATA-MODEL.md) §1.2.3, because two
+contributions stating one value is a fact about claims rather than about anything a design contains.
 
 Advisory findings exist for patterns that are usually wrong and legitimately right often enough that a gate
 would be worse than a note. They are not a softer severity for things nobody got round to enforcing: a finding
@@ -319,7 +308,12 @@ punish exactly the mechanical hygiene it depends on.
 
 ## 5 Maturity Gates
 
-A boundary is at a level when every gate up to and including it passes. **A gate has two conjuncts, not
+**This section states the gates, not a maturity.** What a level would require is a fact about the design and
+belongs here; whether a level has been reached is computed by the process that assesses a design, reported in
+its answer, and keyed by **address** rather than by boundary ([Data Model](DATA-MODEL.md) §1.2, §5.2). Nothing
+in this model carries a maturity, and a gate is a condition rather than a state.
+
+An address is at a level when every gate up to and including it passes. **A gate has two conjuncts, not
 one:** every check registered at that level, and at every level below it, must have **completed** — run, and
 neither skipped for an unmet requirement nor blocked (§5.1) — **and** none of them reported a finding that
 blocks it.
@@ -382,8 +376,15 @@ by a dozen different checks across every level from `M0` to `M5`
 same or different entities at its own checkpoint — which is also why it is plural: it asserts only that the
 positions the raising check requires are unclaimed, never that some other check has certified the rest.
 
-A `SpecifiableBoundary` is complete at `M4`; a `DeployableBoundary` at `M5`. A containing boundary is at the
-lowest level any boundary it contains is at — a service is not reconciled while one of its domains is not.
+A `SpecifiableBoundary` is complete at `M4`; a `DeployableBoundary` at `M5`. That is a fact about what the two
+boundary kinds are, so it belongs to this configuration's content rather than to the mechanisms the data model
+authors ([Data Model](DATA-MODEL.md) §1.2) — a process configured for something with no boundaries in it would
+have no such fact to state, and would still have gates.
+
+**Aggregation is by address, and takes the minimum.** An address is at the lowest level of any address beneath
+it — a service is not reconciled while one of its domains is not. Stated over addresses rather than over
+boundaries, it holds for whatever a configuration's checks assess, and it is what makes the claim
+compositional: establishing it for the root establishes it for everything within.
 
 ### 5.1 Blocked
 

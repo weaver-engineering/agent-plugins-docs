@@ -235,13 +235,7 @@ classDiagram
         +Scope scope
         +Literal[] settings
     }
-    class Finding {
-        +Address subject
-        +Prose detail
-        +MaturityLevel blocks
-        +FindingStatus status
-        +Checksum condition
-    }
+    class Finding
 
     Check --> "1..*" FindingKind : produces
     Check --> "0..*" Check : requires
@@ -258,6 +252,10 @@ object — a package exports both together — so splitting them would add an in
 half of, and would give the model two names for one entity. Every relationship above is drawn once and is not
 restated as an attribute, which is the convention the data model already follows
 ([Data Model](../datamodel/DATA-MODEL.md) §5.5).
+
+`Finding` is drawn without its attributes deliberately: its shape is one of the process shapes the data model
+authors ([Data Model](../datamodel/DATA-MODEL.md) §1.2.2), and a check produces findings without deciding what
+a finding is. It appears here for the relationships, not as a definition.
 
 **What a check answers with** is every finding it raises — open, acknowledged and blocked alike — each carrying
 the `status` that tells them apart (§2.3). A check does not filter its own soft-resolved findings out, because
