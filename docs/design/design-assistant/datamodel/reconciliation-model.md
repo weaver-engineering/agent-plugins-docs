@@ -309,11 +309,11 @@ punish exactly the mechanical hygiene it depends on.
 ## 5 Maturity Gates
 
 **This section states the gates, not a maturity.** What a level would require is a fact about the design and
-belongs here; whether a level has been reached is computed by the process that assesses a design, reported in
-its answer, and keyed by **address** rather than by boundary ([Data Model](DATA-MODEL.md) §1.2, §5.2). Nothing
-in this model carries a maturity, and a gate is a condition rather than a state.
+belongs here; whether a level has been reached is computed by the process that assesses a design and reported
+in its answer, against the design's **root address** rather than by boundary ([Data Model](DATA-MODEL.md)
+§1.2, §5.2). Nothing in this model carries a maturity, and a gate is a condition rather than a state.
 
-An address is at a level when every gate up to and including it passes. **A gate has two conjuncts, not
+A design is at a level when every gate up to and including it passes. **A gate has two conjuncts, not
 one:** every check registered at that level, and at every level below it, must have **completed** — run, and
 neither skipped for an unmet requirement nor blocked (§5.1) — **and** none of them reported a finding that
 blocks it.
@@ -381,10 +381,16 @@ boundary kinds are, so it belongs to this configuration's content rather than to
 authors ([Data Model](DATA-MODEL.md) §1.2) — a process configured for something with no boundaries in it would
 have no such fact to state, and would still have gates.
 
-**Aggregation is by address, and takes the minimum.** An address is at the lowest level of any address beneath
-it — a service is not reconciled while one of its domains is not. Stated over addresses rather than over
-boundaries, it holds for whatever a configuration's checks assess, and it is what makes the claim
-compositional: establishing it for the root establishes it for everything within.
+**A level is bounded by the lowest thing beneath it.** A blocking finding subjected at any address within the
+design bounds the design's own level — a service is not reconciled while one of its domains is not. Stated over
+addresses rather than over boundaries, it holds for whatever a configuration's checks assess, and it is what
+makes the claim compositional: establishing it for the root establishes it for everything within.
+
+**This is how the one level is derived, not a level carried by each address.** The other conjunct — that every
+check registered at the level completed — is a property of the run and not of any element within it, so an
+address carrying no blocking finding has not thereby been assessed to anything. What is worth reporting
+per-address is which subjects are doing the bounding ([Data Model](DATA-MODEL.md) §5.2), since that is what
+says where the work is.
 
 ### 5.1 Blocked
 

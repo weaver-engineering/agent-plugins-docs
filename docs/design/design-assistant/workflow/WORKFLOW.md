@@ -11,6 +11,8 @@
   stored
 * [Assessment And Trust](../serialization/assessment-and-trust.md) - the attestation the pre-parse stage
   verifies
+* [evolve-a-design-to-maturity](../../../analysis/use-cases/evolve-a-design-to-maturity/USE-CASE.md) - the use
+  case this workflow serves, and the source of what §2.3.1 requires a report to contain
 * @docs/standards/design-layout-standards.md - the layout the global checks report against
 * @docs/workflows/weaver-workflows.md - where design sits in the workflow
 
@@ -98,7 +100,7 @@ For each registered check, in configured order:
    match a standing acknowledgement regardless, so reporting the matches is returning what was computed — and
    it is what lets an architect see what has been accepted alongside what is outstanding. A check raising
    nothing at all is complete; move on.
-3. **Findings, some workable** — those findings are the next unit of work. Report and stop.
+3. **Findings, some workable** — those findings are the next unit of work. Report (§2.3.1) and stop.
 4. **Findings, none workable** — every finding is soft-resolved. Where all of them are **acknowledged** the
    check is complete, since an acknowledged finding blocks nothing; where any is **blocked** the check is
    blocked, because a change request leaves the level unreachable. Either way, carry on to the next check.
@@ -113,6 +115,27 @@ That is also why `unstated-required-attributes` is plural. It does not assert th
 attribute it will eventually need; it asserts that the attributes **this check requires** are present. Two
 checks may require different attributes of one entity at different checkpoints, and neither is making a claim
 about the other's.
+
+#### 2.3.1 What A Run Reports
+
+Stopping at the first check with workable findings is where the runner stops **working**, not the whole of what
+it answers with. A run reports:
+
+| Reported | Because |
+|---|---|
+| the **design's maturity**, and the **addresses bounding it** — the subjects of the blocking findings at the level that stopped it | the level is the NUWD's to report ([Data Model](../datamodel/DATA-MODEL.md) §1.2.1) and is what the architect steers by; the subjects are what makes it actionable rather than a score. One level, not one per element: completion is a property of the run (§2.4), so no address is assessed independently of the design containing it |
+| the **checks that completed, by level** | completion is half of every gate (§2.4), and a level's remaining checks are not visible from its findings |
+| **acknowledged** findings, grouped by the level they were raised at, with their own group for the global checks, which have no level | what this design has decided to live with. Every check already returns them (§2.3 step 2), so reporting them is returning what was computed |
+| **blocked** findings, as a group of their own | a change request leaves its level unreachable where an acknowledgement does not (§2.5). Folding the two together would make a blocked design read as one with accepted exceptions |
+| the **findings of the first check that produced workable ones**, each with its resolution routes (§6) | the unit of work itself |
+| the **checks not yet evaluated up to the next level**, each with whether it could run now | what the architect picks from when they would rather run a different check than work the one presented |
+| the **levels not yet evaluated at all** | how much of the assessment has not been attempted, which absence of findings does not distinguish from having passed |
+
+The last two are what make the report steerable rather than merely informative: without them, "run a different
+check" requires knowing which checks exist and which of them are currently satisfiable, and a report that
+withholds that turns its own first finding into an instruction.
+
+A run that reaches the end with nothing outstanding reports the same shape, with an empty unit of work.
 
 ### 2.4 Maturity Is Earned, Level By Level
 
@@ -858,6 +881,15 @@ to the document that also described how to do the work. Registering checks separ
 is data a project can change, and how each assessment is resolved is a document per check that can be improved
 without touching the order. It also makes the thing dog-foodable — the first serving is the configuration and
 the first check, and each check is bottomed out as it is reached rather than all of them in advance.
+
+**Why a run reports more than the unit of work.** The runner's own loop stops at the first check with workable
+findings, and an earlier reading of that had the report stop there too — one finding set, and nothing else. The
+use case it serves ([evolve-a-design-to-maturity](../../../analysis/use-cases/evolve-a-design-to-maturity/USE-CASE.md))
+does not permit that: the architect decides what to work on, which needs what else is outstanding, what has been
+accepted, what is blocked, and which other checks could run instead. A report carrying only the first finding
+set makes that decision for them by omission, whatever it says about being advisory. Almost all of it is already
+computed — every check returns its soft-resolved findings anyway (§2.3), and completion by level is what §2.4
+already reasons over — so this is a statement of what to return, not new work for the runner.
 
 **Why a check does not declare its stage.** A check declares what it needs, not where it sits. The same
 question can legitimately be asked at different points by different projects — a project that wants document

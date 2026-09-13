@@ -10,6 +10,7 @@ The Loom runs.
 ## 1 Use Cases
 
 * [document-a-concept](analysis/use-cases/document-a-concept/USE-CASE.md) — the Architect gets a concept out of their head and into linked, reviewable documentation
+* [evolve-a-design-to-maturity](analysis/use-cases/evolve-a-design-to-maturity/USE-CASE.md) — the Architect iteratively evolves a design, deciding each step from findings and their available resolutions
 * [find-and-read-documentation](analysis/use-cases/find-and-read-documentation/USE-CASE.md) — a memoryless Agent reaches the sections that bear on its task without reading whole documents
 * [number-document-sections](analysis/use-cases/number-document-sections/USE-CASE.md) — section, figure and reference numbering stays standards-compliant without being maintained by hand
 
