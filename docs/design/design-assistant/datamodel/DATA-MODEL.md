@@ -369,12 +369,15 @@ Stated over the model's own terms, for a boundary `B`:
    side effect, no call tree node absent from its caller's declared calls, no orphan, and no behavior left
    standing at a cell its condition space no longer supports.
 5. **Fresh** — every derived element's provenance checksums still match the content they were derived from.
-6. **Approved** — every behavior carries a human review that has not been invalidated.
+6. **Approved** — every behavior that is owed a human review carries one that has not been invalidated. A
+   behavior resting entirely on fixtures referenced from outside this design is not owed one
+   ([Reconciliation Model](reconciliation-model.md) §6.1).
 7. **Sufficient** — `B` has reached the maturity level its kind requires (§5.2): `M4 Reconciled` for a
    Specifiable boundary, `M5 Deployable` for a Deployable one.
 
-Claims 1–5 are fully mechanical. Claim 6 is mechanical to *check* and never mechanical to *grant*. Claim 7 is
-the conjunction of the gates in [Reconciliation Model](reconciliation-model.md) §5.
+Claims 1–5 are fully mechanical. Claim 6 is mechanical to *check*, and mechanical to *grant* only where the
+design authored none of the behavior's entry state — never otherwise. Claim 7 is the conjunction of the gates
+in [Reconciliation Model](reconciliation-model.md) §5.
 
 **The claim is made against a stated check set** (§1). "Complete, reconciled and sound" is decidable relative
 to the checks a design is configured with, and is not a well-formed question without them — two designs both

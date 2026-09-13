@@ -8,9 +8,13 @@
 
 ## Purpose
 
-Has a human taken responsibility for every behavior? `approved` is the only state a human can put a behavior
-into, and the design assistant can never grant it to itself. This is deliberately *the* human in the loop: it is
-the point at which a person takes responsibility for what the code will be made to do.
+Has a human taken responsibility for every behavior this design decided anything about? `approved` is the only
+state a human can put a behavior into, and the design assistant can never grant it to itself. This is
+deliberately *the* human in the loop: it is the point at which a person takes responsibility for what the code
+will be made to do.
+
+The qualifier is load-bearing rather than a softening: a behavior whose every fixture is external decided
+nothing here, and asking for a signature on it would dilute the ones that matter.
 
 ## Registration
 
@@ -24,6 +28,13 @@ the point at which a person takes responsibility for what the code will be made 
 
 Every behavior's `review` state. A behavior is outstanding while it is `pending` — derived, presented or not,
 but not yet confirmed — or `redesign-required`.
+
+**Except where every one of its chosen fixtures is external.** A behavior resting entirely on fixtures this
+design references rather than authored ([Behavior Model](../../datamodel/behavior-model.md) §3.0) is owed no
+approval and is not outstanding for want of one: no Given condition of it was arrived at here, so there is
+nothing for a signature to stand behind (see Notes below, and
+[Reconciliation Model](../../datamodel/reconciliation-model.md) §6.1). One locally authored fixture among them
+and the behavior is outstanding like any other.
 
 An approved behavior that becomes **invalid** returns to `pending`: what the human agreed to was a behavior at a
 cell that supported it, and the cell no longer does.

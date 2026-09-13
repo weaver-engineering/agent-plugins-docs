@@ -422,6 +422,28 @@ Every behavior carries a review state:
 `approved` is the only state a human can put a behavior into, and the design assistant can never grant it to
 itself. Everything else about review is mechanical.
 
+**A behavior every one of whose chosen fixtures is external is owed no approval, and is not outstanding for
+want of one.** Where each fixture is referenced rather than authored here
+([Behavior Model](behavior-model.md) §3.0), no Given condition of that behavior was arrived at by
+this design: each was authored elsewhere, by someone else, and is held by address and checksum. Approval exists
+to put a person behind conditions this design produced — above all to catch one that was *inferred* and
+presented as though it had been stated (`behavior-approval`'s own Notes). Where nothing was inferred here,
+there is nothing for a signature to add, and demanding one would ask a human to take responsibility for a fact
+they had already stated somewhere else.
+
+The concession is narrow and it is not a weakening. Such a behavior is still traced, still matched against its
+required effects, and still invalidated the moment any fixture it rests on changes — sooner than an approved
+one would be, since a `stale-reference` fires on the author's edit rather than waiting for anyone to notice.
+Mix in a single fixture this design authored and the behavior is outstanding again: what makes the assertion
+mechanical is that *all* of it came from outside, and one locally authored fixture is one condition somebody
+here decided.
+
+**This is not a fourth review state either**, for the same reason `invalid-behavior` is not one (below). Such a
+behavior stays `pending` — derived, and not confirmed by a human, both of which remain true. What changes is
+whether `behavior-approval` counts it as outstanding, which is a question about the check rather than about the
+behavior's own state. Naming a state would assert a property of the behavior; what is actually being said is
+that nobody is being asked for anything.
+
 **An approved behavior that becomes invalid does not silently keep its approval.** An open `invalid-behavior`
 (§3.2) returns the behavior to `pending`. What the human agreed to was a behavior at a cell that supported
 it, and the cell no longer does — so nothing currently recorded has been confirmed, which is the same
