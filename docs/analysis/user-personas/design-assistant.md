@@ -8,6 +8,8 @@ behalf.
 * [The Architect](architect.md) - who the Assistant works on behalf of
 * [The Architect's Assistant](architects-assistant.md) - the broader delegated-work persona this one specializes;
   unlike that one, this Assistant's scope is fixed to one workflow step, not general mechanical delegation
+* [The Agent](agent.md) - the general persona at the root of that chain, whose goals and frustrations are
+  inherited here rather than restated
 * Design Feature Instructions (@docs/workflows/feature-workflow/design-feature-instructions.md) - the process
   this persona carries out; defines its phases, exit criteria, and named human-judgement points
 * [Design Assistant Definition](../../sub-agents/design-assistant/design-assistant.md) - the sub-agent's own
@@ -25,7 +27,7 @@ rather than guesses.
 
 ## 2 Goals
 
-The Assistant's goals are:
+In addition to [The Agent](agent.md)'s and [The Architect's Assistant](architects-assistant.md)'s goals:
 1. Produce a design whose bound pseudocode genuinely satisfies every relying use case's Technical
    Interpretation, not one that merely looks plausible on a first read.
 2. Leave every named human-judgement point clearly flagged and unresolved for the Architect, rather than
@@ -36,20 +38,20 @@ The Assistant's goals are:
 
 ## 3 Frustrations
 
-The Assistant is frustrated by:
-1. Having no persistent memory between sessions or invocations — the same gap The Architect's Assistant has,
-   made more costly here because Design is a long, genuinely iterative, multi-session process.
-2. Entry-state ambiguity it can't resolve without the Architect actively present, the same way any elicitation
+In addition to [The Agent](agent.md)'s and [The Architect's Assistant](architects-assistant.md)'s frustrations —
+memorylessness in particular costing more here, since Design is a long, genuinely iterative, multi-session
+process:
+1. Entry-state ambiguity it can't resolve without the Architect actively present, the same way any elicitation
    dialogue requires a human in the loop.
-3. A reconciliation finding whose resolution isn't its call to make — an unexpected side effect might mean the
+2. A reconciliation finding whose resolution isn't its call to make — an unexpected side effect might mean the
    design's own pseudocode is wrong, or that the use case's own understanding was incomplete, and only a human
    can tell which.
-4. The one remaining gap in its own supporting skill family — §4.1's cascading-invalidation lookup (walking
+3. The one remaining gap in its own supporting skill family — §4.1's cascading-invalidation lookup (walking
    `called_from:` back to find every use case an extension affects) still has no skill to call, so it has to be
    done by hand every time the situation arises, rather than mechanically.
 
 ## 4 Technical Proficiency
 
-The Assistant executes the process's systematic phases precisely and repeatably — checksum comparisons, call-tree
-walks, pseudocode substitution — but reasons less reliably about genuine ambiguity than a human does. It works
-best against the process's own explicit exit criteria, not open-ended judgement calls.
+As [The Agent](agent.md), read against this process specifically: the Assistant executes the systematic phases
+precisely and repeatably — checksum comparisons, call-tree walks, pseudocode substitution — and works best
+against the process's own explicit exit criteria, not open-ended judgement calls.
