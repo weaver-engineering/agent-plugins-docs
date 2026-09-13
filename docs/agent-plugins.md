@@ -9,15 +9,13 @@ The Loom runs.
 
 ## 1 Use Cases
 
-* [UC-001 — Discuss A Project Concept And Document It](analysis/use-cases/UC-001-discuss-concept-and-document.md)
-* [UC-002 — Auto-Number Document Sections](analysis/use-cases/UC-002-auto-number-document-sections.md)
-* [UC-003 — Index A Path](analysis/use-cases/UC-003-index-a-path.md)
-* [UC-004 — Index Document Words (Retired)](analysis/use-cases/UC-004-index-document-words.md) — merged into UC-003
-* [UC-005 — Search Documentation](analysis/use-cases/UC-005-search-documentation.md)
-* [UC-006 — Extract Document Content](analysis/use-cases/UC-006-extract-document-content.md)
+* [document-a-concept](analysis/use-cases/document-a-concept/USE-CASE.md) — the Architect gets a concept out of their head and into linked, reviewable documentation
+* [find-and-read-documentation](analysis/use-cases/find-and-read-documentation/USE-CASE.md) — a memoryless Agent reaches the sections that bear on its task without reading whole documents
+* [number-document-sections](analysis/use-cases/number-document-sections/USE-CASE.md) — section, figure and reference numbering stays standards-compliant without being maintained by hand
 
 ## 2 User Personas
 
+* [The Agent](analysis/user-personas/agent.md) — the general persona both assistants below specialize
 * [The Architect](analysis/user-personas/architect.md)
 * [The Architect's Assistant](analysis/user-personas/architects-assistant.md)
 * [The Design Assistant](analysis/user-personas/design-assistant.md)
