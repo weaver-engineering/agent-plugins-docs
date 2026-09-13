@@ -162,7 +162,7 @@ asked again. Every document in this set describes an arc of that loop; this is t
 Two things follow from the shape rather than from any content. **Nothing persists outside the MaturityStore** —
 the model is a fold and the NUW is computed, so losing either costs a recomputation and never a reconstruction
 ([Serialization](../serialization/SERIALIZATION.md) §5). And **maturity is not in the model**: it is the NUWD's
-to report, keyed by address, because the NUWD is process and the model is open (§5.2).
+to report, against the design's own root address, because the NUWD is process and the model is open (§5.2).
 
 #### 1.2.2 The Process Shapes
 
@@ -516,10 +516,21 @@ unit of work is, which reports it as part of its answer. The model's contributio
 ([Reconciliation Model](reconciliation-model.md) §5): what would have to hold for a level to have been
 reached. Whether it currently holds is not a fact about a boundary.
 
-What that process reports is keyed by **address** rather than by boundary. Addresses are a convention of this
-model that every design has (§5.1), while a boundary is a modelled concern — and the process is not entitled to
-a schema, so it names the thing every model has. Anything addressed can therefore carry a maturity, and nothing
-in the process layer has to know what kind of element it named.
+What that process reports is **one level for the design**, named by its **root address** rather than by
+boundary. Addresses are a convention of this model that every design has (§5.1), while a boundary is a modelled
+concern — and the process is not entitled to a schema, so it names the thing every model has.
+
+**It is one level, not one per addressed element.** A gate's first conjunct is that every check registered at
+that level completed, and completion is a property of the run rather than of any element the run looked at. So
+there is no sense in which one address was assessed to a level and another was not: an address carrying no
+blocking finding was not thereby checked, and treating it as matured would be the same error as reading absence
+of findings as a pass. What *is* per-address is where the level is **bounded** — which blocking findings, about
+which subjects, are holding the design where it is ([Reconciliation Model](reconciliation-model.md) §5). That
+is what the process reports alongside the level, and it is what makes the level actionable.
+
+One design directory is one design target's scope, so one run answers for one design: a promoted target's
+artefacts leave the containing design's scope for their own
+([Boundary Model](boundary-model.md) §3.1), and are assessed by their own run against their own configuration.
 
 `M0 Identified` through `M5 Deployable`, below, are **the default configuration's own levels** (§1) — what we
 currently think the right set of checkpoints is — not this document's fixed list:
@@ -821,8 +832,17 @@ this model keeps only the gates that say what reaching a level would require.
 the next unit of work — is asked of a directory, not of a schema, and the schema is open by construction (§1).
 Naming a boundary in the answer would push a modelled concern into a process that is not entitled to one, and
 would be wrong for the first configuration whose checks assess something other than boundaries. An address is
-the one thing every design has whatever its checks require, so keying on it costs nothing and generalises
+the one thing every design has whatever its checks require, so naming one costs nothing and generalises
 without the process layer ever knowing what it named.
+
+**Why that is one level and not a level per addressed element.** An earlier reading took "keyed by address" to
+mean every address carries its own maturity, and it does not follow: addressing is the vocabulary the answer is
+phrased in, not a statement about how many answers there are. A gate's completion conjunct is a property of the
+run, so an address with no blocking finding against it has not been assessed — it has merely not objected, which
+is the same thing absence of findings always is. The reading survived as long as it did because it was inherited
+from the `maturity` attribute this section removed: when maturity sat on entities, one per entity was what it
+meant, and moving the computation out of the model did not by itself discharge the assumption that came with it.
+What genuinely is per-address is which subjects **bound** the level, and that is what §5.2 reports alongside it.
 
 **Why the levels are the configuration's own list rather than this document's.** The same reasoning that moved
 the finding kinds out of a closed table applies to what they gate. Fixing `M0`–`M5` here, with their
