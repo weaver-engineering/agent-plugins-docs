@@ -1,8 +1,8 @@
 # evolve-a-design-to-maturity — Evolve A Design To Maturity
 
 **Actor:** [The Architect](../../user-personas/architect.md) — primary. The design is theirs, and every choice
-about how it evolves stays theirs. [The Agent](../../user-personas/agent.md) is a supporting actor: it assesses,
-it presents, and it does the work the Architect chooses, in that order.
+about how it evolves stays theirs. [The Design Assistant](../../user-personas/design-assistant.md) is a
+supporting actor: it assesses, it presents, and it does the work the Architect chooses, in that order.
 **Scope:** Covers evolving a design — assessing its maturity, choosing what to do next, and doing it. What any
 particular check asserts, and what any particular resolution does, is the content of a configuration rather than
 of this use case (§7). Implementing the design the loop produces is downstream of it.
@@ -10,9 +10,10 @@ of this use case (§7). Implementing the design the loop produces is downstream 
 ## Context
 * [Agent Plugins index](../../../agent-plugins.md) - root index for this repo
 * [The Architect](../../user-personas/architect.md) - primary actor
-* [The Agent](../../user-personas/agent.md) - supporting actor
-* [find-and-read-documentation](../find-and-read-documentation/USE-CASE.md) - how the Agent reaches the design
-  documentation it uses as context at step 3
+* [The Design Assistant](../../user-personas/design-assistant.md) - supporting actor; its Role states which
+  halves of this loop it may act on and which are the Architect's
+* [find-and-read-documentation](../find-and-read-documentation/USE-CASE.md) - how the Assistant reaches the
+  design documentation it uses as context at step 3
 * [Data Model §1.2.1](../../../design/design-assistant/datamodel/DATA-MODEL.md) - the document evolution loop
   this use case is the actor-level statement of
 * [Design A Specifiable Boundary](../../../design/design-assistant/workflow/WORKFLOW.md) - the default check
@@ -24,7 +25,7 @@ of this use case (§7). Implementing the design the loop produces is downstream 
 
 The Architect brings a design to the maturity they actually need, in iterations small enough to stay in control
 of — each one telling them what is wrong with the design now, and what could be done about it, so that they
-decide how it evolves and the Agent does the work of evolving it.
+decide how it evolves and the Assistant does the work of evolving it.
 
 Two things make this worth a use case. A design that *looks* finished is not the same as one that *is*: without a
 mechanical assessment, "this design is complete enough to build from" is an opinion, formed by re-reading the
@@ -68,13 +69,13 @@ the designs that most need bringing under assessment.
    * the findings of the first check that produced any, each with the resolutions available to it;
    * every check not yet evaluated up to the next level, and whether it could run now;
    * the levels not yet evaluated at all.
-3. The Architect, assisted by the Agent and with the design's own documentation as context
+3. The Architect, assisted by the Assistant and with the design's own documentation as context
    ([find-and-read-documentation](../find-and-read-documentation/USE-CASE.md)), decides which finding to pursue
    and which of its resolutions to apply.
-4. The Agent applies that resolution, using the skills and tools the resolution itself names, eliciting from the
-   Architect whatever the resolution needs and the design does not already say.
-5. The Agent writes the result into the design documentation, where the next assessment reads it as an ordinary
-   claim rather than as a record of having been told.
+4. The Assistant applies that resolution, using the skills and tools the resolution itself names, eliciting
+   from the Architect whatever the resolution needs and the design does not already say.
+5. The Assistant writes the result into the design documentation, where the next assessment reads it as an
+   ordinary claim rather than as a record of having been told.
 6. The Architect asks again, from step 1. The design has changed, so the assessment is recomputed against what
    it now says.
 
@@ -84,7 +85,7 @@ the designs that most need bringing under assessment.
   from.
 * The design's maturity can be read off rather than asserted — and where it has not advanced, what is holding it
   is named.
-* Every choice about how the design evolved was the Architect's; the Agent's contribution is assessment,
+* Every choice about how the design evolved was the Architect's; the Assistant's contribution is assessment,
   presentation, and execution.
 
 ## 6 Extensions
