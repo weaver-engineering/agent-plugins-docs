@@ -59,7 +59,9 @@ Duplication is waste, and the pressure this creates is toward each fact having e
 What a good set of lines looks like is layout guidance and belongs with the templates, not here — this contract
 constrains no layout and rejects none.
 
-Both kinds are defined in [Reconciliation Model](../datamodel/reconciliation-model.md) §3 and §3.1.
+Both kinds are defined in [Data Model](../datamodel/DATA-MODEL.md) §1.2.3. They name no design content — two
+contributions writing one position is a fact about claims — so they are among the kinds the data model authors
+rather than any one concern's.
 
 ## 4 Identity Is The Data Model's To Declare
 

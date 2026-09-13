@@ -20,15 +20,21 @@ wherever a finding says something is genuinely wrong rather than merely absent.
 
 ## What It Does
 
-1. Establishes **what** is wrong — which of the finding's two or three possible causes this instance is.
+1. Establishes **how** to adjust the design so the condition no longer holds. Which of the kind's possible
+   conditions this instance is arrives already settled: a finding's disambiguator collapses them to one
+   ([Evolving A Check](../checks/evolving-checks.md) §2.4), so the judgement is the correction, not the
+   diagnosis.
 2. Makes the edit, as prose and claims written together in one transaction.
 3. States the disposition of any claim whose anchor the edit disturbs (§5 of the write contract): on a deleted,
    split or merged section, which claims survive and where they anchor.
 
 ## Mechanical
 
-No. Which of a finding's causes applies is the judgement, and it is what decides whether the edit invalidates
-anything downstream.
+No. **Which correction to make is the judgement**, and it is what decides whether the edit invalidates anything
+downstream. There is a limited number of changes that would evaporate a finding without contradicting the
+design's own requirements, and the first one found is often not the best — so the effort belongs in finding the
+better one, and the options set aside go to the log rather than into the design
+([Evolving A Resolution](evolving-resolutions.md) §4.5).
 
 ## What Must Be True Afterwards
 

@@ -291,8 +291,10 @@ prose and tools of each resolution route. This document names the routes; it doe
 
 A check names each kind it may produce, either
 
-* **by reference** to a kind that already exists — the default set in
-  [Reconciliation Model](../datamodel/reconciliation-model.md) §3 and §3.1, or one another check defines; or
+* **by reference** to a kind that already exists — the kinds that name no design content, in
+  [Data Model](../datamodel/DATA-MODEL.md) §1.2.3; the kinds that do, in
+  [Reconciliation Model](../datamodel/reconciliation-model.md) §3 and §3.1 and the concern documents; or one
+  another check defines; or
 * **inline**, defining the kind as part of the check.
 
 **Finding kinds are not owned by checks.** One check may produce several kinds, and one kind may be produced by

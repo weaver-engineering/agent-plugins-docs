@@ -52,7 +52,13 @@ removed mechanically, surfacing nothing. If the same condition later recurs, it 
 new occurrence from a record made about an old one is exactly the blanket suppression instance-scoping exists to
 rule out, arrived at by accident and silently.
 
-So the matching pass runs **both ways**: computing findings and looking up each one's acknowledgement can never
-see an orphan, and the same pass must walk the recorded acknowledgements and confirm each still has a finding to
-answer. No acknowledgement is retired while an `unparsed-document` stands, because the model is then
-known-incomplete and the finding that would have matched may simply not have been computable.
+The matching therefore runs **both ways**, and both are a **check's** work rather than the model's — only the
+check that would raise a condition can say whether it still arises. So a check answers with the findings it has
+soft-resolved as well as those it has open ([Workflow](../WORKFLOW.md) §2.3), and an acknowledgement its check
+did not report has no finding left to answer.
+
+**Only a completed check falsifies one.** A check skipped for an unmet requirement, or blocked, reports nothing
+trivially, so an acknowledgement belonging to it is unknown rather than spent and is kept. An
+`unparsed-document` is the clearest instance of that rule rather than a condition of its own: while one stands
+the pre-parse stage is not clean, so nothing downstream of it has completed and nothing downstream can retire
+anything.
