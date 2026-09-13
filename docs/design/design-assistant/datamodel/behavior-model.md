@@ -216,6 +216,21 @@ already written the fixture; restating it here would duplicate a fact with nothi
 which is the same argument §3 already makes against restating one payload per value it exhibits. The design
 references it and traces against it.
 
+**Including fixtures for a dependency, where the requirement names the dependency.** A use case whose steps save
+a widget to the widget store and later fetch it from the widget store has named that store, and the states it
+can be in — holding the widget, not holding it, unreachable — are facts about the requirement rather than
+discoveries of the design. Analysis can reasonably be expected to supply those fixtures.
+
+The test is the one §2.1 already applies to required effects: a `document` sourcing means the fact is owned
+elsewhere, and changing it means change control against the owning document. A dependency the **design** chose —
+a cache, a retry queue, a particular client — was named nowhere outside, so nothing outside could have authored
+its fixtures, and they are this design's to write and to answer for.
+
+Read from the other side, that is the same question anticipation asks (§2.3). A behavior every one of whose
+dependency interactions is anticipated by a `document`-sourced required effect is one whose entry state the
+requirement already accounted for entirely — which is exactly when every fixture it needs could have come from
+outside. One interaction that only the design named, and one of its fixtures is local.
+
 This is also why the model does not say a fixture *belongs to* the design target. Some do; the ones that matter
 most for [Reconciliation Model](reconciliation-model.md) §6.1 do not.
 
