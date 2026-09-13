@@ -45,9 +45,9 @@ In addition to [The Agent](agent.md)'s and [The Architect's Assistant](architect
 2. Present findings together with the resolutions available to them, so the Architect decides how the design
    evolves. Answering with a single next action would be deciding, one small step at a time, exactly what the
    Architect is there to decide.
-3. Make its own progress recoverable from the documents alone — pick up exactly where a prior, memoryless
-   session left off by recomputing, rather than by being re-told. Nothing it produces needs to survive the
-   session that produced it.
+3. Make its own progress recoverable from the documents alone. What it writes into the design is meant to last;
+   what it works out along the way — the assembled model, the findings, the level — is recomputed rather than
+   remembered, so a cold session picks up by assessing again rather than by being re-told where it had got to.
 
 ## 3 Frustrations
 
