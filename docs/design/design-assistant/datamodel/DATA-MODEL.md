@@ -47,6 +47,8 @@ from what the design can claim, which is a legitimate configuration rather than 
 That is what makes the model extensible where it matters: an additional NFR to assess, or any other design
 attribute a project wants covered, is added by **defining a check**, not by editing this model.
 
+That disclaimer is true of **positions** and not true of everything, and §1.2 says what it is not true of.
+
 ### 1.1 Applying It To A Design It Did Not Author
 
 The model is not restricted to designs written through it. **Any design written as markdown prose, at any state
@@ -74,6 +76,267 @@ The rules in scope are unassessed ([Boundary Model](boundary-model.md) §7.3), s
 each governs; cross-cutting dimensions accrete into the affected condition spaces
 ([Condition Model](condition-model.md) §2.2); the cells that adds are uncovered; behaviors are derived for them
 and their effects traced; and the design completes at a higher checkpoint than it started.
+
+### 1.2 What This Model Does Author
+
+§1's dependency runs the right way round for positions and would be wrong read as "a check could redefine
+anything". There is a part of this model **no configuration can change**, and leaving that implicit is how a
+`maturity` attribute came to sit unchallenged in two class diagrams for as long as it did.
+
+The criterion is narrow: **an invariant is authored here if it is true of any design whatever its check
+configuration.** Remove every check and the positions go with them. These remain, because the fold, the process
+and the verification claim are all defined in terms of them.
+
+| Authored here | What no configuration can change | Stated in |
+|---|---|---|
+| **Addressing** | that every element has a path-derived address, and how a namespaced address resolves | §5.1, §5.1.1 |
+| **Collections** | that every collection is unordered, that significant order is an attribute, and how entry identity is decided | §5.6 |
+| **Grounding** | that every claim is anchored in prose or carries provenance, and that one with neither is invalid | [Claim Model](../serialization/claim-model.md) §2 |
+| **Provenance** | that a derived element records every source with a checksum of its content at derivation time | §5.3, [Reconciliation Model](reconciliation-model.md) §2 |
+| **Sourcing** | that an authored fact records how it entered the model | [Decision Model](decision-model.md) §5 |
+| **External references** | that a document outside the design is an address plus a checksum, and is never parsed | §5.4 |
+| **Maturity's shape** | that levels are sequential, and that a gate is completion *and* the absence of a blocking finding | §5.2 |
+| **The process shapes** | `Finding`, `Acknowledgement`, `ChangeRequest`, `Review` | §1.2.2 |
+
+**No element type is authored here, and nothing about what a design contains is.** A boundary is not this
+model's — nor is an operation, a condition space or a behavior. They are the content one configuration's checks
+require, and a documentation evolution process configured for something else would have none of them. That is
+why the table above reaches only mechanisms: addresses without the segment kinds that name them, maturity's
+shape without any statement of what completes at which level.
+
+Everything in §2 through §6 of this document is therefore **one configuration's content** — the design
+assistant's — described in a document that also happens to state the mechanisms above. Those are two things, and
+only the second is what §1.2 is about.
+
+#### 1.2.1 The Document Evolution Loop
+
+What §1.2 authors is, taken together, a **configurable documentation evolution process**. A consumer supplies its
+checks and its resolutions; everything below is the same whatever they are.
+
+```mermaid
+flowchart LR
+    ClaimSpace --folds--> DocumentEvolutionModel@{shape: cyl, label: DocumentEvolutionModel} --> NUWD@{shape: subproc, label: NUWD}
+
+    subgraph MaturityStore
+        subgraph DocStore
+            DocA@{shape: doc, label: DocA}
+            DocB@{shape: doc, label: DocB}
+            DocC@{shape: doc, label: DocC}
+        end
+
+        DocA <--claims and anchors--> ClaimA1 & ClaimA2
+        DocB <--claims and anchors--> ClaimB1
+        DocC <--claims and anchors--> ClaimC1 & ClaimC2
+
+        subgraph ClaimSpace
+            ClaimA1@{shape: lean-r, label: ClaimA1}
+            ClaimA2@{shape: lean-r, label: ClaimA2}
+            ClaimB1@{shape: lean-r, label: ClaimB1}
+            ClaimC1@{shape: lean-r, label: ClaimC1}
+            ClaimC2@{shape: lean-r, label: ClaimC2}
+        end
+    end
+
+    NUWD --> NUW
+    subgraph NUW
+        direction TD
+        Finding@{shape: lean-r, label: Finding} -->
+        Resolutions@{shape: lean-r, label: Resolutions}
+    end
+
+    NUW --updates-->MaturityStore
+```
+
+| Named here | Is |
+|---|---|
+| **MaturityStore** | the documents and their claims together — the whole durable thing, and the only thing that persists |
+| **DocStore** | the prose a person reads, reviews and diffs |
+| **ClaimSpace** | the claims, each bound into its document's prose by anchors ([Claim Model](../serialization/claim-model.md) §2) |
+| **DocumentEvolutionModel** | what the ClaimSpace **folds** into, and the only thing a check reads ([Parse Contract](../serialization/parse-contract.md) §2) |
+| **NUWD** | the process that runs the configured checks over that model and answers one question: what is the next unit of work |
+| **NUW** | that answer — a finding, and the resolutions available to it |
+
+**The loop closes.** Applying a resolution updates the MaturityStore, the ClaimSpace folds again, and the NUWD is
+asked again. Every document in this set describes an arc of that loop; this is the loop.
+
+Two things follow from the shape rather than from any content. **Nothing persists outside the MaturityStore** —
+the model is a fold and the NUW is computed, so losing either costs a recomputation and never a reconstruction
+([Serialization](../serialization/SERIALIZATION.md) §5). And **maturity is not in the model**: it is the NUWD's
+to report, keyed by address, because the NUWD is process and the model is open (§5.2).
+
+#### 1.2.2 The Process Shapes
+
+A check computes findings; it does not decide what a finding **is**. An architect records acknowledgements,
+change requests and reviews; none of those shapes is a check's to choose either. So they are authored here — and
+they are the one group that is **modelled without ever being folded**: no claim carries a `Finding`, and a check
+that invented its own shape would make its output unreadable to the process that has to present it.
+
+"Part of the model" and "part of the fold" are therefore different questions, and only the second is answered by
+[Parse Contract](../serialization/parse-contract.md) §2.
+
+`Finding` is defined here rather than in a concern document, because no single concern owns it:
+
+| Attribute | Type | Meaning |
+|---|---|---|
+| `kind` | `FindingKind` | which condition this is (§1.2.3, or a concern document's, or a check's own) |
+| `subject` | `Address` or a path | the element the finding is about — a model address once a model exists, and a file or directory path before one does |
+| `detail` | `Prose` | what was found, concretely — enough that a cold session need not re-derive it |
+| `blocks` | `MaturityLevel` | the level this finding prevents; absent where the kind is advisory |
+| `status` | `FindingStatus` | `open`, or soft-resolved and by which ([Reconciliation Model](reconciliation-model.md) §3.1) |
+| `raisedBy` | `Slug` | the `id` of the check that produced it |
+| `condition` | `Checksum` | a digest of the condition that produced it, which a soft resolution keys onto |
+
+Two of those types are **referenced and not owned**. `MaturityLevel` is declared by a check configuration
+([Design A Specifiable Boundary](../workflow/WORKFLOW.md) §4), and referencing a type this model does not own is
+ordinary — §5.4 already does it for documents outside the design. And `subject` admitting a path is what lets one
+shape carry a finding raised before any model exists, rather than needing a second kind of finding for the
+pre-parse stage.
+
+`Acknowledgement`, `ChangeRequest` and `Review` are authored here in the same sense and are **stated** where
+their concern already states them — [Reconciliation Model](reconciliation-model.md) §3.1 and §6,
+[Decision Model](decision-model.md) §4 — because unlike a finding, each has a concern that owns it. What §1.2
+adds is that a configuration cannot redefine them.
+
+#### 1.2.3 Model-Agnostic Finding Kinds
+
+A finding kind is authored here when it **names no design content**: it is about a claim, a document, the
+configuration, or one of the mechanisms above, so it exists under every configuration.
+
+| Kind | Raised when |
+|---|---|
+| `not-a-design-directory` | the directory has no `DESIGN.yaml` at its root |
+| `undeclared-namespace` | `DESIGN.yaml` names no namespace for the design's addresses to root in |
+| `missing-check-configuration` | the walk outward from the design reaches no check configuration |
+| `invalid-check-configuration` | the configuration cannot be run as written |
+| `malformed-document` | a file in scope is not well-formed |
+| `unparsed-document` | a prose document's contribution to the design has not been assessed |
+| `unstated-required-attributes` | a position the running check requires is unclaimed |
+| `conflicting-claim` | two contributions state differing values for one position |
+| `duplicate-claim` | two contributions state the same value for one position |
+| `unsourced-fact` | an authored fact required to carry `Sourcing` carries none |
+| `stale-provenance` | a derived element's sources no longer checksum to what is recorded |
+| `stale-reference` | an `ExternalRef` no longer checksums to what is recorded |
+
+The first five are the pre-parse kinds, and a `subject` that admits a path is what lets them sit here rather than
+being carved out as a special case.
+
+**A kind naming particular content is not authored here** — `uncovered-cell`, `signature-nonconformance`,
+`invalid-sli-definition` and the rest belong to the concern document describing what they are about and to the
+check that raises them. `unsourced-condition-dimension` is the instructive pair: it is the model-specific sibling
+of `unsourced-fact` and stays with [Condition Model](condition-model.md), while the catch-all is generic and
+sits here.
+
+#### 1.2.4 The Authored Shapes Against The Store
+
+Four of the shapes above relate to the MaturityStore in ways worth drawing, because each reaches somewhere the
+loop diagram does not show.
+
+**A claim may reference another document in the store.** The document links to it and the claim references it, and
+the two are different acts: the link is prose a reader follows, the reference is what a checksum makes falsifiable.
+
+```mermaid
+flowchart
+    subgraph MaturityStore
+        subgraph DocStore
+            Doc@{shape: doc, label: Doc} --links--> Feature@{shape: doc, label: Feature}
+        end
+
+        Doc <--claims and anchors--> Claim --references--> Feature
+
+        subgraph ClaimSpace
+            Claim@{shape: lean-r, label: Claim}
+        end
+    end
+```
+
+**A `ChangeRequest` changes a document outside the store.** A reference reaches outward and is never parsed
+(§5.4); a change request reaches outward and asks for an edit this store has no authority to make. That is the
+general rule, of which "a design may not change another design target's operations"
+([Boundary Model](boundary-model.md) §3.2) is one configuration's case.
+
+```mermaid
+flowchart
+    Doc --links--> ExternalDoc@{shape: doc, label: External Doc}
+    subgraph MaturityStore
+        subgraph DocStore
+            Doc@{shape: doc, label: Doc}
+        end
+
+        Doc <--claims and anchors--> Claim
+
+        subgraph ClaimSpace
+            Claim@{shape: lean-r, label: Claim}
+            ChangeRequest@{shape: lean-r, label: ChangeRequest}
+        end
+    end
+
+    Claim --references--> ExternalDoc
+    ChangeRequest --changes--> ExternalDoc
+```
+
+**An `Acknowledgement` is durable and answers something that is not.** It lives in the ClaimSpace; the finding it
+answers is recomputed every run. That asymmetry is why it keys onto the finding's condition rather than onto the
+finding ([Reconciliation Model](reconciliation-model.md) §3.1).
+
+```mermaid
+flowchart LR
+    ClaimSpace --folds--> DocumentEvolutionModel@{shape: cyl, label: DocumentEvolutionModel} --> NUWD@{shape: subproc, label: NUWD}
+
+    subgraph MaturityStore
+        subgraph DocStore
+            Doc@{shape: doc, label: Doc}
+        end
+
+        Doc <--claims and anchors--> Claim
+
+        subgraph ClaimSpace
+            Claim@{shape: lean-r, label: Claim}
+            Acknowledgement@{shape: lean-r, label: Acknowledgement}
+        end
+    end
+
+    NUWD --> NUW
+    subgraph NUW
+        direction TD
+        Finding@{shape: lean-r, label: Finding} -->
+        Resolutions@{shape: lean-r, label: Resolutions}
+    end
+
+    Acknowledgement --acknowledges--> Finding
+    NUW --updates-->MaturityStore
+```
+
+**A derived element enters the store with provenance rather than an anchor.** Resolving a finding may produce one,
+and it points back at the documents it was derived from — which is what makes it invalidatable without any prose
+having to say it (§5.3).
+
+```mermaid
+flowchart LR
+    ClaimSpace --folds--> DocumentEvolutionModel@{shape: cyl, label: DocumentEvolutionModel} --> NUWD@{shape: subproc, label: NUWD}
+
+    subgraph MaturityStore
+        subgraph DocStore
+            Doc@{shape: doc, label: Doc}
+        end
+
+        Doc <--claims and anchors--> Claim
+
+        subgraph ClaimSpace
+            Claim@{shape: lean-r, label: Claim}
+            DerivedElement@{shape: lean-r, label: Derived Element}
+        end
+    end
+
+    NUWD --> NUW
+    subgraph NUW
+        direction TD
+        Finding@{shape: lean-r, label: Finding} -->
+        Resolutions@{shape: lean-r, label: Resolutions}
+    end
+
+    Finding --> DerivedElement --provenance--> Doc
+    NUW --updates-->MaturityStore
+```
 
 ## 2 The Six Layers
 
@@ -139,7 +402,7 @@ on it.
 | Attaches at | What attaches |
 |---|---|
 | `FunctionalBoundary` | identity, purpose, boundary kind, containment, dependency references, its functions with their signatures, descriptions, calls and emitted metrics, its interfaces, the data types it defines |
-| `SpecifiableBoundary` | a **design target**: build manifest, operations, condition spaces, behaviors, required effects, cross-cutting boundaries, call trees, expected effects, fixtures, reconciliation, maturity, key decisions, open design questions, change requests — plus the function catalog and data dictionary as views scoped to its own design |
+| `SpecifiableBoundary` | a **design target**: build manifest, operations, condition spaces, behaviors, required effects, cross-cutting boundaries, call trees, expected effects, fixtures, reconciliation, key decisions, open design questions, change requests — plus the function catalog and data dictionary as views scoped to its own design |
 | `DeployableBoundary` | runtime manifest extending the build manifest, the five-vector interface perimeter, endpoints, service archetype, SLIs — each naming the operation whose delivery it measures |
 
 The split is **content** versus **requirements**, not structure versus substance. A `FunctionalBoundary` holds
@@ -244,8 +507,19 @@ incomplete** rather than rejecting one that has only just started.
 makes the levels sequential ([Design A Specifiable Boundary](../workflow/WORKFLOW.md) §4). Where the line
 falls between "requirement settled" and "solution structured" is a judgement a project may reasonably draw
 elsewhere — or into four levels, or seven — so the configuration states it rather than this document owning
-it. `Finding.blocks` ([Reconciliation Model](reconciliation-model.md) §3) and `FunctionalBoundary.maturity`
-(§6) both reference a level the design's configuration declares, not a value from a closed enum here.
+it. `Finding.blocks` ([Reconciliation Model](reconciliation-model.md) §3) references a level the design's
+configuration declares, not a value from a closed enum here.
+
+**Maturity is not an attribute of anything in this model.** No entity carries it, and nothing in a design
+claims it. It is computed, and it is computed **outside the model** — by the process that asks what the next
+unit of work is, which reports it as part of its answer. The model's contribution is the gates
+([Reconciliation Model](reconciliation-model.md) §5): what would have to hold for a level to have been
+reached. Whether it currently holds is not a fact about a boundary.
+
+What that process reports is keyed by **address** rather than by boundary. Addresses are a convention of this
+model that every design has (§5.1), while a boundary is a modelled concern — and the process is not entitled to
+a schema, so it names the thing every model has. Anything addressed can therefore carry a maturity, and nothing
+in the process layer has to know what kind of element it named.
 
 `M0 Identified` through `M5 Deployable`, below, are **the default configuration's own levels** (§1) — what we
 currently think the right set of checkpoints is — not this document's fixed list:
@@ -275,14 +549,17 @@ maturity at all. So what a checkpoint demands of a particular design follows fro
 configuration, and these levels are the frame the checks are registered into rather than a fixed list of
 requirements.
 
-**Three things are not configurable, and are model facts rather than the configuration's:**
+**Two things are not configurable, and are the mechanisms this model authors** (§1.2):
 
 1. Levels are **sequential**, and a design climbs them — `M3` is not a question a design without an `M1`
    condition space can answer.
 2. A gate is the two-part conjunction stated above, in every configuration, whatever the levels are named or
    how many there are.
-3. A `SpecifiableBoundary` is complete at `M4`; a `DeployableBoundary` at `M5` — a fact about what the two
-   boundary **kinds** are, not about how any configuration defines its levels.
+
+A third thing is fixed but is **not** one of those, and the difference is worth keeping: a
+`SpecifiableBoundary` is complete at `M4` and a `DeployableBoundary` at `M5`. That follows from what the two
+boundary **kinds** are, so it is this configuration's content — a process configured for something with no
+boundaries in it would state no such fact and would still have gates.
 
 **Design starts before `M0`.** `M0` is simply the first checkpoint — the first point at which enough is
 settled to assert anything about the boundary. The work of arriving there is real design work: eliciting what
@@ -368,7 +645,12 @@ freely elsewhere. Where to find each:
 | `ConditionSpace`, `ConditionDimension`, `ConditionValue`, `ConditionCell`, `NfrRule` | [Condition Model](condition-model.md) |
 | `Effect`, `Trace`, `CallTreeNode`, `Fixture` | [Behavior Model](behavior-model.md) |
 | `RuntimeManifest`, `InterfacePerimeter`, `Endpoint`, `SLI` | [Deployable Model](deployable-model.md) |
-| `MaturityLevel` | [Design A Specifiable Boundary](../workflow/WORKFLOW.md) §4 — the one type in this table this model references but does not own; a check configuration declares its `slug`, `name`, `asserts` and `rank` (§5.2) |
+
+**`MaturityLevel` is deliberately not in that table.** It is declared by a check configuration
+([Design A Specifiable Boundary](../workflow/WORKFLOW.md) §4), which is read as configuration before parsing
+begins and is never a claim ([Serialization](../serialization/SERIALIZATION.md) §3). So it is never folded into
+the model, and a check derives a level rather than reading one — which makes it a type of the process that
+assesses a design, not of the design (§5.2).
 
 Anything else named in a type position is an enumeration, defined where it is first used. An attribute whose
 `Required by` column reads `derived` is computed from other attributes and never authored; one reading a
@@ -411,7 +693,6 @@ classDiagram
 
     class FunctionalBoundary {
         +BoundaryKind kind
-        +MaturityLevel maturity
     }
     class SpecifiableBoundary
     class DeployableBoundary
@@ -524,6 +805,24 @@ declare what it needs.
 always in exactly one. Neither holds here: design work happens between checkpoints, several parts of a design
 sit at different points at once, and a design can fall back when something upstream is invalidated. A
 checkpoint only ever asserts what is true now, which is the only claim the model can actually make.
+
+**Why maturity is not an attribute, when the checkpoints themselves are modelled.** Two diagrams in these
+documents used to carry a `maturity` attribute on a boundary, at two different levels, and no attribute table
+anywhere declared it — so nothing ever said it was computed, and the only reading available to a builder was
+stored state. It cannot be stored, and the decisive case is not an edit to the design at all: a
+`stale-reference` blocks `M4`, and an `ExternalRef`'s checksum moves when a document **outside** the design's
+scope changes ([Reconciliation Model](reconciliation-model.md) §3, §5.4). A recorded maturity would therefore
+become wrong while every claim in the design stayed exactly as it was, and no invalidation walk over this model
+could reach it. Marking it `derived` would have been enough to stop it being written and not enough to put it in
+the right place: what computes it is the process that assesses a design, so that is where it is reported, and
+this model keeps only the gates that say what reaching a level would require.
+
+**Why the process reports maturity against addresses rather than boundaries.** The question it answers — what is
+the next unit of work — is asked of a directory, not of a schema, and the schema is open by construction (§1).
+Naming a boundary in the answer would push a modelled concern into a process that is not entitled to one, and
+would be wrong for the first configuration whose checks assess something other than boundaries. An address is
+the one thing every design has whatever its checks require, so keying on it costs nothing and generalises
+without the process layer ever knowing what it named.
 
 **Why the levels are the configuration's own list rather than this document's.** The same reasoning that moved
 the finding kinds out of a closed table applies to what they gate. Fixing `M0`–`M5` here, with their
