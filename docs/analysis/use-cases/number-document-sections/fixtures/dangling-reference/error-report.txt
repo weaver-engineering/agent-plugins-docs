@@ -1,0 +1,8 @@
+failed - unresolvable reference
+nothing renumbered, nothing written
+
+unresolvable
+- §9 @Line 10 - no heading or figure in this document carries that number
+
+remedy
+- point it at a section that exists, or remove it, and run again

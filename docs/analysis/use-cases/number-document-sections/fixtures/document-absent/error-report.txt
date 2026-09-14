@@ -1,0 +1,8 @@
+failed - document absent
+nothing written
+
+document
+- docs/guides/widget-store-guide.md - nothing at this path
+
+remedy
+- check the path and run again

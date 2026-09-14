@@ -1,0 +1,8 @@
+failed - document not writable
+nothing written; the document was read and can be renumbered
+
+document
+- docs/guides/widget-store-guide.md - read-only
+
+remedy
+- make it writable and run again
