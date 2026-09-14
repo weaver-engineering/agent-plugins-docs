@@ -1,0 +1,11 @@
+renumbered
+- (unnumbered) "Overview" -> §0 (hidden)
+- §2 "Using The Store" -> §1
+- §2.1 "Retry" -> §1.1
+
+references rewritten
+- §2 -> §1 @Line 8
+- §2.1 -> §1.1 @Line 8 - link text, ../dir/widget-store-guide.md resolves here
+
+references removed
+- none

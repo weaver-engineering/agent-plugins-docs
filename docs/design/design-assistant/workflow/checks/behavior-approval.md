@@ -14,7 +14,10 @@ deliberately *the* human in the loop: it is the point at which a person takes re
 will be made to do.
 
 The qualifier is load-bearing rather than a softening: a behavior whose every fixture is external decided
-nothing here, and asking for a signature on it would dilute the ones that matter.
+nothing here, and asking for a signature on it would dilute the ones that matter. It also means this check
+will never put such a behavior in front of anyone — the review of it happened when its fixtures were
+authored, upstream and out of this design's sight
+([Reconciliation Model](../../datamodel/reconciliation-model.md) §6.1).
 
 ## Registration
 

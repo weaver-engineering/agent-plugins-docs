@@ -1,0 +1,33 @@
+renumbered
+- (unnumbered) "Overview" -> §0 (hidden)
+- §2 "Using The Store" -> §1
+- (unnumbered) "Errors" -> §1.0 (hidden)
+- §2.1 "Retry" -> §1.1
+- §2.1.a "Retry Invocation" -> §1.1.a (figure)
+
+renumbered - Appendix
+- §5 "Worked Example" -> §1
+- (unnumbered) "Field Reference" -> §2
+
+renumbered - Rationale
+- §9 "Why One Widget Per Call" -> §1
+
+skipped
+- "Context" @Line 16 - nested Context, never numbered, takes no position
+
+references rewritten
+- §2 -> §1 @Line 10
+- §2.1 -> §1.1 @Line 11 - link text, target resolves here
+- §2.1 -> §1.1 @Line 11 - link text, "./" form of the same target
+- §Appendix.5 -> §Appendix.1 @Line 24 - region-qualified
+
+references removed
+- none
+
+warnings
+- §2.1 left as written @Line 12 - network protocol, target not resolved
+
+untouched
+- §2.3 in [model's own §2.3](widget-model.md) @Line 10 - link text, resolves elsewhere
+- 1.4.2 @Line 19 - not a reference
+- @magpieweaver-docs/docs/glossary.md/§4 @Line 20 - external

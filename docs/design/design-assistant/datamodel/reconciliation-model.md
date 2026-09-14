@@ -444,6 +444,13 @@ whether `behavior-approval` counts it as outstanding, which is a question about 
 behavior's own state. Naming a state would assert a property of the behavior; what is actually being said is
 that nobody is being asked for anything.
 
+**The review has not disappeared — it has moved, and moved out of this design's sight.** Authoring the fixture
+*was* the human-in-the-loop moment, and it happened in analysis, before this design existed. So a fault in an
+external fixture is never put to anyone here: the behavior resting on it is asserted mechanically, the design
+asks nothing, and the fault reaches implementation unchallenged. That is the correct trade — a fact stated
+once should not be ratified twice — but it puts the whole weight of the review on the moment the fixture was
+written, and whoever writes one should know that is what they are doing.
+
 **An approved behavior that becomes invalid does not silently keep its approval.** An open `invalid-behavior`
 (§3.2) returns the behavior to `pending`. What the human agreed to was a behavior at a cell that supported
 it, and the cell no longer does — so nothing currently recorded has been confirmed, which is the same

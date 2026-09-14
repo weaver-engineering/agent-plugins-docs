@@ -1,0 +1,9 @@
+failed - unresolvable reference
+nothing renumbered, nothing written
+
+unresolvable
+- §3.1 @Line 8 - carried by "Retry" @Line 10 and "Reject" @Line 14
+- #4-1-retry @Line 8 - carried by "Retry" @Line 20 and "Retry" @Line 24
+
+remedy
+- give the colliding headings distinct pseudo-numbers, or in the second case distinct titles, and run again
