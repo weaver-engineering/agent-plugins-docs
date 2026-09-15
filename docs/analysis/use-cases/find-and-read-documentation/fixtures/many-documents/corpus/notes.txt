@@ -1,0 +1,7 @@
+Scratch notes from the widget store spike.
+
+Not a markdown document. Sitting in the same directory as two documents that are, so that registering the
+directory has something to decline to register.
+
+- try the pooled client next
+- ask about the eviction policy

@@ -16,7 +16,7 @@ It does not cover deciding what that documentation *says*
 * [document-a-concept](../document-a-concept/USE-CASE.md) - the authoring use case whose output is registered here
 * @docs/standards/documentation-standards.md/§3 - Document Shape, the structure registration records
 * @docs/standards/documentation-standards.md/§4 - Indexing, the word and section content registration holds and
-  the Rationale/Appendix exclusion §6's extension 6b turns on
+  the Rationale/Appendix exclusion steps 2 and 5 state, and §6's extension 7a turns on
 
 ## 1 Goal
 
@@ -43,31 +43,87 @@ The Agent is given work whose correct execution depends on documentation whose l
 
 ## 4 Main Success Scenario
 
-1. The Architect, or The Agent on their behalf, authors or revises a document
-   ([document-a-concept](../document-a-concept/USE-CASE.md)) and registers the path it lives under — one document
-   or a directory of them.
-2. The registry records, for each document under that path: its sections and figures with their titles, types and
-   positions; the significant words in each of them; and every outstanding TODO marker. Registrations whose source
-   document no longer exists are dropped in the same pass, so the registry describes what is there now rather than
-   what once was.
-3. The Architect instructs The Agent to carry out work. The Agent knows the subject it has been given and has no
-   memory of which documents cover it.
-4. The Agent searches the registry: a query, and a scope to search within.
-5. The registry returns the documents and sections whose registered words match, ranked by relevance, each as an
-   addressable reference — without any source document having been read.
-6. The Agent judges which of those documents and sections are actually worth reading. The ranking informs that
-   judgement; it does not make it, and the Agent is free to fetch any returned reference, or none.
-7. The Agent fetches the references it chose.
-8. The registry returns their verbatim source text, each with its **context path** — the chain of ancestors from
-   the document down to the section returned — so a section read on its own carries where it sits in the document
-   it came from, rather than arriving as free-floating prose.
-9. The Agent carries out the delegated work from what it fetched, and can state which documents and sections that
-   work rests on.
+1. Register a path
+
+    **BOUNDARY:** the registry's registration surface, crossed with a path. Its shape is deliberately not
+    guessed at: what invokes it — an actor, a commit hook, a watch on the corpus — is §7's second open
+    question, and what it reaches is §7's first. Only the crossing itself is perceived here.
+
+    **STATES:** [operations/1-register-a-path.md](operations/1-register-a-path.md) — the entry states this
+    step admits, the state each establishes, and the fixture exposing each.
+
+    The Architect, or The Agent on their behalf, authors or revises a document
+    ([document-a-concept](../document-a-concept/USE-CASE.md)) and registers the path it lives under — one
+    document, or a directory of them. The authoring half belongs to that use case, not this one: what this
+    operation admits is the path, whatever produced what sits under it. Only markdown documents are registered;
+    anything else under a directory path is not a document and takes no part in the registry, silently.
+
+    **What is in scope is the caller's to say.** A directory's own subdirectories are descended into only when
+    the caller asks, and then either to a depth they name or all the way down. Documents outside the scope that
+    results are not registered, and that is the scope being honoured rather than anything going wrong.
+
+    **Registering is absolute, never differential.** A path registered for the first time and one re-registered
+    after every document beneath it changed are handled identically: what the registry *holds* afterward is
+    computed from what is under the path now, never amended from what it held before. What the run *reports* is
+    a separate question — it may say that a document has not changed since it was last registered, precisely so
+    that re-registering a large, settled corpus does not report the whole of it back.
+
+2. > The registry records, for each document in scope: its sections and figures with their titles, types and
+   > positions; the significant words in each of them; and every outstanding TODO marker. Rationale and appendix
+   > sections — and everything nested beneath them — are recorded as structure but not as words: they stay
+   > addressable, and nothing they contain is ever matched by a search. Registrations whose source document no
+   > longer exists are dropped in the same pass, so the registry describes what is there now rather than what
+   > once was. A document in scope that cannot be read is named in the run's report rather than registered — the
+   > rest register regardless, and nothing about it is left behind describing a document nobody could open.
+
+3. > The Architect instructs The Agent to carry out work. The Agent knows the subject it has been given and has
+   > no memory of which documents cover it.
+
+4. Search the registry
+
+    **BOUNDARY:** the registry's search surface, crossed with a query and a scope. The Agent is a systematic
+    actor, so whatever this surface is, it is callable rather than presented — a CLI or an API, not a UI.
+    Which of those, and what sits behind it, are not settled here (§7).
+
+    **STATES:** [operations/4-search-the-registry.md](operations/4-search-the-registry.md) — the entry states
+    this step admits, the state each establishes, and the fixture exposing each.
+
+    The Agent searches the registry: a query, and a scope to search within.
+
+5. > The registry returns the documents and sections whose registered words match, ranked by relevance, each as
+   > an addressable reference — without any source document having been read. No rationale or appendix section
+   > is ever among them, whatever the query: their words were never registered (step 2), so there is nothing
+   > there for a query to match.
+
+6. > The Agent judges which of those documents and sections are actually worth reading. The ranking informs that
+   > judgement; it does not make it, and the Agent is free to fetch any returned reference, or none.
+
+7. Fetch the chosen references
+
+    **BOUNDARY:** the registry's retrieval surface, crossed with references the Agent already holds — ones
+    search returned, or ones it derived from them (7a). Callable rather than presented, for the same reason
+    as step 4. Whether retrieval is the same surface as search or a separate one is exactly the kind of merge
+    or split `Architect Solution` decides: this use case perceives two crossings and commits to nothing about
+    how many surfaces answer them.
+
+    **STATES:** [operations/7-fetch-references.md](operations/7-fetch-references.md) — the entry states this
+    step admits, the state each establishes, and the fixture exposing each.
+
+    The Agent fetches the references it chose — one, or several in a single crossing.
+
+8. > The registry returns their verbatim source text, each with its **context path** — the chain of ancestors
+   > from the document down to the section returned — so a section read on its own carries where it sits in the
+   > document it came from, rather than arriving as free-floating prose.
+
+9. > The Agent carries out the delegated work from what it fetched, and can state which documents and sections
+   > that work rests on.
 
 ## 5 Postconditions
 
-* Every document under a registered path is findable by its content, and none of the registry's entries describe
-  a document that is no longer there.
+* Every document the registration actually covered is findable by its content, and none of the registry's
+  entries describe a document that is no longer there. A document under the path that was *not* covered — out
+  of the scope the caller asked for, not a markdown document, or impossible to read — is not findable either,
+  and the run's own report is what distinguishes those from an omission.
 * The Agent has the content that bears on its task, and has read no source document in full to get it.
 * Returned content is verbatim source text, never reconstructed from what the registry holds about it.
 * Every returned section carries its context path.
@@ -75,17 +131,25 @@ The Agent is given work whose correct execution depends on documentation whose l
 
 ## 6 Extensions
 
-* **1a.** The path has never been registered → no different from re-registering a changed one; registration
-  computes what is true now rather than diffing against what it held before.
+* **1a.** The path resolves directly to a document that is not markdown → it fails gracefully, naming the path
+  and saying it is not a document this registry can hold. Registering a single path is registering exactly what
+  is there; there is no directory to filter it out of. Cell in
+  [operations/1-register-a-path.md](operations/1-register-a-path.md).
+* **1b.** Nothing exists at the given path → it fails gracefully, naming the path and saying nothing was found
+  there. Cell in [operations/1-register-a-path.md](operations/1-register-a-path.md).
+* **1c.** The path exists but cannot be read → it fails gracefully, and the message says so rather than
+  reporting it as absent — the Architect's remedy (fix a permission) is different from 1b's (fix a path). Cell
+  in [operations/1-register-a-path.md](operations/1-register-a-path.md).
 * **2a.** A source document under the path has been deleted → its registration is removed, not left stale to be
   returned as a search result pointing at nothing.
 * **4a.** The query matches nothing in scope → an empty result, not an error. The Agent re-queries with different
   terms or a wider scope rather than falling back to reading documents at random.
 * **4b.** The scope spans repos with no shared relevance baseline — very different document sizes or densities →
   results are still returned, but scores are not comparable across them. Not resolved here (§7).
-* **6a.** The Agent needs justification rather than fact → rationale is deliberately excluded from what search
-  matches on, so it is never *found* by searching. It is reached by fetching it from the section it justifies,
-  which is why registration records the structure of rationale sections even though it excludes their words.
+* **7a.** The Agent needs justification rather than fact → it fetches the rationale by addressing it from the
+  section that justifies it, rather than choosing it from among what search returned. Search never hands back a
+  rationale reference (step 5), so what is fetched here is a reference the Agent derived from a returned section,
+  not one it was offered.
 * **8a.** A fetched reference no longer resolves, because the source document changed after it was registered →
   the fetch fails with the closest surviving match rather than a bare error, and the path is re-registered before
   the Agent proceeds.
@@ -98,13 +162,22 @@ The Agent is given work whose correct execution depends on documentation whose l
   the variation.
 * **What triggers registration.** An actor invoking it, a commit hook, or a watch on the corpus. Step 1 says the
   path is registered, not who or what noticed it needed to be.
+* **How far a bounded recursion can actually go.** Registration can descend not at all, to a caller-given
+  depth, or without limit (`operations/1-register-a-path.md` §4.1). Whether a depth counts from something other
+  than the registered path, and whether `unbounded` needs a cap against a real, possibly enormous tree, are not
+  settled here.
 * **Relevance.** Which algorithm ranks results, whether the caller can select between algorithms, and how many
   results and how much preview a search returns by default.
 * **Cross-scope comparability** (extension 4b) — whether scores from different repos can be made comparable at
   all, or whether the honest answer is to rank within each and merge.
 * **How much context path is enough** — ancestor titles, ancestor numbers, or both.
-* **Technical Interpretation.** Not yet written, here or for the other two use cases. The versions that existed
-  before this rewrite were written in the vocabulary of one particular registry implementation (files named
-  `.index/<slug>.words.yaml`), which is a solution, not a requirement — carrying them forward would have
-  reintroduced under the Analysis label the very decision §7's first question exists to keep open. They are to be
-  rewritten, not restored.
+* **Step Contracts and operation condition spaces.** The second pass over these steps
+  (@docs/workflows/feature-workflow/use-cases.md/§2.1) — which steps cross a boundary, and the condition space
+  and fixtures each of those points at — is the gap WVR-203 closes for this use case; the other two still
+  outstanding are `document-a-concept` and `evolve-a-design-to-maturity`. This supersedes the **Technical
+  Interpretation** this bullet used to promise: WVR-202 retired that artefact in favour of Step Contracts stated
+  on the steps themselves. The Technical Interpretations that existed before this rewrite were written in the
+  vocabulary of one particular registry implementation (files named `.index/<slug>.words.yaml`), which is a
+  solution and not a requirement — carrying them forward would have reintroduced under the Analysis label the
+  very decision §7's first question exists to keep open. They were deleted rather than restored, and nothing
+  written to close this gap may reintroduce that vocabulary.

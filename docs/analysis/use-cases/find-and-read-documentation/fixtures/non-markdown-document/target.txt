@@ -1,0 +1,7 @@
+Widget store benchmark results, 2026-09-14.
+
+put p50 1.2ms p99 8.4ms
+get p50 0.7ms p99 3.1ms
+
+Kept beside the documentation because it is referred to by it. It is not a document, and registering it was
+never going to be possible.

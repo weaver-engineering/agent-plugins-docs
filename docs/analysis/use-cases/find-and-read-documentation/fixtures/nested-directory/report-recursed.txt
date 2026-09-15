@@ -1,0 +1,4 @@
+registered:
+- /repo/docs/handbook/index.md - 2 sections, §1 - §2
+- /repo/docs/handbook/onboarding/setup.md - 2 sections, §1 - §2
+- /repo/docs/handbook/onboarding/tooling/editors.md - 1 section, §1 - §1

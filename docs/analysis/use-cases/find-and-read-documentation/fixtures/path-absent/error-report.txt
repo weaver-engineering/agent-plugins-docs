@@ -1,0 +1,8 @@
+failed - path absent
+nothing registered
+
+path
+- /repo/docs/handbook/ - nothing at this path
+
+remedy
+- check the path and run again

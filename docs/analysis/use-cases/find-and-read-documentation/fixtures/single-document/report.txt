@@ -1,0 +1,2 @@
+registered:
+- /repo/docs/retry-policy.md - 4 sections, §1 - §3

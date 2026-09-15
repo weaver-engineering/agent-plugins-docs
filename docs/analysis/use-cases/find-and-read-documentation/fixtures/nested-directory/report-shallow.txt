@@ -1,0 +1,2 @@
+registered:
+- /repo/docs/handbook/index.md - 2 sections, §1 - §2

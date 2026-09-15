@@ -125,7 +125,8 @@ the designs that most need bringing under assessment.
 * **What happens to a standing acknowledgement whose check could not run.** Stated in the design as kept rather
   than spent; whether the Architect needs to see that distinction, or is better served by not being shown it,
   is an analysis question this use case does not answer.
-* **Technical Interpretation.** Not yet written, here or for the other three use cases — see
+* **Step Contracts and operation condition spaces.** Not yet written for this use case. This supersedes the
+  **Technical Interpretation** this bullet used to promise, retired by WVR-202 — see
   [find-and-read-documentation §7](../find-and-read-documentation/USE-CASE.md).
 
 # Rationale
