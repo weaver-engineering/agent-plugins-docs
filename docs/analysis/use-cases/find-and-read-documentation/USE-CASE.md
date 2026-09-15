@@ -88,12 +88,17 @@ The Agent is given work whose correct execution depends on documentation whose l
     **STATES:** [operations/4-search-the-registry.md](operations/4-search-the-registry.md) — the entry states
     this step admits, the state each establishes, and the fixture exposing each.
 
-    The Agent searches the registry: a query, and a scope to search within.
+    The Agent searches the registry: a query, and a scope to search within. The scope may name one registered
+    location, several at once, or every one the registry holds; naming none searches from where the Agent
+    already is. Whichever it is, what comes back is one ranked set rather than one per location.
 
 5. > The registry returns the documents and sections whose registered words match, ranked by relevance, each as
-   > an addressable reference — without any source document having been read. No rationale or appendix section
-   > is ever among them, whatever the query: their words were never registered (step 2), so there is nothing
-   > there for a query to match.
+   > an addressable reference. A section and the document containing it are separate results, scored separately
+   > and ranked against each other on their own merits. The ranking is answered from what registration
+   > recorded, not by reading the corpus — and where the Agent asks for them, a short preview of each hit's own
+   > opening lines comes back with it, so that choosing what to fetch costs a few lines rather than a document.
+   > No rationale or appendix section is ever among the results, or inside a preview, whatever the query: their
+   > words were never registered (step 2), so there is nothing there for a query to match.
 
 6. > The Agent judges which of those documents and sections are actually worth reading. The ranking informs that
    > judgement; it does not make it, and the Agent is free to fetch any returned reference, or none.
@@ -144,8 +149,10 @@ The Agent is given work whose correct execution depends on documentation whose l
   returned as a search result pointing at nothing.
 * **4a.** The query matches nothing in scope → an empty result, not an error. The Agent re-queries with different
   terms or a wider scope rather than falling back to reading documents at random.
-* **4b.** The scope spans repos with no shared relevance baseline — very different document sizes or densities →
-  results are still returned, but scores are not comparable across them. Not resolved here (§7).
+* **4b.** The scope names something the registry cannot resolve to any location at all → it fails gracefully,
+  naming the scope. The Agent's remedy is to correct the scope, which is a different remedy from 4a's: there,
+  the scope was right and the terms found nothing. Cell in
+  [operations/4-search-the-registry.md](operations/4-search-the-registry.md).
 * **7a.** The Agent needs justification rather than fact → it fetches the rationale by addressing it from the
   section that justifies it, rather than choosing it from among what search returned. Search never hands back a
   rationale reference (step 5), so what is fetched here is a reference the Agent derived from a returned section,
@@ -166,10 +173,14 @@ The Agent is given work whose correct execution depends on documentation whose l
   depth, or without limit (`operations/1-register-a-path.md` §4.1). Whether a depth counts from something other
   than the registered path, and whether `unbounded` needs a cap against a real, possibly enormous tree, are not
   settled here.
-* **Relevance.** Which algorithm ranks results, whether the caller can select between algorithms, and how many
-  results and how much preview a search returns by default.
-* **Cross-scope comparability** (extension 4b) — whether scores from different repos can be made comparable at
-  all, or whether the honest answer is to rank within each and merge.
+* **Which relevance function, and its defaults.** A score measures how well one piece of prose answers the
+  query, against that prose's own extent — so it says nothing about the document or the scope containing it,
+  and scores from anywhere are ranked against each other directly
+  (`operations/4-search-the-registry.md` §5). That much is required. Which function computes it is not: a
+  starting point is matched words against total words, but a result matching several query terms is worth more
+  than one matching a single term many times, and weighing coverage against frequency is left open. So are
+  phrase matching, negation and conjunction, whether a caller may select between functions, and what the
+  default result count and preview length actually are.
 * **How much context path is enough** — ancestor titles, ancestor numbers, or both.
 * **Step Contracts and operation condition spaces.** The second pass over these steps
   (@docs/workflows/feature-workflow/use-cases.md/§2.1) — which steps cross a boundary, and the condition space
