@@ -1,0 +1,8 @@
+failed - not a document
+nothing registered
+
+path
+- /repo/docs/widgets/benchmarks.txt - not a markdown document
+
+remedy
+- register a markdown document, or the directory holding one

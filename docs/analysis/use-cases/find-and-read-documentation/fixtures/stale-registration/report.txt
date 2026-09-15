@@ -1,0 +1,5 @@
+registered:
+- /repo/docs/widgets/doc-a.md - 3 sections, §1 - §2
+
+dropped:
+- /repo/docs/widgets/doc-b.md - no longer under this path

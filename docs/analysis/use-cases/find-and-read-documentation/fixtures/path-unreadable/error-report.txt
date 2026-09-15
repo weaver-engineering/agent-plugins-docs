@@ -1,0 +1,8 @@
+failed - path unreadable
+nothing registered
+
+path
+- /repo/docs/restricted/ - present, but cannot be read
+
+remedy
+- fix the permission and run again

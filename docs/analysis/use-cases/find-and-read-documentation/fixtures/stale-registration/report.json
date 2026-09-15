@@ -1,0 +1,1 @@
+{"ok":true,"registered":[{"path":"/repo/docs/widgets/doc-a.md","sections":3,"range":"§1 - §2"}],"dropped":[{"path":"/repo/docs/widgets/doc-b.md","reason":"no longer under this path"}],"warnings":[],"unchanged":0}
