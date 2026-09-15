@@ -6,7 +6,14 @@ with the state it establishes and the fixture exposing it.
 
 ## Context
 * [number-document-sections](../USE-CASE.md) - the use case whose step 1 this analyses
-* [Mixed Numbering Fixtures](../fixtures/mixed-numbering/FIXTURES.md) - the main scenario's own states
+* [mixed-numbering](../fixtures/mixed-numbering/FIXTURES.md) - the main scenario's own states
+* [shared-pseudo-number](../fixtures/shared-pseudo-number/FIXTURES.md) - duplicated numbers nothing points at
+* [anchor-disambiguated](../fixtures/anchor-disambiguated/FIXTURES.md) - an anchor resolving into them
+* [relative-target](../fixtures/relative-target/FIXTURES.md) - one payload under two filesystem layouts
+* [dangling-reference](../fixtures/dangling-reference/FIXTURES.md) - a reference naming nothing
+* [ambiguous-reference](../fixtures/ambiguous-reference/FIXTURES.md) - a reference naming more than one thing
+* [document-absent](../fixtures/document-absent/FIXTURES.md) - nothing at the given path
+* [document-not-writable](../fixtures/document-not-writable/FIXTURES.md) - present, readable, not writable
 * @docs/standards/documentation-standards.md/§3 - the numbering convention the outputs satisfy
 * @docs/standards/documentation-standards.md/§6 - the two reference forms §2.1 turns on
 
@@ -90,10 +97,9 @@ at two URLs. There is no question to answer, not merely an expensive one.
 Cost is the lesser reason and was overstated in an earlier draft: only links whose *text* carries a `§`
 would ever need resolving, and those are few.
 
-**Why the warning is required rather than optional.** The rule is opinionated and will sometimes be wrong —
-a published URL really can name this document. An operation that silently declines leaves a reference
-quietly stale; one that says so hands the judgement to the only party able to make it. A tool that rewrites
-someone's prose on an opinionated rule owes them notice of where the opinion was applied.
+**Why this operation warns rather than declining silently.** The rule is opinionated and will sometimes be
+wrong — a published URL really can name this document — and a caller who never learns where the opinion was
+applied has no way to check it.
 
 ## 3 Dependency States
 
@@ -135,29 +141,16 @@ The knobs of the invocation. Projection: `when` — the entry state is identical
 | 1 | `human` | the report is read by a person |
 | 2 | `machine` | the caller declares it will parse the answer — hypothesised as `--json` |
 
-**What the machine rendering has to guarantee**, and the human one does not. It must parse: one JSON
-document, compact, nothing else on the stream — no banner, no progress, no error text, nothing a person
-would have found helpful. And it must say whether the run succeeded rather than leaving that to be
-inferred from what is present or absent. A caller that parses the answer cannot recover from prose mixed
-into it, and cannot ask afterwards what happened.
+This operation's human rendering is terse and line-oriented — a section head, one item per line, its
+location, a short reason — which is what its Architect asked for, being a report they read at a glance
+rather than one they study. Its machine rendering is compact JSON declaring `ok`.
 
-**Success is stated twice, and the two must agree.** Whichever rendering it is, the report says whether the
-run succeeded and the process exits with a code saying the same. Both are in front of the caller at once,
-so a disagreement between them is not a second opinion — it is an operation that cannot be believed on
-either channel. The exit code is not part of the report and does not appear in it; the requirement is that
-the two never diverge, not that one carries the other. Why a run failed stays inferable from the report's
-own body, in both renderings.
+Both renderings state the outcome, and this operation also exits with a code, so it has two channels saying
+the same thing and they are required to agree. The code is not carried in the report.
 
 ## 5 Invariants
 
-Conditions that define what the operation does without varying it. Each earns no cell, and each must be
-witnessed **exactly once**, by a leaf of the main success scenario — where it can be seen working rather
-than seen surviving a fault.
-
-The cell named here must name the invariant back (§6). An `@` marks a cell reference, so @`1.2.1.2` reads
-as *at cell 1.2.1.2* wherever it appears, and is never a section or an ordinal. Either half without the
-other is a fault: an invariant with no witnessing cell is a requirement nothing demonstrates, and a cell
-claiming to witness an invariant this table does not list is claiming something of no one.
+What this operation does regardless of any condition.
 
 | Invariant | The rule it defines | Witnessed by |
 |---|---|---|
@@ -172,46 +165,32 @@ Three of the four are witnessed at the same cell, which is what makes `mixed-num
 one document carrying every rule that has no condition of its own. The fourth needs a bare anchor, and the
 main scenario's payload has none.
 
-Non-reference text is carried by every payload rather than only the one that witnesses it. That is a choice
-and not the rule — one witness discharges the obligation, and carrying a constant everywhere costs nothing
-while letting every fixture show that nothing else disturbed it.
+Non-reference text is carried by every payload here, not only the one that witnesses it: it costs nothing,
+and it lets every fixture show that nothing else disturbed it.
 
 `Context` never has subsections of its own. Nothing here supports one, and nothing here polices it either.
 
 ## 6 Output Fixtures
 
-The condition space as a tree, nested in rank order. A node is identified by its number, the dimension it
-adds, and that dimension's ordinal; everything above it in the tree is in force too. A node with
-permutations beneath it carries only that identity, and a leaf carries what the operation establishes, any
-invariant it witnesses, and its fixtures by role — **Payload** for what goes in, **Result** for what the
-operation leaves in the store, **Stdout** for what it prints, and one line per dependency, named for the
-dependency it states.
-
-Result and Stdout are not the same thing: a renumbered document is written, a report is printed, and a run
-can produce one without the other — every failing leaf here does. Both graceful failures and successes
-print to **Stdout**, because reporting that the document it was given is invalid *is* the operation working.
-**Stderr** would be for the tool itself failing, which is not a condition of this space and has no leaf
-here. A fixture is named `{fixture-set}.{fixture}`, always set-qualified, so
-a leaf says exactly what it rests on without a directory having to be opened. Where one fixture has two
-renderings they are linked from the one name.
-
-Everything a node says about itself is block-quoted beneath it, one statement per line. The quoting is what
-keeps a node's own detail from running together into a paragraph, and keeps it visibly subordinate to the
-nodes around it. Pruned nodes are shown where they
-fall, with their reason, rather than collected elsewhere: a prune is a fact about a position in the tree.
-
 Every leaf has two further leaves under **report-rendering** — `.1` human and `.2` machine — carrying the
 same state and differing only in how the report is rendered, so they are not drawn.
 
-A cell is an **extension** of the use case where the Architect has to do something different as a result,
-and part of the main scenario where they do not. Renumbering is the use case's goal rather than a step
-toward one, so the report is part of what was asked for: anything stated in it, a warning included, is the
-main scenario doing its job. What makes an extension is the operation not delivering a renumbered document
-— which every failing cell here does, and nothing else does.
+**Result** and **Stdout** are not the same thing here: a renumbered document is written, a report is
+printed, and a run can produce one without the other — every failing leaf below does. Both the graceful
+failures and the successes print to Stdout, because reporting that the document it was given is invalid
+*is* this operation working; **Stderr** would be the tool itself failing, which is not a condition of this
+space and has no leaf.
 
-No node is **invalid**: every combination of these dimensions is a document someone could write. Four are
-**immaterial**. **unresolved-link-text** is immaterial throughout — a warning that interacts with nothing —
-so it is witnessed once, at @`1.2.1.2`, and not drawn elsewhere.
+No node here is **invalid** — every combination of these dimensions is a document someone could write.
+Seven are **immaterial**: **first-sibling-number** and **figure** each contribute a rule that varies with
+nothing else, so their values are witnessed once rather than again under every other value, and
+**local-target** collapses wherever a payload has no locally-resolvable target to be uncertain about.
+**unresolved-link-text** is immaterial throughout — a warning interacting with nothing — so it is witnessed
+at @`1.2.1.2` and not drawn elsewhere.
+
+Renumbering is this use case's goal rather than a step toward one, so its report is part of what was asked
+for: every failing leaf below is an extension because it delivers no renumbered document, and the warning
+at @`1.2.1.2` is not one.
 
 * 1 - **document:** `readable-writable`
   * 1.1 - **reference-resolution:** `none-present`
@@ -355,17 +334,15 @@ so it is witnessed once, at @`1.2.1.2`, and not drawn elsewhere.
   > **Stdout:** `document-not-writable.error-report` — [txt](../fixtures/document-not-writable/error-report.txt)
   > · [json](../fixtures/document-not-writable/error-report.json)
 
+## 7 Coverage
+
+Eight leaves survive pruning, each with exactly one payload fixture where it has a payload at all.
+
 Every value of every dimension is still exposed by a kept leaf: **first-sibling-number** `absent` at
 @`1.2.1.2` and `present` at @`1.1.2.1`; **figure** `present` at @`1.2.1.2` and `absent` at @`1.1.2.1`; both
 values of **local-target** beneath @`1.2.1.1`; all four values of **reference-resolution** and all three of
-**document** on the spine. Pruning removes repetition, never coverage — a pruned node whose value appears
-nowhere else is a gap wearing a prune's clothes.
-
-## 7 Coverage
-
-Eight leaves survive pruning, each with exactly one payload fixture where it has a payload at all. Every
-invariant in §5 names the leaf that witnesses it, and every one of those leaves names the invariant back —
-four claims, agreeing from both directions.
+**document** on the spine. Every invariant in §5 names the leaf that witnesses it, and each of those leaves
+names the invariant back — six claims, agreeing from both directions.
 
 * **Leaf @`1.4` carries both routes in one payload** — a `§` token defeated by a duplicated number, an
   anchor defeated only when the titles match too. They are two ways to reach one value, not two values: the

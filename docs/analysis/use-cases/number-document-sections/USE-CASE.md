@@ -47,10 +47,8 @@ added, removed or reordered.
     **BOUNDARY:** the numbering tool, perceived as a CLI run against a path — the same surface The Agent
     invokes when it numbers a document as a step of larger delegated work, rather than a second one of its own.
 
-    **STATES:** [operations/1-number-a-document.md](operations/1-number-a-document.md) — the entry states this
-    step admits, the state each establishes, and the fixture exposing each. There is more than one of each: a
-    step that crosses a boundary has a condition space, not a single pair of bracketing states, and every cell
-    of it is a state this step must handle.
+    **STATES:** [operations/1-number-a-document.md](operations/1-number-a-document.md) — the entry states
+    this step admits, the state each establishes, and the fixture exposing each.
 
     The tool reads the document once, recording every eligible heading — a heading-like line inside a fenced
     block is not a heading at all, which this use case's own fixtures depend on, being documents quoted
@@ -177,8 +175,6 @@ in remedy and the remedy is the half that matters to them.
   gracefully**. The document was handed over in an invalid state: it points at a section that is not there,
   which numbering cannot repair and only its author can.
 
-    **BOUNDARY:** as step 1.
-
     The operation did not create the dangling reference and does not remove it. Deleting the author's text
     to tidy away a fault it neither caused nor was asked to fix would be a larger intervention than
     numbering has any business making — and leaving it in place is unsafe, because after renumbering some
@@ -192,8 +188,6 @@ in remedy and the remedy is the half that matters to them.
   fails gracefully**. The document was handed over in an invalid state: it contains a reference that names
   two things, which no numbering can repair and only its author can. Nothing is renumbered and nothing is
   written.
-
-    **BOUNDARY:** as step 1.
 
     Two ways in, one condition: a `§` token is defeated by a duplicated number alone, since it names only a
     number; an anchor survives that and is defeated only when the titles match too, since it names both.
