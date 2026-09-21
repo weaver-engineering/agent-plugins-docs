@@ -1,0 +1,36 @@
+$ weaverdoc search "eviction policy"
+
+registries searched:
+  /repo/docs (no scope named; the registry at this location)
+
+policies/retention-policy$3                    - 0.92 over 33 words
+  - Data Retention Policy - 78 words
+    - 3 Expiry
+procedures/eviction-procedures                 - 0.92 over 139 words
+  - Eviction Procedures
+policies/eviction-policy$2.1                   - 0.91 over 37 words
+  - Cache Eviction Policy - 161 words
+    - 2 When An Entry Is Evicted - 99 words
+      - 2.1 Pressure Eviction
+procedures/eviction-procedures$2               - 0.90 over 77 words
+  - Eviction Procedures - 139 words
+    - 2 Policies In Force
+policies/retention-policy                      - 0.88 over 78 words
+  - Data Retention Policy
+policies/eviction-policy                       - 0.87 over 161 words
+  - Cache Eviction Policy
+policies/eviction-policy$2                     - 0.86 over 99 words
+  - Cache Eviction Policy - 161 words
+    - 2 When An Entry Is Evicted
+procedures/eviction-procedures$3               - 0.53 over 30 words
+  - Eviction Procedures - 139 words
+    - 3 After Eviction
+procedures/cache-tuning$2                      - 0.50 over 41 words
+  - Cache Tuning - 99 words
+    - 2 Sizing
+policies/eviction-policy$2.2                   - 0.47 over 28 words
+  - Cache Eviction Policy - 161 words
+    - 2 When An Entry Is Evicted - 99 words
+      - 2.2 Age Eviction
+
+... (6 more matches)

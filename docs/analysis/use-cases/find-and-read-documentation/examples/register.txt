@@ -1,0 +1,14 @@
+$ weaverdoc register corpus/ --recurse
+
+registered:
+- policies/eviction-policy.md - 5 sections, §1 - §3
+- policies/retention-policy.md - 3 sections, §1 - §3
+- procedures/cache-tuning.md - 3 sections, §1 - §3
+- procedures/eviction-procedures.md - 5 sections, §1 - §3
+
+outstanding TODOs: 1
+- procedures/cache-tuning.md:15
+
+unchanged: 0
+dropped: none
+not documents: corpus/notes.txt

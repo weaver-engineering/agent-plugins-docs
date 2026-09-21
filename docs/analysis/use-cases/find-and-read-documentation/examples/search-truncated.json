@@ -1,0 +1,30 @@
+{
+  "ok": true,
+  "query": "eviction policy",
+  "registries_searched": [{"name": null, "location": "/repo/docs"}],
+  "matched": 16,
+  "reported": 10,
+  "withheld": 6,
+  "results": [
+    {"reference": "policies/retention-policy$3", "title": "3 Expiry", "relevance": 0.92, "words": 33,
+     "ancestry": [{"title": "Data Retention Policy", "words": 78}, {"title": "3 Expiry", "words": 33}]},
+    {"reference": "procedures/eviction-procedures", "title": "Eviction Procedures", "relevance": 0.92, "words": 139,
+     "ancestry": [{"title": "Eviction Procedures", "words": 139}]},
+    {"reference": "policies/eviction-policy$2.1", "title": "2.1 Pressure Eviction", "relevance": 0.91, "words": 37,
+     "ancestry": [{"title": "Cache Eviction Policy", "words": 161}, {"title": "2 When An Entry Is Evicted", "words": 99}, {"title": "2.1 Pressure Eviction", "words": 37}]},
+    {"reference": "procedures/eviction-procedures$2", "title": "2 Policies In Force", "relevance": 0.90, "words": 77,
+     "ancestry": [{"title": "Eviction Procedures", "words": 139}, {"title": "2 Policies In Force", "words": 77}]},
+    {"reference": "policies/retention-policy", "title": "Data Retention Policy", "relevance": 0.88, "words": 78,
+     "ancestry": [{"title": "Data Retention Policy", "words": 78}]},
+    {"reference": "policies/eviction-policy", "title": "Cache Eviction Policy", "relevance": 0.87, "words": 161,
+     "ancestry": [{"title": "Cache Eviction Policy", "words": 161}]},
+    {"reference": "policies/eviction-policy$2", "title": "2 When An Entry Is Evicted", "relevance": 0.86, "words": 99,
+     "ancestry": [{"title": "Cache Eviction Policy", "words": 161}, {"title": "2 When An Entry Is Evicted", "words": 99}]},
+    {"reference": "procedures/eviction-procedures$3", "title": "3 After Eviction", "relevance": 0.53, "words": 30,
+     "ancestry": [{"title": "Eviction Procedures", "words": 139}, {"title": "3 After Eviction", "words": 30}]},
+    {"reference": "procedures/cache-tuning$2", "title": "2 Sizing", "relevance": 0.50, "words": 41,
+     "ancestry": [{"title": "Cache Tuning", "words": 99}, {"title": "2 Sizing", "words": 41}]},
+    {"reference": "policies/eviction-policy$2.2", "title": "2.2 Age Eviction", "relevance": 0.47, "words": 28,
+     "ancestry": [{"title": "Cache Eviction Policy", "words": 161}, {"title": "2 When An Entry Is Evicted", "words": 99}, {"title": "2.2 Age Eviction", "words": 28}]}
+  ]
+}

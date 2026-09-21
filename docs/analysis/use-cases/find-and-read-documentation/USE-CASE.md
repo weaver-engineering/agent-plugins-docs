@@ -9,6 +9,9 @@ It does not cover deciding what that documentation *says*
 ([number-document-sections](../number-document-sections/USE-CASE.md)) — see §7.
 
 ## Context
+* [Examples](examples/EXAMPLES.md) - a corpus registered, searched and reported from, written down before
+  analysis to expose how things vary; what the data model, dimensions and aspects are read off. Examples, not
+  fixtures — they assert nothing
 * [Agent Plugins index](../../../agent-plugins.md) - root index for this repo
 * [The Agent](../../user-personas/agent.md) - primary actor; its memorylessness and context budget are why this
   use case exists
@@ -22,7 +25,9 @@ It does not cover deciding what that documentation *says*
 
 The Agent reaches the current, curated truth on whatever subject its delegated work touches — and the
 justification behind it where the work needs that too — by reading only the sections that actually bear on the
-task, rather than reading whole documents, or guessing.
+task, rather than reading whole documents, or guessing. **Where it cannot reach that truth, it learns what it
+must fix in order to** — a path that is not there, a permission that blocks it — which is the same journey's
+end by a different road rather than a failure of the use case.
 
 Both halves of that are load-bearing, and they are separate problems (see
 [The Agent §3](../../user-personas/agent.md)). The Agent cannot remember which document covers a subject, because
@@ -30,6 +35,13 @@ it remembers nothing between invocations. And it could not read them all even if
 context budget is finite, and every document read to find one relevant section is budget not spent on the work
 itself. A capability that solved only recall would still leave it reading too much; one that only reduced reading
 would still leave it reading the wrong things.
+
+**The goal's closing clause — *learns what it must fix* — is a deliberate widening, recorded as one.** Without it, a registration that finds
+nothing at the path is a dead end: no route to the goal, so by the method's own rule the use case may not name
+it and nothing may be written about it. Those states are worth keeping, because they are where the applicable
+stops being applicable and so are exactly what a condition space has to be drawn around. Widening the goal to
+admit them is the honest way to keep them; the alternative is losing them here and rediscovering them at
+design, after the analysis they should have informed was already written.
 
 ## 2 Trigger
 
@@ -129,7 +141,9 @@ The Agent is given work whose correct execution depends on documentation whose l
   entries describe a document that is no longer there. A document under the path that was *not* covered — out
   of the scope the caller asked for, not a markdown document, or impossible to read — is not findable either,
   and the run's own report is what distinguishes those from an omission.
-* The Agent has the content that bears on its task, and has read no source document in full to get it.
+* The Agent has the content that bears on its task, and has read no source document in full to get it — or,
+  where it could not, holds a statement of what to fix specific enough to act on, rather than an absence it
+  has to diagnose.
 * Returned content is verbatim source text, never reconstructed from what the registry holds about it.
 * Every returned section carries its context path.
 * What the Agent acted on is traceable to current registered documents, not to recall.
@@ -141,10 +155,12 @@ The Agent is given work whose correct execution depends on documentation whose l
   is there; there is no directory to filter it out of. Cell in
   [operations/1-register-a-path.md](operations/1-register-a-path.md).
 * **1b.** Nothing exists at the given path → it fails gracefully, naming the path and saying nothing was found
-  there. Cell in [operations/1-register-a-path.md](operations/1-register-a-path.md).
+  there, which is the Agent learning what it must fix (§1). Cell in
+  [operations/1-register-a-path.md](operations/1-register-a-path.md).
 * **1c.** The path exists but cannot be read → it fails gracefully, and the message says so rather than
-  reporting it as absent — the Architect's remedy (fix a permission) is different from 1b's (fix a path). Cell
-  in [operations/1-register-a-path.md](operations/1-register-a-path.md).
+  reporting it as absent — the Architect's remedy (fix a permission) is different from 1b's (fix a path), and
+  naming which is owed is what makes both routes to §1's goal rather than dead ends. Cell in
+  [operations/1-register-a-path.md](operations/1-register-a-path.md).
 * **2a.** A source document under the path has been deleted → its registration is removed, not left stale to be
   returned as a search result pointing at nothing.
 * **4a.** The query matches nothing in scope → an empty result, not an error. The Agent re-queries with different

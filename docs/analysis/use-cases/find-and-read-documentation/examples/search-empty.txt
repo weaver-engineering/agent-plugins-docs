@@ -1,0 +1,6 @@
+$ weaverdoc search "quota"
+
+registries searched:
+  /repo/docs (no scope named; the registry at this location)
+
+nothing answered "quota"
