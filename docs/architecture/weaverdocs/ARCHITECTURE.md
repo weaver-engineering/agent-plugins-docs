@@ -3,6 +3,7 @@
 ## Context
 
 * [Find and read documentation](../../analysis/use-cases/find-and-read-documentation/USE-CASE.md) - The use case for registering, finding a reading documentations
+* [Search the registry](../../analysis/use-cases/find-and-read-documentation/operations/4-search-the-registry.md) - The condition space of that use case's search step; §2.3 and §2.4 answer to it
 * [Number document sections](../../analysis/use-cases/number-document-sections/USE-CASE.md) - The use case for auto-numbering document sections
 * [Architect persona](../../analysis/user-personas/architect.md) - The architect user persona
 * [Agent persona](../../design/design-assistant) - The agent user persona
@@ -134,7 +135,12 @@ Search the available WeaverDocs registries for a relevant document or document s
   * Reports only top results
   * Reports document path `reference`, title, relevance score and word count
   * Reports section path `reference`, title, relevance score and word count per section
+  * Reports how many matched in all, not only how many were reported
   * Optionally presents preview of first lines
+
+A capped answer carrying only what survived the cap cannot say how much it withheld, so the caller cannot tell
+a query that found three things from one that found thirty and reported three. The count is a fact only the
+registry holds.
 
 *fig.* 2.3.a Searching for a registered document or section
 ```mermaid
@@ -154,13 +160,13 @@ sequenceDiagram
                     RegistrySet->>RegistryInterface: Construct
                     activate RegistryInterface
                         RegistrySet->>RegistryInterface: search query
-                        RegistryInterface-->>RegistrySet: results
+                        RegistryInterface-->>RegistrySet: results and total matched
                     deactivate RegistryInterface    
                     opt If query is details query
                         loop For each result
                             activate RegistryInterface
                                 RegistrySet->>RegistryInterface: get preview text for result
-                                RegistryInterface-->>RegistrySet: preview text
+                                RegistryInterface-->>RegistrySet: preview text and total lines
                             deactivate RegistryInterface
                         end
                     end
@@ -209,3 +215,8 @@ Report verbatim the contents of a registered document of document section.
 * For section `refrence`s reports the section path to the `reference` with their nested `Context`
 * Optionally specify the lines to report `start-line = 5` `end-line = 10` (both optional) 
   So to get 5 lines of preview text `get {reference} end-line=5`
+* Reports how many lines there are at the `reference`, not only how many were reported
+
+The same reason as §2.3: asked for five lines and given five, nothing in the answer says whether a sixth
+exists, so a preview cannot name what it did not show. Both operations answer to one rule — **a bounded answer
+must disclose what the bound cost.**
