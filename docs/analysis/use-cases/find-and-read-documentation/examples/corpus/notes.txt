@@ -1,0 +1,4 @@
+Scratch notes on cache eviction policy. Not a document.
+
+Ask Sam whether the audit class really needs seven years, or whether that was
+copied from the old platform without anyone checking.

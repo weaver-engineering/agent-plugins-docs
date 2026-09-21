@@ -1,0 +1,17 @@
+$ weaverdoc report procedures/cache-tuning$Rationale
+
+context path:
+  - Cache Tuning
+    - Rationale
+
+procedures/cache-tuning.md lines 21-29 (9 of 33 lines in the document)
+
+# Rationale
+
+**Why eviction rate rather than eviction count.** An eviction policy says what goes, never how often; a count
+rises with traffic whether or not the cache is behaving worse, so a count cannot be compared between two
+weeks. A rate can, and a rate is what shows thrashing.
+
+**Why the oldest surviving entry and not the average age.** An average hides the case this measure exists to
+catch, which is a cache evicting so fast that nothing lives long enough to be hit twice.
+

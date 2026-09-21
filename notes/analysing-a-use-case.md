@@ -1,6 +1,161 @@
 # Analysing A Use Case
 
-## 1 The Spine
+## 1 Analysis Starts From Examples
+
+**The first question of any use case analysis is: where are the examples?** Ask it before §2, before the
+model, before anything. An analysis has no other place to start.
+
+A `USE-CASE.md` is a story about an actor. A data model is not in it, a dimension is not in it, and an aspect
+is not in it. Those are read off something the story has been carried out on — these documents in this state,
+this request against them, this answer back.
+
+### 1.1 If There Are None, Stop
+
+| | |
+|---|---|
+| **There are examples** | read them, and check with the architect that they are this use case at the minimum being analysed |
+| **There are none, and the architect gives a seed** | write them from it, and take them back before §2. A seed is the shape of the input, the kind of request, roughly what comes back. It need not be much |
+| **There are none, and there is no seed** | **stop and ask for one** |
+
+That last row is the one that matters, and it is an instruction to stop rather than a preference. An agent has
+no knowledge of the domain beyond what it has been told, so examples it invents are not examples of anything —
+and they will read exactly like examples somebody chose, right down to the confident file names. Everything
+below inherits them and nothing below can contradict them.
+
+### 1.2 What They Are For
+
+**To expose variation.** That is the whole objective, and the rest follows from it.
+
+An analysis asserts what must be true of how a thing changes. You cannot assert that until you know **how the
+thing might change** — and nobody knows that from a narrative. Examples are how the variability of the real
+world gets in front of you: this could be empty, this could be enormous, this one has no sections, that one is
+not a document at all. Seeing the ways things vary is what makes it possible to say what holds however they do.
+
+So examples inform the answer needed to *start* analysing a condition space. They are the input to that work,
+not a small version of it.
+
+### 1.3 An Example Is An Example Of A Fixture That Could Be True
+
+Every example is an instance of some fixture the analysis might end up asserting. It is not that fixture — it
+asserts nothing — but it is drawn from the same world, and that constrains it absolutely:
+
+**If the thing could not exist, it is not an example.**
+
+So do not write data that could not be. Not a malformed record, not an impossible combination, not a value
+outside the range its own type allows — **not even to show that it would be rejected**. An artefact that could
+never exist is an example of nothing, and putting one beside real ones teaches whoever reads them that the set
+cannot be trusted as a picture of the world.
+
+**What cannot exist is stated, not exhibited.** This is what the analysis is *for*: drawing a boundary through
+the world state between applicable and inapplicable, valid and invalid, variant and invariant, and so defining
+the condition space in which the use case must be true. It draws that boundary by **stating things that are
+true**:
+
+> The following parameters exist
+> * `mode`: enum
+> * `preview-length`: int
+>
+> The parameter `mode` has discrete values `list` and `preview`.
+>
+> The parameter `preview-length` is not valid when the `mode` is `list`.
+
+Every line there is a true statement, the last one included. It rules a possibility out by being true about
+the boundary, not by exhibiting something impossible on the far side of it. **This state could exist; this
+possibility cannot** — and the two are said in completely different ways.
+
+So an example never illustrates invalidity. An invalid combination has no instance to show, which is exactly
+what makes it invalid.
+
+#### 1.3.1 Which Unwelcome States Need Examples
+
+A use case is the happy path to a goal, and **the exceptions it names are the ones with a way round** — jiggle
+the doodah, not burn the computer. That, and only that, is what needs an example:
+
+* **The happy path**, throughout.
+* **Every exception the use case actually names.** If it names a doodah, the doodah needs an example just as
+  the main route does. It is a route to the goal, so it is part of what must be true for the actor to get
+  there.
+
+Everything else on the unhappy path needs no example to start. It is not a concern of what must be true for
+the actor to achieve their goal, and an analysis does not become sounder by cataloguing the ways the world can
+go wrong around it. Where one turns out to matter, the use case gains an extension and the extension gains an
+example — in that order.
+
+### 1.4 One Of Every Fixture Type, For Every Operation
+
+Examples are not a body of work with an arbitrary size. They are indexed: **every fixture type of every
+operation**, where a fixture type is a kind of artefact that operation deals in — what is handed to it, what
+it is parameterised by, the state it acts on, and each shape of result it can produce.
+
+There is a ladder, and only the bottom rung is required:
+
+| | |
+|---|---|
+| **Minimum** | one example of every fixture type of every operation, covering the happy path and every exception the use case names (§1.3.1). For a state, that means one of what it could be *before* and one of what it could be *after*. None of them related |
+| **Better** | several per fixture type, chosen to expose the edges of how that fixture can vary. Still none of them related |
+| **Better still** | several per fixture type, exposing edges, and some of them related |
+| **Platinum** | several per fixture type, exposing edges, **and** one fully worked example end to end |
+
+**The minimum is a gate: do not start §2 without it.** A fixture type with no example is a kind of artefact
+nobody has looked at, and the analysis will either skip it or invent it.
+
+**Platinum is named so it can be recognised, not so it can be aimed at.** It is not required, and reaching for
+it is exactly how examples turn into the burden §1.5 warns about. Rungs above the minimum are reached the
+cheap way, by adding an example when elicitation turns up an edge worth showing — not by setting out to fill
+a grid.
+
+### 1.5 Do Not Work Them Too Hard
+
+**An example worked hard enough becomes a fixture, and then the analysis has been skipped.** Starting from
+fixtures is starting from assertions about what must be true — which is the conclusion, arrived at without the
+reasoning, and it is the failure this ordering exists to prevent.
+
+**Examples must not be a burden.** Enough to show how things vary, and no more. Accuracy is worth having where
+it is cheap — the more accurate they are the better the analysis they support — but effort spent polishing an
+example is effort taken from the analysis that example exists to make possible.
+
+| | An example | A fixture |
+|---|---|---|
+| exists | before there is a condition space | because analysis found a cell |
+| says | *this is roughly how this varies* | *this must be true* |
+| when it disagrees with the analysis | ask which is wrong | something is broken |
+| may be cited as a requirement | never | always |
+
+### 1.6 They Need Not Be Related
+
+**Nothing requires one example to follow from another, and nothing is gained by forcing it.** The temptation
+is to write a tidy run-through where each step takes up where the last left off. Coherence is not what exposes
+variability, and the effort of maintaining it is the burden again.
+
+Independent is the default and is perfectly good. **Where examples *are* related, the combination has to be
+one that could be true** — the same rule as §1.3, applied across two artefacts instead of inside one. A state
+example that could not have come from the call example beside it is not two examples, it is one
+contradiction.
+
+### 1.7 When Their Work Is Done
+
+Examples are not maintained alongside the analysis. They have a job, and it finishes:
+
+1. Elicitation on top of the examples **evolves the model**.
+2. Doing that may expose something wrong in an example. Fix it then — that is the one moment examples change.
+3. With a model in place, the work moves to **aspects**, and those expose the rough edges of the model —
+   sometimes wholesale changes to its details, as the architect's understanding of how the real world varies
+   percolates into the dimensions of the condition space.
+4. **At that point the examples' work is done.** Later reworks of the condition space come from rough edges
+   that will not smooth, not from the examples, and there is little reason to revisit them again unless one is
+   egregiously wrong.
+
+New examples can be added at any time to make a point. That is a cheap and good thing to do, and it is not the
+same as maintaining the old ones.
+
+### 1.8 The Same Device, One Level Up
+
+§4 works this method through on a wooden adding machine with a missing tooth. That machine is doing for the
+method exactly what a use case's examples do for a use case: it is a crude, concrete thing you can watch state
+move in, chosen because its variability is visible rather than because it is realistic. Examples are that
+device pointed at the use case in hand.
+
+## 2 The Spine
 
 A use case is the sequence of operations an actor performs to achieve a goal.
 
@@ -59,7 +214,7 @@ And one thing about its ends:
 A use case need not start from the empty state and need not return to one. It must not return to the state it
 started in.
 
-## 2 State Spaces
+## 3 State Spaces
 
 A **state** is a corpus of identifiable, typed entities. Rows in tables. Objects at prefixes in a bucket.
 Key/value pairs in a cache. Items on a queue. A notification in flight. Those types have attributes, to any
@@ -69,7 +224,7 @@ depth.
 ordinals. Not only attribute values: how many rows there are, whether a list is empty, whether anything
 exists at a prefix, how long a collection is. Any variable aspect of the corpus.
 
-### 2.1 The Use Case Owns Its Dimensions
+### 3.1 The Use Case Owns Its Dimensions
 
 Of everything that *could* vary, the use case declares which its narrative actually turns on. Those dimensions
 and their ordinals are the use case's, and together they are its **global space**.
@@ -87,16 +242,16 @@ aspect of the data model it varies — an attribute, a count, a presence, a leng
 aspect of the model is a dimension of nothing, which is the same both-ends check the operation document runs
 one level down.
 
-### 2.2 A State Space Prunes The Global Space
+### 3.2 A State Space Prunes The Global Space
 
 A state space is not a list of values. It is a set of **not-applicable** rules over the use case's global
 space: at this point on the spine, these ordinals cannot arise.
 
 **Every space on the spine is a pruning of the same global space.** The entry condition, an operation's start
 and end, a transition, an extension's product, the goal. That is what makes them commensurable, and why the
-comparison in §2.4 is arithmetic rather than judgement.
+comparison in §3.4 is arithmetic rather than judgement.
 
-### 2.3 Recording One
+### 3.3 Recording One
 
 **A state space is declared as not-applicable rules, in the form every rule takes**, so that there is one data
 structure and one way of writing it. A state space's own rules are unconditional, so the form collapses to a
@@ -146,7 +301,7 @@ are **not-applicable**.
 space does not care what it holds; *none* says there is nothing there. An empty peg board is
 `peg-board` • *none*, not `peg-board` • *any*.
 
-### 2.4 Comparing Two
+### 3.4 Comparing Two
 
 Set a start space beside an end space, dimension by dimension, and three of the four outcomes are derived
 rather than declared:
@@ -158,7 +313,7 @@ rather than declared:
 | *any* | *any* | **unconstrained** — the use case makes no claim about it |
 | *any* | constrained | **changed**, from something to something definite |
 
-Only one thing has to be declared: **which of the changed dimensions is the goal** (§6). Everything else
+Only one thing has to be declared: **which of the changed dimensions is the goal** (§7). Everything else
 follows — the remaining changed dimensions are the side effects, and the identically-constrained ones are the
 invariants.
 
@@ -168,7 +323,7 @@ Which gives a check the spine can be run against on its own:
   never changes it and never guarantees it — it is carrying a name for nothing, and it should be released for
   an operation to claim.
 
-### 2.5 Unions
+### 3.5 Unions
 
 **An operation's entry space is the union of every state space transitioning into it.** One route in and the
 union is that route; several and the operation must be sound across all of them. A union widens: it is the
@@ -183,7 +338,7 @@ twice over.
 That is where a loop costs something, and where it does not. Name the spaces first and the question answers
 itself.
 
-## 3 A Worked Example
+## 4 Worked Through: The Wooden Adding Machine
 
 A wooden adding machine with a missing tooth, holding its state on a peg board.
 
@@ -215,14 +370,14 @@ to the difference. Identical is rarely the real-world case; invariant to the dif
 how it declares otherwise. 4.a names operation 3, so it goes there rather than on to 5.
 
 **Returning widens the target's entry space, because an entry space is the union of everything transitioning
-into it** (§2.5). Operation 3's entry space is now the union of what operation 2 produces and what 4.a
+into it** (§3.5). Operation 3's entry space is now the union of what operation 2 produces and what 4.a
 produces, and it must be sound across all of it. That is what a loop costs.
 
 Unlike the main sequence this *is* a check, because an extension is a claim about where the spine rejoins and
 so can be wrong: an extension **must** return to an operation, and may only return to one whose start state
 its own end state contains.
 
-## 4 The Use Case Is The Happy Path
+## 5 The Use Case Is The Happy Path
 
 **A use case has no dead ends.** It names a failure only where there is a way round to the same goal. The
 machine jams and the actor reaches for the doodah, so 4.a is an extension and earns a row; the machine catches
@@ -242,7 +397,7 @@ the operation had better catch fire gracefully.
 So a failure the use case does not name is not one the operation may ignore. It is one the use case has
 nothing to say about, which is a different claim entirely.
 
-### 4.1 Branching And Merging
+### 5.1 Branching And Merging
 
 **A use case that branches to different goals is probably two use cases.** If the routes end somewhere
 genuinely different then they were never one thing, and splitting them says so. It does not have to be split —
@@ -252,7 +407,7 @@ but the burden is on keeping it together, not on separating it.
 in is a start state that operation must be sound for, and the more routes there are the more of them it has to
 answer. That is the cost of a merge, and it is paid by the operation rather than the use case.
 
-## 5 Every Step Is An Operation
+## 6 Every Step Is An Operation
 
 Including the ones nothing supports. A decision an actor makes unaided — *is this widget mature enough?* —
 consumes state and produces state, and does not need a service to exist.
@@ -262,11 +417,11 @@ or do that* identifies two routes to one goal; where the routes do not agree exa
 simply declare a wider condition space, most of which is usually invariant or side effect. If the decision
 needs a trace, the difference between the states is the trace.
 
-**Where the use case *is* the decision, the decision must change state.** That is §1's rule applied to the
+**Where the use case *is* the decision, the decision must change state.** That is §2's rule applied to the
 case where deciding is the whole point: a decision leaving nothing behind cannot be asserted to have been
 made.
 
-### 5.1 A Step That Cannot Be Shown To Matter
+### 6.1 A Step That Cannot Be Shown To Matter
 
 Not a verdict — a **smell**, and it has at least three causes worth telling apart:
 
@@ -278,10 +433,10 @@ Not a verdict — a **smell**, and it has at least three causes worth telling ap
 
 The smell is the same in all three. Which one it is has to be asked rather than assumed.
 
-## 6 Where The Goal Lives
+## 7 Where The Goal Lives
 
 **The goal is declared, on the end space, as the aspects the actor came for.** Everything else about the end
-space is then derived by comparing it with the entry condition (§2.2):
+space is then derived by comparing it with the entry condition (§3.2):
 
 | Part of the end space | How it is known |
 |---|---|
@@ -309,8 +464,8 @@ aspects are the point and the rest serve them.
 It also makes the shape of a use case checkable, and now mechanically:
 
 * **The end space must carry at least one aspect marked as the goal.** A use case whose end space carries
-  none has been drawn too long — it has passed through what it came for and kept going, which is what the
-  first draft of the worked example did by ending with a reset.
+  none has been drawn too long — it has passed through what it came for and kept going, which is what §9.1's
+  first draft did by ending with a reset.
 * **Every aspect marked as the goal must be a changed aspect.** An aspect that is invariant between the entry
   condition and the end cannot be what the actor came for; it was already true.
 
@@ -319,7 +474,7 @@ for.** In the
 example that risk is real: the actor wants to *know* the sum, and the model only covers the machine. It is
 sound here because the sum is on the peg board at the end, and reading it is not a further operation.
 
-### 6.1 A Use Case Has No Single Entry State
+### 7.1 A Use Case Has No Single Entry State
 
 It has a **condition space over the state** — the states in which starting the use case is a valid course of
 action. Another use case may already have established that orders come small, medium and large; this one
@@ -328,7 +483,7 @@ covers large orders, and says so by constraining the space rather than by naming
 **The first operation's behaviours and fixtures must cover all of it.** That is where the cost of a wide entry
 condition lands, and it is why constraining the entry is worth doing deliberately rather than by omission.
 
-## 7 What Determines The Cost Of An Operation
+## 8 What Determines The Cost Of An Operation
 
 **The cost is the product of the start-state space and what may be done with it** — the payload and parameters
 the operation admits. The spine gives the first factor directly.
@@ -336,7 +491,7 @@ the operation admits. The spine gives the first factor directly.
 | Where the entry space comes from | Its size |
 |---|---|
 | a single transition in | that transition's space — the cheapest case |
-| several transitions in | their **union** (§2.5) |
+| several transitions in | their **union** (§3.5) |
 | the use case's own entry condition | whatever that condition admits |
 
 An operation reached by several routes must be sound across their union, which is why merging is paid for by
@@ -362,7 +517,7 @@ Three signals, all readable off the spine, that an operation is expensive:
 An operation that is none of these still earns a place on the spine and a name. *"This transition is
 unconditional"* is a claim worth being wrong about in public.
 
-## 8 Use Cases Within Use Cases
+## 9 Use Cases Within Use Cases
 
 **An operation may expand into a use case of its own.** A use case therefore has an optional **parent
 operation**, and that link carries a contract rather than a cross-reference:
@@ -387,7 +542,7 @@ description* is, to widget-evolution, a state going from absent to present; evol
 prose says. To a documentation use case it is the goal, and there may be several ways to reach it. Both are
 right, and the trivial reading is not a failure to analyse — it is the parent correctly declining to care.
 
-### 8.1 Worked: A Decision And The Use Case That Makes It
+### 9.1 Worked: A Decision And The Use Case That Makes It
 
 **In the parent**, deciding is one operation among several and changes nothing about the widget:
 
@@ -415,7 +570,7 @@ invariant: the widget is still `built`.
 And the audit state is the child's own. Evolution has no opinion about it, evolution's model does not carry
 it, and nothing needs to be modelled read-only for the two to coexist.
 
-## 9 The Data Model
+## 10 The Data Model
 
 **A use case's data model is the minimal set of types and attributes that must exist for its spine to be
 sound.** For the adding machine, `peg-board` and `calc-state` and nothing else. For widget evolution, `widget`
@@ -446,7 +601,7 @@ compatibility. So is one more, at the level of the analysis rather than any one 
 * **Every attribute in the aggregate varies in at least one use case.** One that varies nowhere is an
   attribute nobody needs, or a use case nobody has written.
 
-### 9.1 Analysis Declares Types, Not Models
+### 10.1 Analysis Declares Types, Not Models
 
 **What is owed at analysis level is a type catalog**: the named types, what each one is, and — where one is
 declared — its **primary key**. Nothing more: no other attributes, no structure, no validity rules. The same
@@ -472,7 +627,7 @@ actually need.
 This is why a use case needing an attribute nobody else has modelled simply declares it. There is nothing to
 request and nobody to request it from.
 
-### 9.2 The Same Attribute Under Two Names
+### 10.2 The Same Attribute Under Two Names
 
 The hard case is the one equality cannot catch: two use cases declaring an attribute with **the same meaning
 and different names**. Nothing mismatches, so nothing fails, and the aggregate quietly carries two attributes
@@ -500,7 +655,7 @@ Renaming one contradicts a claim they made, so it has to be asked for.
 **A child use case inherits its parent's types.** Its entry state is already described, so it starts from a
 model rather than a blank page — and any attribute it adds joins the aggregate by the rules above.
 
-## 10 The Spine Is A Graph
+## 11 The Spine Is A Graph
 
 Not a table. Operations are nodes, transitions are edges, and drawing it is worth the effort because loops,
 forks and merges are visible in a graph and invisible in a list.
@@ -561,7 +716,7 @@ re-examining before any of it is analysed further.
 and its own state space — but each edge should carry the extension it came from, so the prose and the graph do
 not drift apart.
 
-## 11 What A Use Case Analysis Produces
+## 12 What A Use Case Analysis Produces
 
 * **A data model** for the shared state: the minimal types and attributes its spine needs, in the vocabulary
   every operation's start and end states are written in. Its type *names* come from the analysis-wide catalog;
@@ -569,13 +724,15 @@ not drift apart.
 * **The spine as a graph**: operations as nodes, transitions as edges, each transition carrying the state
   space it admits, and each operation carrying what it transforms and what drives that.
 * **The extensions**, each as an edge, with the state space it produces and the operation it returns to.
-* **The goal**, declared as aspects of the end space. The side effects and the invariants are derived from it
-  and the entry condition, and are not written down.
+* **The goal**, declared as aspects of the end space, and with it **the side effects** and **the invariants**.
+  Both are derived from the goal and the entry condition, and both are written out anyway. The prose is read
+  by a human, and a human left to infer them will infer them wrongly; written down, they are something a
+  reader can disagree with and a check can falsify.
 * **The entry condition**: the state space in which starting the use case is valid.
 * **The parent operation**, where the use case is the expansion of one.
 * **The list of operations owed a full analysis**, and the start-state space that puts each on it.
 
-Every one of those is a state space or a comparison between two, which is why §2 comes before any of it.
+Every one of those is a state space or a comparison between two, which is why §3 comes before any of it.
 
 Get the state model and the spine right first. The spine is not checkable — it is the claim everything else is
 checked against — but it is cheap to write, it is the thing a reader can disagree with, and it decides how much

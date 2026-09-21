@@ -5,6 +5,7 @@
 * [Analysing A Use Case](../../notes/analysing-a-use-case.md) - what must be true of an analysed use case; this template is the document that must exist once it is
 * [Analysing An Operation](../../notes/analysing-an-operation.md) - where §4.2's flagged operations go next
 * [find-and-read-documentation](../analysis/use-cases/find-and-read-documentation/USE-CASE.md) - a use case whose `USE-CASE.md` this analysis evolves
+* [find-and-read-documentation's examples](../analysis/use-cases/find-and-read-documentation/examples/EXAMPLES.md) - the input this template is derived from, and the shape a use case's examples take
 
 Template for a use case's analysis, filed as `ANALYSIS.md` beside the `USE-CASE.md` it evolves, in the use
 case's own directory. The `USE-CASE.md` states the goal and the steps in the actor's words; this document
@@ -12,6 +13,22 @@ states what must be true for those steps to reach that goal, in states.
 
 It is written in the order it is derived: the model first, then what varies in it, then the spaces those
 variations name, then the sequence, then what has happened by the end.
+
+**It has one input that is not a document: the use case's examples**, in `examples/` beside the `USE-CASE.md`.
+The model in §1 and the aspects in §5 are read off them — a `USE-CASE.md` is a story about an actor and
+contains neither. Examples exist to expose how things vary; this document is where that becomes what must be
+true however they do. Starting without them produces an invented domain that reads exactly like an elicited
+one, which is why finding or writing them is the first question of
+[the instructions](../../notes/analysing-a-use-case-instructions.md) and not a section here.
+
+Two things about them bear on what is written below. **Every example is something that could be true** — an
+instance of a fixture this analysis might end up asserting — so an attribute or an ordinal that no example
+could ever carry is one to question rather than record. Nothing impossible is ever exemplified; what cannot
+exist is *stated* here instead, as a validity or invalidity rule, which is a true statement about the
+boundary rather than an artefact from beyond it. And **the minimum is one example of every fixture type of
+every operation**, covering the happy path and every exception the use case names, a state counting as one
+before and one after; where that minimum is not met, the fixture type with no example is where this document
+is most likely to invent something.
 
 **The block quotes are part of the document, not scaffolding to delete.** Each says what its section is for,
 and it stays there once the section is filled in — this is a long document whose sections are easy to
@@ -31,6 +48,7 @@ in its own right.
 
 ## Context
 * {link to the USE-CASE.md this analyses}
+* {link to the examples this is derived from — examples/EXAMPLES.md}
 * {link to the parent use case's ANALYSIS.md, and the operation of it this expands — omit if there is none}
 * {links to the ANALYSIS.md of any use case sharing a type with this one}
 
@@ -39,6 +57,11 @@ in its own right.
 > The minimal types and attributes the spine needs, and nothing else. Type names come from the analysis type
 > catalog; where the analysis declares a primary key it is that type's, not this use case's to change. An
 > attribute this use case does not vary is declared `INVARIANT` — and is worth a word saying why it is here.
+>
+> **Read this off the examples**, whose state is a populated instance of the model being drafted here: each
+> distinct kind of thing in them is a candidate type and each column a candidate attribute. An attribute they
+> do not carry is one being invented — keep it if the spine needs it, and say in its description that the
+> examples do not show it, because that is either a gap in them or an attribute the model does not need.
 
 ```mermaid
 classDiagram

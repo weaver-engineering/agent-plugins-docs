@@ -1,0 +1,25 @@
+$ weaverdoc search "retention class"
+
+registries searched:
+  /repo/docs (no scope named; the registry at this location)
+
+policies/retention-policy                      - 1.00 over 78 words
+  - Data Retention Policy
+policies/retention-policy$2                    - 1.00 over 18 words
+  - Data Retention Policy - 78 words
+    - 2 Retention By Class
+policies/eviction-policy$2                     - 0.86 over 99 words
+  - Cache Eviction Policy - 161 words
+    - 2 When An Entry Is Evicted
+policies/eviction-policy                       - 0.84 over 161 words
+  - Cache Eviction Policy
+policies/retention-policy$1                    - 0.57 over 24 words
+  - Data Retention Policy - 78 words
+    - 1 Data Classes
+policies/retention-policy$3                    - 0.52 over 33 words
+  - Data Retention Policy - 78 words
+    - 3 Expiry
+policies/eviction-policy$2.2                   - 0.47 over 28 words
+  - Cache Eviction Policy - 161 words
+    - 2 When An Entry Is Evicted - 99 words
+      - 2.2 Age Eviction

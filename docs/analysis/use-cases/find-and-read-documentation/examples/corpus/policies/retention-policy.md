@@ -1,0 +1,21 @@
+# Data Retention Policy
+
+## Context
+* [Cache Eviction Policy](eviction-policy.md) - what evicts an entry once its retention has run out
+
+## 1 Data Classes
+
+Every piece of data the platform holds belongs to one class, and its class decides how long it may be kept.
+
+## 2 Retention By Class
+
+| Class | Kept for |
+|---|---|
+| operational | 30 days |
+| audit | 7 years |
+| derived | until the source changes |
+
+## 3 Expiry
+
+Data past its retention is deleted. Where that data also sits in a cache, the eviction policy removes the
+cached copy independently — a cache entry is never the record of retention.

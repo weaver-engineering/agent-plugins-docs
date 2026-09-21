@@ -1,0 +1,10 @@
+$ weaverdoc register corpus/handbooks/ --recurse
+
+failed - nothing at that path
+nothing registered
+
+path
+- corpus/handbooks/ - nothing exists there
+
+remedy
+- check the path

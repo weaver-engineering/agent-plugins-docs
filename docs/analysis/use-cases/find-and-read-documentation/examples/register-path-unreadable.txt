@@ -1,0 +1,10 @@
+$ weaverdoc register corpus/restricted/ --recurse
+
+failed - path cannot be read
+nothing registered
+
+path
+- corpus/restricted/ - exists, but could not be opened
+
+remedy
+- fix the permission on the path
