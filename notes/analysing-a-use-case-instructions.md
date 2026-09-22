@@ -244,6 +244,18 @@ the architect is the one who knows which.
 For each type, check the analysis type catalog: one already named there keeps that name and its primary key,
 neither of which is yours to change. One not there is new, and you are proposing an addition.
 
+**Do not limit yourself to attributes that sound like stored fields.** A modelled attribute only has to be
+derivable from whatever design builds; the one the narrative actually turns on is very often not physical at
+all — how many are in the list, whether the thing is populated, how well the prose answers. Those are good
+attributes.
+
+**An attribute that comes from other data says so in its description, as **derived from**.** Naming it
+derived does not oblige the model to carry what derives it — if behaviour only changes on the size of the
+list, declare the size and leave the members out, and every fixture is that much cheaper. Name the sources
+this model carries; describe the ones it does not. Where the model *does* carry both a collection and
+something derived from it, check they agree: a model that contradicts itself cannot produce a true example or
+a true fixture.
+
 Write the class diagram and the attribute tables. A foreign key names its target as **link-to**:
 `{TypeName}`.
 

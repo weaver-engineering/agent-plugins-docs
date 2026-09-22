@@ -572,9 +572,100 @@ it, and nothing needs to be modelled read-only for the two to coexist.
 
 ## 10 The Data Model
 
-**A use case's data model is the minimal set of types and attributes that must exist for its spine to be
-sound.** For the adding machine, `peg-board` and `calc-state` and nothing else. For widget evolution, `widget`
-and whatever maturity turns on.
+**A use case's data model is the structures of the entities its analysis needs in order to say what data
+exists in state** — enough that the narrative of how the use case mutates that state hangs together, and no
+more. The use case names the attributes it needs to tell that story along its spine, and it names them so
+that state can be written down:
+
+| | |
+|---|---|
+| a **state example** | what state *could* exist |
+| a **state fixture** | what state *must* exist |
+
+Both are written in the model's vocabulary, and neither can be written without it. For the adding machine
+that vocabulary is `peg-board` and `calc-state` and nothing else; for widget evolution, `widget` and whatever
+maturity turns on.
+
+### 10.1 The Analysis Model Is Not The Physical Model
+
+**A modelled attribute is not a physical attribute.** It has to be *derivable* from whatever the physical
+model turns out to be — but what that physical model is, and how it supports the derivation, is not analysis's
+concern and never appears here.
+
+That is what leaves the model free to be useful. The attribute an analysis actually pivots on is very often
+not a physical one: how many records are in a list, whether something is populated, how well some prose
+answers a query. Each is real and each is derivable from something physical, and none of them need exist as a
+stored field anywhere.
+
+### 10.2 Two Ways To Model One Thing, And They Must Agree
+
+Take a list the use case turns on because of its size. There are two ways to model it:
+
+* represent the members, and let the size follow from them;
+* declare `list-size` as an attribute in its own right.
+
+**Both are valid, and both may appear in the same model.** Where they do, **they must agree.** A model
+carrying three members and a `list-size` of four describes nothing at all, and an example or a fixture
+written from it is not true. Analysis deals only in what must be true, so neither has any place in it.
+
+### 10.3 Derived Attributes
+
+Every attribute of an analysis model is physically derived, so saying that of all of them says nothing.
+**Analysis means something narrower: an attribute marked derived is one the analysis says comes from other
+data rather than standing on its own.** All fixtures are data, so any data attribute in the fixture set can
+derive one — its own type's or another's.
+
+| Attribute | Derived from |
+|---|---|
+| `list-size` | the members of the list |
+| `has-context` | whether the context is populated |
+| `relevance-score` | the query's terms, the document's prose, and the search algorithm |
+
+#### 10.3.1 The Model Need Not Carry What Derives It
+
+**A fixture states what must be true for the narrative to be consistent, and nothing beyond that.** It is
+under no obligation to carry the attributes that derive a derived one, and neither is the model.
+
+* If the only thing that varies behaviour is how many are in the list, the model needs `list-size`. It does
+  not need the members.
+* If the only thing that varies behaviour is how well a document answers, the model needs `relevance-score`.
+  It does not need the prose.
+
+Modelling the sources anyway costs every fixture all of them, and buys the narrative nothing it uses.
+
+#### 10.3.2 Name What The Model Has, Describe What It Has Not
+
+**Where the model names what derives an attribute, the derived attribute names them. Where it does not, the
+derived attribute describes them.**
+
+> `relevance-score`
+>
+> **derived from**:
+> * `query.terms`
+> * `query.algorithm`
+> * the prose of the document
+
+`query.terms` and `query.algorithm` are attributes this model carries, so they are named. The document's
+prose is not in the model, so it is described. Either way *attribute `relevance-score` is derived from
+`query.terms`, `query.algorithm` and the prose of the document* is a true statement, and that is what gives
+it a place in analysis.
+
+Describing rather than naming is not a lesser form. It is the honest record of a derivation the model
+deliberately does not reach into — and it leaves a reader in no doubt that the attribute is not free-standing.
+
+#### 10.3.3 What A Derived Attribute Cannot Do
+
+**It cannot be varied independently of what derives it.** What that costs depends on whether the model
+carries the sources:
+
+| | |
+|---|---|
+| the model carries them | they and the derived attribute must agree in every fixture (§10.2), and a dimension over the derived attribute constrains them too |
+| the model does not carry them | there is nothing in the fixture to keep consistent, and the derived attribute varies on its own — which is frequently the reason for leaving them out |
+
+### 10.4 Minimal, And Shared By Name
+
+**A use case's model is the minimal set of types and attributes that must exist for its spine to be sound.**
 
 **Types are shared across the analysis by name, and models are not.** Two use cases naming `widget` are
 describing the same thing from different perspectives, which gives four properties worth relying on:
@@ -601,7 +692,7 @@ compatibility. So is one more, at the level of the analysis rather than any one 
 * **Every attribute in the aggregate varies in at least one use case.** One that varies nowhere is an
   attribute nobody needs, or a use case nobody has written.
 
-### 10.1 Analysis Declares Types, Not Models
+### 10.5 Analysis Declares Types, Not Models
 
 **What is owed at analysis level is a type catalog**: the named types, what each one is, and — where one is
 declared — its **primary key**. Nothing more: no other attributes, no structure, no validity rules. The same
@@ -627,7 +718,7 @@ actually need.
 This is why a use case needing an attribute nobody else has modelled simply declares it. There is nothing to
 request and nobody to request it from.
 
-### 10.2 The Same Attribute Under Two Names
+### 10.6 The Same Attribute Under Two Names
 
 The hard case is the one equality cannot catch: two use cases declaring an attribute with **the same meaning
 and different names**. Nothing mismatches, so nothing fails, and the aggregate quietly carries two attributes
