@@ -75,11 +75,24 @@ classDiagram
 
 > What one of these is, in a sentence. A `foreign` key names the type it links to in its description, as
 > **link-to**: `{TypeName}`, so the link can be read without interpreting prose.
+>
+> **A modelled attribute is not a physical attribute.** It has to be derivable from whatever design ends up
+> building, and nothing more is owed — so `list-size` and `has-context` are perfectly good attributes, and
+> how they would be stored is not this document's business.
+>
+> **An attribute that comes from other data rather than standing on its own says so**, as **derived from**.
+> The model is not obliged to carry what derives it: if the only thing that varies behaviour is how many are
+> in the list, declare `list-size` and leave the members out. Name the sources this model carries; describe
+> the ones it does not.
+>
+> **Where the model carries both a thing and something derived from it, the two must agree.** Three members
+> and a `list-size` of four describes nothing, and no example or fixture written from it could be true.
 
 | Attribute | Type | Key | Description |
 |---|---|---|---|
 | `{name}` | {type} | primary | {what it is} |
 | `{name}` | {type} | foreign | **link-to**: `{TypeName}` — {what the link means} |
+| `{name}` | {type} | — | {what it is}<br>**derived from**:<br>• `{Type}.{attribute}` — one this model carries<br>• {one it does not, described} |
 | `{name}` | {type} | — | `INVARIANT` — {why it is declared at all, given the use case never varies it} |
 
 #### 1.{n}.1 Ordinals By Attribute
