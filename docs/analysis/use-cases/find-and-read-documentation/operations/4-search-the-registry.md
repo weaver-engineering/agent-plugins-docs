@@ -15,7 +15,7 @@ the Agent chose between them.
 * [find-and-read-documentation](../USE-CASE.md) - the use case whose step 4 this analyses
 * [1 — Register A Path](1-register-a-path.md) - the operation whose Result is this one's entry state; every
   registry searched here holds what that operation put in it
-* [WeaverDocs Architecture](../../../architecture/weaverdocs/ARCHITECTURE.md) - §1.6 and §2.3, the registry
+* [WeaverDocs Architecture](../../../../architecture/weaverdocs/ARCHITECTURE.md) - §1.6 and §2.3, the registry
   boundary this step crosses
 * @docs/standards/documentation-standards.md/§5 - Indexing, including the Rationale/Appendix exclusion §5's
   first invariant turns on
@@ -622,6 +622,13 @@ wherever that aspect is present.
 | **A refusal names the range it refused against** | a caller told only that a number was wrong has to guess twice; one told what it must be between has to guess once. The range is the operation's to know and costs nothing to say | the range |
 
 ## 7 Coverage
+
+**`rendering` is superseded and has not yet been removed.** §2 declares it as a dimension with `human` and
+`machine` ordinals, and §2.5's rules and §4's arithmetic both count it. The examples have since settled that
+every answer is yaml — readable by a person and by a parser alike — so there is nothing for the caller to
+choose and the dimension has no ordinals left to take. Removing it changes the product §4.4 reconciles, which
+is why it is recorded here rather than done piecemeal:
+[examples/EXAMPLES.md](../examples/EXAMPLES.md) has what replaced it.
 
 **Not yet claimable.** §4 records that its tree is owed, and until it is drawn there is no settled set of cells
 to check every ordinal against, nor any cell for an invariant to be witnessed at. What can be said is that

@@ -1,16 +1,23 @@
 # the document at policies/retention-policy.md was deleted since the last run
 $ weaverdoc register corpus/ --recurse
-
+---
+state: registered
 registered:
-- policies/eviction-policy.md - 5 sections, §1 - §3
-- procedures/cache-tuning.md - 3 sections, §1 - §3
-- procedures/eviction-procedures.md - 5 sections, §1 - §3
-
-dropped:
-- policies/retention-policy.md - no longer present; 4 registrations removed
-
-outstanding TODOs: 1
-- procedures/cache-tuning.md:15
-
-unchanged: 0
-not documents: corpus/notes.txt
+  paths:
+    - path: a-document-with-contexts.md
+      sections: 9
+    - path: policies/eviction-policy.md
+      sections: 5
+    - path: procedures/cache-tuning.md
+      sections: 3
+    - path: procedures/eviction-procedures.md
+      sections: 5
+  todos:
+    - path: procedures/cache-tuning.md
+      line: 15
+  unchanged: 0
+  dropped:
+    - path: policies/retention-policy.md
+  skipped:
+    - corpus/notes.txt
+---

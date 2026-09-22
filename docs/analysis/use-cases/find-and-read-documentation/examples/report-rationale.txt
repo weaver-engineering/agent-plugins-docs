@@ -1,10 +1,15 @@
-$ weaverdoc report procedures/cache-tuning$Rationale
+$ weaverdoc report procedures/cache-tuning§Rationale
+---
+reference: procedures/cache-tuning§Rationale
+state: matched
+document:
+  title: Cache Tuning
+  path: procedures/cache-tuning.md
+---
+# Cache Tuning
 
-context path:
-  - Cache Tuning
-    - Rationale
-
-procedures/cache-tuning.md lines 21-29 (9 of 33 lines in the document)
+## Context
+* [Cache Eviction Policy](../policies/eviction-policy.md) - the eviction behaviour tuning works against
 
 # Rationale
 
@@ -14,4 +19,3 @@ weeks. A rate can, and a rate is what shows thrashing.
 
 **Why the oldest surviving entry and not the average age.** An average hides the case this measure exists to
 catch, which is a cache evicting so fast that nothing lives long enough to be hit twice.
-

@@ -1,10 +1,11 @@
 $ weaverdoc report policies/retention-policy
-
-context path:
-  - Data Retention Policy
-
-policies/retention-policy.md lines 1-21 (21 of 21 lines in the document)
-
+---
+reference: policies/retention-policy
+state: matched
+document:
+  title: Data Retention Policy
+  path: policies/retention-policy.md
+---
 # Data Retention Policy
 
 ## Context
