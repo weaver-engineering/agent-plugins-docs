@@ -1,14 +1,20 @@
-$ weaverdoc report policies/eviction-policy$2.1
+$ weaverdoc report policies/eviction-policy§2.1
+---
+reference: policies/eviction-policy§2.1
+state: matched
+document:
+  title: Cache Eviction Policy
+  path: policies/eviction-policy.md
+---
+# Cache Eviction Policy
 
-context path:
-  - Cache Eviction Policy
-    - 2 When An Entry Is Evicted
-      - 2.1 Pressure Eviction
+## Context
+* [Retention Policy](retention-policy.md) - what may be kept, and for how long
+* [Eviction Procedures](../procedures/eviction-procedures.md) - how this policy is carried out
 
-policies/eviction-policy.md lines 17-21 (5 of 30 lines in the document)
+## 2 When An Entry Is Evicted
 
 ### 2.1 Pressure Eviction
 
 Under pressure the least recently used entry is evicted first. The policy takes no view on how recency is
 measured, only that the measure is the same for every entry in one cache.
-

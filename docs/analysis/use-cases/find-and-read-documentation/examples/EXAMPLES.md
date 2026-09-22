@@ -19,6 +19,17 @@ use case's eight extensions that survive the minimum (§2.1) — each of those i
 is part of what must be true for the Agent to reach it. Everything else that could go wrong is absent on
 purpose.
 
+**Every answer here opens with a yaml frontmatter block, and every one carries a `state`.** Yaml is
+readable by a person and by a parser, so there is nothing for a rendering control to choose between and none
+is offered. A caller knows what it has from the first two fields, before it reads a word of prose, and a
+parser never has to infer an outcome from whether a body turned up.
+
+**The `state` vocabulary is per operation and deliberately wide.** A search is `matched` or `unmatched`, a
+registration `registered` or `unregistered`. One vocabulary across all of them collapses to `passed` and
+`failed`, which cannot carry *why* — and carrying why is the whole of what the use case promises when it
+cannot deliver: the Agent finds what it was looking for, **or what it must do instead**
+([USE-CASE.md §1](../USE-CASE.md)). A `failed` that says nothing more is not a route to that goal.
+
 **They are not fixtures and must not become them.** A fixture asserts; an example says *this is roughly how
 this varies*. Nothing here may be cited as a requirement, nothing here is locked, and none of it has been
 polished past the point where it shows something — an example worked hard enough to be a fixture is an
@@ -47,7 +58,7 @@ reads only the part that bears on its task.
 | a ranked answer of documents and sections together | previews of a result's own prose |
 | a results list capped at a default | a caller-set cap, or any caller-set bound |
 | reporting a reference in full, with its context path | reporting part of a reference by line range |
-| the human rendering, and the machine rendering of one answer | — |
+| one rendering, readable by a person and by a parser | a rendering control — there is nothing to choose between |
 
 What is out is out of the *minimum*, not out of the use case. Each is an extension, and each attaches to a
 dimension whose default ordinal is the behaviour shown here. Cutting them is what makes the first pass
@@ -70,11 +81,11 @@ exception the use case names.
 | search the registry | the call | each `search-*.txt` header | 4 |
 | | the state it runs against | [`registered.md`](registered.md) — search does not mutate, so before and after are one state | 1 |
 | | **answer** | [`search-answer.txt`](search-answer.txt) | 1 |
-| | **answer, truncated** | [`search-truncated.txt`](search-truncated.txt), [`search-truncated.json`](search-truncated.json) | 2 |
+| | **answer, truncated** | [`search-truncated.txt`](search-truncated.txt) | 1 |
 | | **empty answer** | [`search-empty.txt`](search-empty.txt), [`search-excluded-zone.txt`](search-excluded-zone.txt) | 2 |
-| report a reference | the call | each `report-*.txt` header | 4 |
+| report a reference | the call | each `report-*.txt` header | 5 |
 | | the state it runs against | [`registered.md`](registered.md) — likewise unmutated | 1 |
-| | the reported content | [`report-section.txt`](report-section.txt), [`report-document.txt`](report-document.txt), [`report-rationale.txt`](report-rationale.txt) | 3 |
+| | the reported content | [`report-section.txt`](report-section.txt), [`report-document.txt`](report-document.txt), [`report-rationale.txt`](report-rationale.txt), [`report-section-with-contexts.txt`](report-section-with-contexts.txt) | 4 |
 | | a reference that does not resolve | [`report-stale-reference.txt`](report-stale-reference.txt) | 1 |
 
 ### 2.1 The Named Exceptions
@@ -129,27 +140,37 @@ differential. That is an edge worth an example when elicitation reaches it, and 
 
 ## 3 Register A Path
 
-`corpus/` holds four markdown documents in two directories, and one file that is not a document.
+**What is registered is `corpus/`, a path.** It is a directory, not a document, and the operation is given
+the path rather than the things under it. Under it are five markdown documents — one at the root and four
+across two directories — and one file that is not a document at all.
 
-| | |
+| Under `corpus/` | Why it is there |
 |---|---|
-| [`corpus/`](corpus/) | what is registered |
+| [`a-document-with-contexts.md`](corpus/a-document-with-contexts.md) | at the root rather than in a directory; carries a `Context` on sections as well as on itself, at three depths, and an unnumbered section among numbered ones |
+| [`policies/eviction-policy.md`](corpus/policies/eviction-policy.md) | sections nested two deep, and the subject most of the searches are about |
+| [`policies/retention-policy.md`](corpus/policies/retention-policy.md) | flat sections, one of them a table rather than prose |
+| [`procedures/cache-tuning.md`](corpus/procedures/cache-tuning.md) | a Rationale, an Appendix, and the corpus's one outstanding TODO |
+| [`procedures/eviction-procedures.md`](corpus/procedures/eviction-procedures.md) | a second document nested two deep, so a search has more than one place to rank from |
+| [`notes.txt`](corpus/notes.txt) | not a markdown document |
+
+| The artefacts | |
+|---|---|
 | [`registered-before.md`](registered-before.md) | the registry beforehand — empty |
 | [`register.txt`](register.txt) | what the run reports |
 | [`registered.md`](registered.md) | the registry afterwards |
 
-Four things in the corpus are deliberate, and each one is there to make something visible that a corpus of
-plain documents would hide:
+Three of those choices carry more than they look, and each is there to make something visible that a corpus
+of plain documents would hide:
 
-* **`procedures/cache-tuning.md` carries a Rationale and an Appendix.** Both register as structure — they have
-  a type, a line span and a place in the tree — and neither contributes words. They stay addressable and are
-  never matched. Both contain the phrase *eviction policy*, and neither is ever among §4's answers; and the
-  word *thrashing*, which occurs in the corpus twice and both times inside one of them, answers nothing at
-  all.
-* **Every document carries a `Context` section**, which is likewise structure without words.
-* **`cache-tuning.md` carries an outstanding TODO**, so registration has one to record.
-* **`corpus/notes.txt` is not a markdown document.** It is not registered, no answer mentions it, and nothing
-  reports it as a problem. A file that is not a document is not a failure.
+* **A Rationale and an Appendix register as structure and contribute no words.** They have a type, a line
+  span and a place in the tree; they stay addressable and are never matched. Both of `cache-tuning.md`'s
+  contain the phrase *eviction policy* and neither is ever among §4's answers — and the word *thrashing*,
+  which occurs in the corpus twice and both times inside one of them, answers nothing at all.
+* **Every document carries a `Context` section**, which is likewise structure without words. In
+  `a-document-with-contexts.md` sections carry one too, which is what makes a report of a section deep inside
+  it worth showing (§5).
+* **`notes.txt` takes no part, silently.** It is not registered, no answer mentions it, and nothing reports
+  it as a problem. A file that is not a document is not a failure.
 
 ## 4 Search The Registry
 
@@ -159,13 +180,15 @@ because it varies something, against the shapes
 
 | | Shape | What it shows |
 |---|---|---|
-| [`search-truncated.txt`](search-truncated.txt) | **answer, truncated** | 16 nodes answered, the default cap admitted 10, and the answer says so |
-| [`search-truncated.json`](search-truncated.json) | the same, machine rendering | the same answer in the same order, every field present |
+| [`search-truncated.txt`](search-truncated.txt) | **answer, truncated** | 16 nodes answered, the default cap admitted 10, and `matches: 16` is how the answer says so |
 | [`search-answer.txt`](search-answer.txt) | **answer** | 7 answered, nothing cut, documents and sections ranked against each other |
 | [`search-empty.txt`](search-empty.txt) | **empty answer** | nothing answered, and that is an answer rather than a failure |
 | [`search-excluded-zone.txt`](search-excluded-zone.txt) | **empty answer** | a word that *is* in the corpus, twice, and is unreachable because both occurrences sit in a Rationale or an Appendix |
 
-The last of those is the only place an invariant is witnessed here rather than described. It is worth the
+**A cut answer says so with `matches`.** Sixteen matched, ten rows reported: the frontmatter states the
+whole and the body carries what survived the cap, which is a bounded answer disclosing what the bound cost.
+
+The excluded-zone search is the only place an invariant is witnessed here rather than described. It is worth the
 extra file: prose saying excluded zones are never matched is a claim, and an empty answer to a word that
 demonstrably occurs in the corpus is evidence.
 
@@ -174,21 +197,28 @@ and beneath it the ancestry chain down from the document, each ancestor with its
 lets the Agent choose what to fetch without fetching anything.
 
 **A section and the document containing it are separate results.** `policies/retention-policy` and
-`policies/retention-policy$2` both answer `retention class` and are ranked against each other on their own
+`policies/retention-policy§2` both answer `retention class` and are ranked against each other on their own
 merits. Neither suppresses the other.
 
 ## 5 Report A Reference
 
+**A reference is reported as its document, cut down to the path that reaches it.** The document's title,
+then every ancestor heading on the way down carrying its own `Context` where it has one, then the node itself
+in full. An ancestor contributes its heading and its context and nothing else: what is being reported is the
+node, and the chain is there to say where it sits.
+
 | | |
 |---|---|
-| [`report-section.txt`](report-section.txt) | a section reference — verbatim text, and the context path down to it |
-| [`report-document.txt`](report-document.txt) | a document reference — the same, where the chain is the document alone |
+| [`report-section.txt`](report-section.txt) | a section two levels down, whose ancestors carry no `Context` of their own |
+| [`report-section-with-contexts.txt`](report-section-with-contexts.txt) | a section three levels down, where the document and one ancestor each carry a `Context`, and the node's own subtree comes with it |
+| [`report-document.txt`](report-document.txt) | a document reference — the whole document, because the node is the document |
 | [`report-rationale.txt`](report-rationale.txt) | extension 7a — a rationale, which no search will ever hand back and which is addressable all the same |
 | [`report-stale-reference.txt`](report-stale-reference.txt) | extension 8a — a reference the document no longer has, answered with the closest surviving one |
 
-Each carries the line span and the document's total length, so what was reported is never mistaken for all
-there is. In the minimum a report is never bounded, so that count is always the whole of it — which is
-exactly the kind of thing that looks like an invariant here and turns out to be an artefact of the cut.
+**A reference that does not resolve answers with the frontmatter alone.** There is no document to cut down,
+so there is no body: the reference as it was given, `state: unmatched`, and the closest reference that does
+survive. The Agent gets somewhere to go rather than an error to interpret — and it reads that from the same
+field a matched report fills with `matched`.
 
 The rationale one is worth its place twice over. It is the only artefact showing a node that is registered as
 structure, never indexed, and still reachable — the same node whose words §4 proves are unreachable. The
@@ -201,12 +231,12 @@ question the analysis inherits.
 
 * **Ranking by density alone ranks badly.** The figures come from the crudest function that honours the one
   constraint the use case already states ([USE-CASE.md](../USE-CASE.md) §7: matching more of the query's distinct terms beats matching one
-  of them often). Even so, `policies/retention-policy$3 Expiry` outranks `policies/eviction-policy` on the
+  of them often). Even so, `policies/retention-policy§3 Expiry` outranks `policies/eviction-policy` on the
   query *eviction policy* — a passing mention in a short section beating the document actually about it. The
   weighing of coverage against frequency is the open question, and this is what it looks like when it is left
   crude.
 * **Whether the query is stemmed is undecided, and it changes the answer set.** `eviction` does not match
-  *evicted* here, so `policies/eviction-policy$3 What Is Never Evicted` — which is about nothing else — never
+  *evicted* here, so `policies/eviction-policy§3 What Is Never Evicted` — which is about nothing else — never
   answers. The use case leaves the query language open; this shows it is not a free choice.
 * **Whether a document's word count includes its sections'.** These figures say yes: a document's count is
   everything under it, minus what is excluded. So `Cache Eviction Policy` is 161 words while its own prose
@@ -215,8 +245,19 @@ question the analysis inherits.
 * **Whether an ancestry shows the answering node itself.** It does here, as the last link with no count of its
   own, because its count is already in the row. That is a rendering decision wearing the clothes of a model
   decision.
-* **What a reference actually is.** Written here as a path relative to the registry root with `$` and a
-  section number. Nothing has settled whether a reference is a path, an identifier, or a pair.
+* **What a reference actually is.** Written here as a path relative to the registry root followed by `§` and
+  a section number — `policies/eviction-policy§2.1`. Nothing has settled whether a reference is a path, an
+  identifier, or a pair, nor what addresses a section that carries no number: `Overview` in
+  `a-document-with-contexts.md` is reachable here as `§Overview`, by its title, which collides the moment two
+  sections under one parent share one.
+* **A report no longer says how much it did not show.** These reports carry no line span and no document
+  length. [ARCHITECTURE.md](../../../../architecture/weaverdocs/ARCHITECTURE.md) §2.4 requires a bounded
+  answer to disclose what the bound cost, and in the minimum a report is never bounded — so nothing is being
+  withheld and nothing needs declaring. Whether the count should be there anyway, ready for the bound that
+  extensions will add, is open.
+* **Whether an ancestor's `Context` belongs in a report of its descendant.** It is here, at every level, and
+  it is a real choice: it makes a section readable on its own, and it means a reference deep in a document
+  returns prose the caller did not ask for.
 
 ## 7 The Figures
 

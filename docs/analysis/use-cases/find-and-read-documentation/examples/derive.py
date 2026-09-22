@@ -82,8 +82,8 @@ def ref(path, node):
         return slug(path)
     m = re.match(r'^([0-9.]+) ', node['title'])
     if m:
-        return f'{slug(path)}${m.group(1)}'
-    return f'{slug(path)}${node["title"].split(":")[0].replace(" ", "-")}'
+        return f'{slug(path)}§{m.group(1)}'
+    return f'{slug(path)}§{node["title"].split(":")[0].strip().replace(" ", "-")}'
 
 
 def load():
@@ -124,51 +124,33 @@ def search(reg, terms):
     return rows
 
 
-def render_search_json(reg, query, terms):
-    """The same answer, written for a parser.
-
-    Every field is present whether or not it has anything in it — a parser that has
-    to tell "absent" from "empty" breaks on the empty case (search §6.1).
-    """
-    rows = search(reg, terms)
-    shown, withheld = rows[:CAP], max(0, len(rows) - CAP)
-    results = []
-    for r in shown:
-        chain = ancestry(reg[r['path']], r['node'])
-        results.append(
-            '    {"reference": %s, "title": %s, "relevance": %.2f, "words": %d,\n'
-            '     "ancestry": [%s]}' % (
-                j(r['ref']), j(r['node']['title']), r['score'], r['words'],
-                ', '.join('{"title": %s, "words": %d}' % (j(a['title']), a['words'])
-                          for a in chain)))
-    return ('{\n'
-            '  "ok": true,\n'
-            '  "query": %s,\n'
-            '  "registries_searched": [{"name": null, "location": "/repo/docs"}],\n'
-            '  "matched": %d,\n'
-            '  "reported": %d,\n'
-            '  "withheld": %d,\n'
-            '  "results": [\n%s\n  ]\n'
-            '}\n') % (j(query), len(rows), len(shown), withheld, ',\n'.join(results))
-
-
 def j(s):
     return '"' + str(s).replace('\\', '\\\\').replace('"', '\\"') + '"'
 
 
-def render_register(reg):
-    out = ['$ weaverdoc register corpus/ --recurse', '', 'registered:']
+def _reg_paths(reg, skip=None):
+    out = []
     for p, doc in reg.items():
+        if skip and slug(p) == skip:
+            continue
         secs = [n for n in doc['nodes'] if n['kind'] == 'section']
-        nums = [re.match(r'^([0-9.]+) ', n['title']).group(1) for n in secs
-                if re.match(r'^([0-9.]+) ', n['title'])]
-        span = f'§{nums[0]} - §{nums[-1]}' if nums else 'no numbered sections'
-        out.append(f'- {slug(p)}.md - {len(secs)} sections, {span}')
-    todos = [(slug(p), line, txt) for p, doc in reg.items() for line, txt in doc['todos']]
-    out += ['', f'outstanding TODOs: {len(todos)}']
-    for s, line, txt in todos:
-        out.append(f'- {s}.md:{line}')
-    out += ['', 'unchanged: 0', 'dropped: none', 'not documents: corpus/notes.txt']
+        out += [f'    - path: {slug(p)}.md', f'      sections: {len(secs)}']
+    return out
+
+
+def _reg_todos(reg):
+    out = []
+    for p, doc in reg.items():
+        for line, _ in doc['todos']:
+            out += [f'    - path: {slug(p)}.md', f'      line: {line}']
+    return out
+
+
+def render_register(reg):
+    out = ['$ weaverdoc register corpus/ --recurse', '---', 'state: registered', 'registered:',
+           '  paths:'] + _reg_paths(reg)
+    out += ['  todos:'] + _reg_todos(reg)
+    out += ['  unchanged: 0', '  dropped: 0', '  skipped:', '    - corpus/notes.txt', '---']
     return '\n'.join(out) + '\n'
 
 
@@ -178,63 +160,88 @@ def render_register_after_deletion(reg, gone):
     Registering is absolute rather than differential, so what the registry ends up
     holding is computed from what is under the path now. What changes is the report.
     """
-    out = ['# the document at policies/retention-policy.md was deleted since the last run',
-           '$ weaverdoc register corpus/ --recurse', '', 'registered:']
-    for p, doc in reg.items():
-        if slug(p) == gone:
-            continue
-        secs = [n for n in doc['nodes'] if n['kind'] == 'section']
-        nums = [re.match(r'^([0-9.]+) ', n['title']).group(1) for n in secs
-                if re.match(r'^([0-9.]+) ', n['title'])]
-        span = f'§{nums[0]} - §{nums[-1]}' if nums else 'no numbered sections'
-        out.append(f'- {slug(p)}.md - {len(secs)} sections, {span}')
-    dropped = reg[os.path.join(HERE, 'corpus', gone + '.md')]
-    nodes = len([n for n in dropped['nodes'] if n['indexed']])
-    out += ['', 'dropped:', f'- {gone}.md - no longer present; {nodes} registrations removed']
-    out += ['', 'outstanding TODOs: 1', '- procedures/cache-tuning.md:15']
-    out += ['', 'unchanged: 0', 'not documents: corpus/notes.txt']
+    out = [f'# the document at {gone}.md was deleted since the last run',
+           '$ weaverdoc register corpus/ --recurse', '---', 'state: registered', 'registered:',
+           '  paths:'] + _reg_paths(reg, skip=gone)
+    out += ['  todos:'] + _reg_todos(reg)
+    out += ['  unchanged: 0', '  dropped:', f'    - path: {gone}.md',
+            '  skipped:', '    - corpus/notes.txt', '---']
     return '\n'.join(out) + '\n'
 
 
 def render_search(reg, query, terms):
     rows = search(reg, terms)
-    shown, withheld = rows[:CAP], max(0, len(rows) - CAP)
-    out = [f'$ weaverdoc search "{query}"', '']
-    out += ['registries searched:', '  /repo/docs (no scope named; the registry at this location)', '']
+    shown = rows[:CAP]
+    out = [f'$ weaverdoc search "{query}"', '---', f'query: {query}']
     if not shown:
-        out.append(f'nothing answered "{query}"')
-        return '\n'.join(out) + '\n', rows, withheld
+        out += ['state: unmatched', 'searched:', '  - /repo/docs', '---']
+        return '\n'.join(out) + '\n', rows, 0
+    out += ['state: matched', f'matches: {len(rows)}', 'searched:', '  - /repo/docs', '---']
     for r in shown:
         out.append(f'{r["ref"]:<46} - {r["score"]:.2f} over {r["words"]} words')
         chain = ancestry(reg[r['path']], r['node'])
         for depth, a in enumerate(chain):
             count = '' if a is r['node'] else f' - {a["words"]} words'
             out.append('  ' + '  ' * depth + f'- {a["title"]}{count}')
-    if withheld:
-        out += ['', f'... ({withheld} more matches)']
-    return '\n'.join(out) + '\n', rows, withheld
+    return '\n'.join(out) + '\n', rows, max(0, len(rows) - CAP)
 
 
 # ---------------------------------------------------------------- reporting
-def render_report(reg, reference):
-    base, _, sec = reference.partition('$')
+def context_of(doc, node):
+    """The node's own `Context` child, where it has one."""
+    for n in doc['nodes']:
+        if n['kind'] != 'context':
+            continue
+        if n['line'] > node['line'] and n['end'] <= node['end'] and n['depth'] == node['depth'] + 1:
+            return n
+    return None
+
+
+def verbatim(doc, node):
+    body = doc['lines'][node['line'] - 1:node['end']]
+    while body and not body[-1].strip():
+        body.pop()
+    return body
+
+
+def render_report(doc_reg, reference):
+    """A reference reported as the document, cut down to the path that reaches it.
+
+    The document's title, then every ancestor heading on the way down carrying its
+    own `Context` where it has one, then the node itself in full. Ancestors
+    contribute their heading and their context and nothing else — what is being
+    reported is the node, and the chain is there to say where it sits.
+    """
+    base = reference.split('§')[0]
     path = os.path.join(HERE, 'corpus', base + '.md')
-    doc = reg[path]
+    doc = doc_reg[path]
     node = next((n for n in doc['nodes'] if ref(path, n) == reference), None)
     if node is None:
         raise SystemExit(f'no such reference: {reference}')
-    chain = ancestry(doc, node)
-    span = node['end'] - node['line'] + 1
-    total = len(doc['lines'])
-    out = [f'$ weaverdoc report {reference}', '']
-    out.append('context path:')
-    for depth, a in enumerate(chain):
-        out.append('  ' + '  ' * depth + f'- {a["title"]}')
-    out.append('')
-    out.append(f'{base}.md lines {node["line"]}-{node["end"]} '
-               f'({span} of {total} lines in the document)')
-    out.append('')
-    out += doc['lines'][node['line'] - 1:node['end']]
+    root = doc['nodes'][0]
+
+    out = [f'$ weaverdoc report {reference}',
+           '---',
+           f'reference: {reference}',
+           'state: matched',
+           'document:',
+           f'  title: {root["title"]}',
+           f'  path: {base}.md',
+           '---']
+
+    if node is root:
+        out += verbatim(doc, root)
+        return '\n'.join(out) + '\n'
+
+    chain = [n for n in ancestry(doc, node) if n is not node]
+    for a in chain:
+        out.append(doc['lines'][a['line'] - 1])
+        ctx = context_of(doc, a)
+        if ctx:
+            out.append('')
+            out += verbatim(doc, ctx)
+        out.append('')
+    out += verbatim(doc, node)
     return '\n'.join(out) + '\n'
 
 
@@ -284,20 +291,47 @@ SEARCHES = [
     ('search-excluded-zone.txt', 'thrashing', ['thrashing']),
 ]
 REPORTS = [
-    ('report-section.txt', 'policies/eviction-policy$2.1'),
+    ('report-section.txt', 'policies/eviction-policy§2.1'),
     ('report-document.txt', 'policies/retention-policy'),
     # extension 7a: a rationale is never returned by a search, and is always
     # addressable — the Agent derives this reference from the section it justifies
-    ('report-rationale.txt', 'procedures/cache-tuning$Rationale'),
+    ('report-rationale.txt', 'procedures/cache-tuning§Rationale'),
+    # a document whose sections carry their own Context, reported from deep inside it
+    ('report-section-with-contexts.txt', 'a-document-with-contexts§2.2.1'),
 ]
+
+
+def check_inventory(reg):
+    """Every file under corpus/ must be named in EXAMPLES.md, and the count must match.
+
+    Prose saying "five documents" beside a corpus of six is the kind of error nobody
+    sees by reading, because both halves look right on their own.
+    """
+    text = open(os.path.join(HERE, 'EXAMPLES.md')).read()
+    under = sorted(os.path.relpath(p, os.path.join(HERE, 'corpus'))
+                   for p in glob.glob(os.path.join(HERE, 'corpus', '**', '*'), recursive=True)
+                   if os.path.isfile(p))
+    missing = [f for f in under if f not in text]
+    docs = [f for f in under if f.endswith('.md')]
+    words = {3: 'three', 4: 'four', 5: 'five', 6: 'six', 7: 'seven'}
+    problems = []
+    if missing:
+        problems.append(f'not named in EXAMPLES.md: {", ".join(missing)}')
+    if len(reg) != len(docs):
+        problems.append(f'{len(reg)} documents parsed, {len(docs)} markdown files under corpus/')
+    claim = f'{words.get(len(docs), len(docs))} markdown documents'
+    if claim not in text:
+        problems.append(f'EXAMPLES.md does not say "{claim}"')
+    for p in problems:
+        print(f'DRIFTED  EXAMPLES.md — {p}')
+    print('ok       EXAMPLES.md names every file under corpus/' if not problems else '')
+    return len(problems)
 
 
 def main():
     reg = load()
     files = {'registered.md': render_registered(reg),
              'register.txt': render_register(reg),
-             'search-truncated.json': render_search_json(reg, 'eviction policy',
-                                                         ['eviction', 'policy']),
              'register-after-deletion.txt': render_register_after_deletion(
                  reg, 'policies/retention-policy')}
     for name, query, terms in SEARCHES:
@@ -306,6 +340,8 @@ def main():
         files[name] = render_report(reg, reference)
     check = '--check' in sys.argv
     drift = 0
+    if check:
+        drift += check_inventory(reg)
     for name, body in files.items():
         p = os.path.join(HERE, name)
         old = open(p).read() if os.path.exists(p) else None

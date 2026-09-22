@@ -1,0 +1,36 @@
+$ weaverdoc report a-document-with-contexts§2.2.1
+---
+reference: a-document-with-contexts§2.2.1
+state: matched
+document:
+  title: A Document With Contexts
+  path: a-document-with-contexts.md
+---
+# A Document With Contexts
+
+## Context
+This is the context of the document
+* [Retention Policy](policies/retention-policy.md) - what may be kept, and for how long
+* [Eviction Procedures](procedures/eviction-procedures.md) - how this policy is carried out
+
+## 2 This Is A Top Section Without Context
+
+### 2.2 This Is A Nested Section With Context
+
+#### Context
+This is the context of section 2.2
+* [Eviction Policy](policies/eviction-policy.md) - the eviction policy
+
+#### 2.2.1 This Is A Sub Section Of A Section With Context
+
+2.2.1 Blah blah
+Blah blah blah
+Blah Blah
+
+Other blah
+
+##### 2.2.1.1 Sub Blah Blah
+2.2.1.1 Blah blah
+
+##### 2.2.1.2 Sub Blah Blah 2
+2.2.1.2 Blah blah

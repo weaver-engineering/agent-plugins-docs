@@ -1,16 +1,9 @@
-# policies/eviction-policy.md was edited after it was registered, and §2.2 removed.
+# policies/eviction-policy.md was edited after it was registered, and its §2.2 removed.
 # The registry still holds what registered.md shows.
 
-$ weaverdoc report policies/eviction-policy$2.2
-
-failed - reference does not resolve
-nothing reported
-
-reference
-- policies/eviction-policy$2.2 - registered as "2.2 Age Eviction"; the document has no §2.2 now
-
-closest surviving
-- policies/eviction-policy$2 - "2 When An Entry Is Evicted", lines 12-21
-
-remedy
-- re-register the path, then search again
+$ weaverdoc report policies/eviction-policy§2.2
+---
+reference: policies/eviction-policy§2.2
+state: unmatched
+closest-match: policies/eviction-policy§2
+---
