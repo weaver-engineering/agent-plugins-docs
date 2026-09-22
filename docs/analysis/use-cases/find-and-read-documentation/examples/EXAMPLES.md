@@ -247,9 +247,10 @@ question the analysis inherits.
   decision.
 * **What a reference actually is.** Written here as a path relative to the registry root followed by `§` and
   a section number — `policies/eviction-policy§2.1`. Nothing has settled whether a reference is a path, an
-  identifier, or a pair, nor what addresses a section that carries no number: `Overview` in
-  `a-document-with-contexts.md` is reachable here as `§Overview`, by its title, which collides the moment two
-  sections under one parent share one.
+  identifier, or a pair. A section with no number of its own is addressed by a computed one instead, never its
+  title: `Overview` in `a-document-with-contexts.md` is its parent's only unnumbered section child, so it is
+  `§2.2.0` — position, 0-based, among the parent's own unnumbered children, appended to the parent's own
+  reference. Only `Rationale` and `Appendix` are ever addressed by a word rather than a number.
 * **A report no longer says how much it did not show.** These reports carry no line span and no document
   length. [ARCHITECTURE.md](../../../../architecture/weaverdocs/ARCHITECTURE.md) §2.4 requires a bounded
   answer to disclose what the bound cost, and in the minimum a report is never bounded — so nothing is being

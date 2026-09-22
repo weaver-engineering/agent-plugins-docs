@@ -76,14 +76,41 @@ def slug(path):
     return os.path.relpath(path, os.path.join(HERE, 'corpus'))[:-len('.md')]
 
 
-def ref(path, node):
-    """Every node is addressable, including the ones no search can reach."""
+def parent_of(doc, node):
+    """The nearest preceding node one depth up. None for the document root."""
+    idx = doc['nodes'].index(node)
+    depth = node['depth'] - 1
+    for n in reversed(doc['nodes'][:idx]):
+        if n['depth'] == depth:
+            return n
+    return None
+
+
+def ref(path, node, doc):
+    """Every node is addressable, including the ones no search can reach.
+
+    A numbered section keeps its own number. Rationale and Appendix are the only
+    kinds a word rather than a number ever addresses. Anything else with no number
+    of its own — an unnumbered section — gets one computed: its position, 0-based,
+    among its parent's own unnumbered section children, appended to the parent's
+    own reference. Never its title — two such sections sharing a title would
+    otherwise collide, and a computed number cannot.
+    """
     if node['kind'] == 'document':
         return slug(path)
+    if node['kind'] in ('rationale', 'appendix'):
+        return f'{slug(path)}§{node["title"].split(":")[0].strip().replace(" ", "-")}'
     m = re.match(r'^([0-9.]+) ', node['title'])
     if m:
         return f'{slug(path)}§{m.group(1)}'
-    return f'{slug(path)}§{node["title"].split(":")[0].strip().replace(" ", "-")}'
+    parent = parent_of(doc, node)
+    siblings = [n for n in doc['nodes']
+                if parent_of(doc, n) is parent and n['kind'] == 'section'
+                and not re.match(r'^([0-9.]+) ', n['title'])]
+    pseudo = siblings.index(node)
+    parent_ref = ref(path, parent, doc)
+    prefix = parent_ref.split('§', 1)[1] + '.' if '§' in parent_ref else ''
+    return f'{slug(path)}§{prefix}{pseudo}'
 
 
 def load():
@@ -119,7 +146,7 @@ def search(reg, terms):
             cover = sum(1 for v in hits.values() if v) / len(terms)
             density = min(total / n['words'] * 10, 1.0)
             rows.append({'score': round(cover * 0.8 + density * 0.2, 2),
-                         'ref': ref(p, n), 'words': n['words'], 'path': p, 'node': n})
+                         'ref': ref(p, n, doc), 'words': n['words'], 'path': p, 'node': n})
     rows.sort(key=lambda r: (-r['score'], r['ref']))
     return rows
 
@@ -215,7 +242,8 @@ def render_report(doc_reg, reference):
     base = reference.split('§')[0]
     path = os.path.join(HERE, 'corpus', base + '.md')
     doc = doc_reg[path]
-    node = next((n for n in doc['nodes'] if ref(path, n) == reference), None)
+    node = next((n for n in doc['nodes']
+                 if n['kind'] != 'context' and ref(path, n, doc) == reference), None)
     if node is None:
         raise SystemExit(f'no such reference: {reference}')
     root = doc['nodes'][0]
@@ -261,7 +289,7 @@ def render_registered(reg):
         for n in doc['nodes']:
             name = ('*(document root)* `' + n['title'] + '`' if n['kind'] == 'document'
                     else '`' + n['title'] + '`')
-            r = f'`{ref(p, n)}`' if n['indexed'] else '—'
+            r = f'`{ref(p, n, doc)}`' if n['indexed'] else '—'
             w = str(n['words']) if n['indexed'] else '—'
             out.append(f'| {"&nbsp;" * 2 * (n["depth"] - 1)}{name} | {n["kind"]} | {r} | '
                        f'{n["line"]}-{n["end"]} | {w} | {"yes" if n["indexed"] else "no"} |')
