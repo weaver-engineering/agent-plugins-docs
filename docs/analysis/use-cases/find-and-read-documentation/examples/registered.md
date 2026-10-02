@@ -20,7 +20,7 @@ be reported; it is simply never matched.
 | &nbsp;&nbsp;&nbsp;&nbsp;`2.1 This Is A Nested Section Without Context` | section | `a-document-with-contexts§2.1` | 16-19 | 13 | yes |
 | &nbsp;&nbsp;&nbsp;&nbsp;`2.2 This Is A Nested Section With Context` | section | `a-document-with-contexts§2.2` | 20-42 | 72 | yes |
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`Context` | context | — | 22-25 | — | no |
-| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`Overview` | section | `a-document-with-contexts§Overview` | 26-28 | 11 | yes |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`Overview` | section | `a-document-with-contexts§2.2.0` | 26-28 | 11 | yes |
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`2.2.1 This Is A Sub Section Of A Section With Context` | section | `a-document-with-contexts§2.2.1` | 29-42 | 52 | yes |
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`2.2.1.1 Sub Blah Blah` | section | `a-document-with-contexts§2.2.1.1` | 37-39 | 13 | yes |
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`2.2.1.2 Sub Blah Blah 2` | section | `a-document-with-contexts§2.2.1.2` | 40-42 | 14 | yes |
