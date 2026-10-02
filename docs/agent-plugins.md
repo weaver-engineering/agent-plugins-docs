@@ -66,3 +66,8 @@ built — every other phase but its own (§4.1's cascading-invalidation lookup) 
   step (WVR-119), built and dogfooded to completion against
   [WVR-95](https://linear.app/weaver-engineering/issue/WVR-95/design-the-doc-search-and-retrieval-mcp-server) —
   see its own [Architect's Guide](sub-agents/design-assistant/architect-guide.md) for how to actually work with it
+
+## 7 Plugins
+
+* [Dispatcher](plugins/dispatcher/architect-guide.md) — the one long-lived session that starts, stops, and
+  resumes worker sessions (WVR-177, WVR-228): installing, starting, and using it
