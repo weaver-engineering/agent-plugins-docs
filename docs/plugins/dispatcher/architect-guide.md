@@ -43,12 +43,12 @@ inside it, so redeploying never touches it. A running dispatcher only picks up a
 
 ```sh
 cd ~/weaver-engineering
-claude --plugin-dir ~/.claude/dispatcher/plugin --agent dispatcher --name Dispatcher --remote-control Dispatcher
+claude --plugin-dir ~/.claude/dispatcher/plugin --agent dispatcher:dispatcher --name Dispatcher --remote-control Dispatcher
 ```
 
-Connect to it over Remote Control as `Dispatcher`. `--agent dispatcher` loads its standing instructions, so
-it behaves the same after every restart. Without that flag it's just an ordinary session with the skill
-available.
+Connect to it over Remote Control as `Dispatcher`. `--agent dispatcher:dispatcher` loads its standing
+instructions, so it behaves the same after every restart. The name has to be written in full: the plugin
+prefix is part of it. Without that flag it's just an ordinary session with the skill available.
 
 ## 4 Using It
 
@@ -91,8 +91,10 @@ A ticketed worker is told to read its ticket and its comments, then wait for you
 `6 - In Progress` itself once work actually starts. The dispatcher posts a comment on the ticket with the
 worker's Claude session id and a ready-to-run `claude --resume` line.
 
-The dispatcher reports back the worker's name, its worktree (or root), its branch, its session id, and the
-Remote Control URL to connect to.
+The worker is started **detached**: it isn't a child of the dispatcher or of any tool call, so nothing times
+it out. Its output goes to `~/.claude/dispatcher/logs/<session-id>.log`. The dispatcher records the worker's
+process id, checks it came up, and reports back the worker's name, its worktree (or root), its branch, its
+session id, and the Remote Control URL to connect to.
 
 ### 4.2 Stop
 
@@ -103,10 +105,12 @@ or ticket. If more than one worker matches, the dispatcher lists the candidates 
 it. A bare product that matches several workers, exactly one of them ad hoc, is assumed to mean the ad hoc
 one, and the dispatcher confirms with you first.
 
-The dispatcher asks the worker to release its worktree lock, then stops it. The worker may wait for your
+The dispatcher asks the worker to release its worktree lock, then ends its processes (SIGTERM, found by the
+recorded process id and the worker's session id, never SIGKILL). The worker may wait for your
 confirmation before releasing the lock. That's expected; if the lock isn't released within the timeout, the
-stop goes no further. The worktree and branch stay, and **the worker stays resumable**. Stopping is the
-default way to put a worker down.
+stop goes no further. If a process ignores SIGTERM, the dispatcher reports it rather than forcing it. The
+worktree and branch stay, and **the worker stays resumable**. Stopping is the default way to put a worker
+down.
 
 ### 4.3 Clear Down
 
@@ -132,26 +136,30 @@ with it, exit it yourself.
 
 ## 5 Stopping And Restarting The Dispatcher
 
-**Exiting the dispatcher ends every worker it started.** Workers run as its background tasks. To restart
-it, for example after a redeploy, exit it (`/exit`), start it again (§3), then ask it to **resume** the
-workers you want back.
+**Exiting the dispatcher doesn't end the workers it started.** They're detached (§4.1), so they keep running,
+and you can still reach each one over Remote Control. To restart the dispatcher, for example after a
+redeploy, exit it (`/exit`) and start it again (§3). There's nothing to resume. The new dispatcher can stop
+any worker the old one started, because it finds the worker by its recorded process id and session id.
 
-You don't need to stop the workers first. Each worker's command line carries its own session id. When a
-new dispatcher starts, it reports the workers whose ids no longer appear in any live process, and marks
-them stopped, so they can be resumed. It repeats that check before every stop and resume. Stopping workers
-first is still the gentler option: each worker gets the chance to release its worktree lock, and to finish
-its current turn, rather than being cut off.
+When a new dispatcher starts, it checks each worker it has down as running against the live processes.
+Each worker's command line carries its own session id. It reports the workers whose ids no longer appear
+in any live process, for example after a crash or a machine restart, and marks them stopped, so they can be
+resumed. It repeats that check before every stop and resume.
 
-Workers started before resume support existed (WVR-228) carry no session id, so the dispatcher can't
-tell whether they're alive. It reports them as unverifiable and leaves them alone. They can't be resumed.
+Workers started before the detached launch (WVR-228) were children of the dispatcher that started them, and
+end with it. They show up in that same check, and are resumable if they have a session id. Workers started
+before resume support existed carry no session id, so the dispatcher can't tell whether they're alive. It
+reports them as unverifiable and leaves them alone. They can't be resumed.
 
 ## 6 When Something Fails
 
 The dispatcher reports any failure verbatim and stops. It doesn't retry or work around one. In particular:
 
 * **A start whose worker never comes up** is cleaned up automatically. Any worktree and branch it created
-  are removed, then the underlying error is reported.
+  are removed, then the underlying error, taken from the end of the worker's log, is reported.
 * **A resume whose worker never comes up** leaves everything as it was. The worker is still stopped and
   still resumable.
+* **A worker that ended on its own** shows as running until the dispatcher next checks (every stop and
+  resume does). Its log, `~/.claude/dispatcher/logs/<session-id>.log`, says why.
 * **A clear down that finds real work** removes nothing it shouldn't. Commit, push, or discard the work
   yourself, then ask again.
