@@ -27,9 +27,11 @@ Agreed with the architect on 19 October 2026. Unchanged by the decisions in §4 
 
 ### 3.1 Configuration
 
-One file, `ui-walkthrough.yaml`, in the directory the skill is run from (the cwd), normally the consuming repo's
-root. Every path in it is relative to that directory. Running from a subdirectory with its own file lets a repo
-segregate its walkthroughs, for instance one per Feature (architect, 20 October 2026):
+One file, `ui-walkthrough.yaml`. The skill is run from where the use cases are and finds the nearest one on the path up
+from the current directory, like git finds `.git`. Every path in it is relative to the directory holding it; step names
+passed to `render` are relative to where the skill is run, and output paths are relative to the file's directory. A
+subdirectory with its own file lets a repo segregate its walkthroughs, for instance one per Feature (architect,
+20 October 2026):
 
 ```yaml
 views: docs/design/ui/views
@@ -110,10 +112,11 @@ This **ends the "no install step" convention for this skill.** The skill carries
 documented install step is plain Node, identical under Claude, Codex or OpenCode:
 
 ```
-cd ~/.claude/skills/ui-walkthrough && npm ci && npx playwright install chromium
+cd ~/.claude/skills/ui-walkthrough && npm install && npx playwright install chromium
 ```
 
-Everything else still deploys by copy. `claude-skills/README.md` is updated to say a skill may declare
+The install is `npm install`, not `npm ci`: the deployed directory has no lockfile, and the `package.json` pins exact
+versions. Everything else still deploys by copy. `claude-skills/README.md` is updated to say a skill may declare
 dependencies and must name its install command.
 
 ### 4.2 Highlight
@@ -166,7 +169,9 @@ use this; neither needs a browser to find the steps.
 
 SHA-256 over, in a fixed order and each length-prefixed: the `step.yaml`, the wireframe of each view the step
 places (sorted by name), the tokens stylesheet, the viewport as `WIDTHxHEIGHT`, and the skill's major version.
-Only wireframes of placed views count, so editing an unused view never stales a step. The hash is written to a PNG
+The state each placed view is in (a step's `states:` entry, else the view's first declared state) is hashed with its
+wireframe, so changing a view's default state in `VIEW.md` stales the images that depend on it. Only wireframes of placed
+views count, so editing an unused view never stales a step. The hash is written to a PNG
 text chunk when rendering. A step is stale when the hash in its `step.png` differs from the one recomputed now;
 missing when there is no `step.png`; invalid per §4.4.
 
