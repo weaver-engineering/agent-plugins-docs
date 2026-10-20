@@ -27,7 +27,9 @@ Agreed with the architect on 19 October 2026. Unchanged by the decisions in §4 
 
 ### 3.1 Configuration
 
-One file at the consuming repo's root, `ui-walkthrough.yaml`:
+One file, `ui-walkthrough.yaml`, in the directory the skill is run from (the cwd), normally the consuming repo's
+root. Every path in it is relative to that directory. Running from a subdirectory with its own file lets a repo
+segregate its walkthroughs, for instance one per Feature (architect, 20 October 2026):
 
 ```yaml
 views: docs/design/ui/views
