@@ -76,6 +76,9 @@ An HTML fragment that follows these standards, so the skill can assemble it:
 * A **component** is any element marked `data-component="COMPONENT-NAME"`: a button, a title, a banner.
 * Each slot and component name appears once, and no name is both.
 * The wireframe draws its own placeholder content, which is what a step shows wherever nothing binds or overrides it.
+  Inside a slot that is a **slot placeholder**, drawn one way by every view: `<div data-placeholder>SLOT-NAME</div>`,
+  which the skill styles as a box crossed corner to corner with the slot's name centred, in the tokens stylesheet's
+  `--walkthrough-placeholder` (§4.11).
 * **State hooks:** the skill writes the view's top-level enum and boolean state onto the root (§4.3), and the view's CSS
   selects on them: `[data-view="CARD"][data-mode="selected"]`, `[data-view="CARD"][data-shared]`.
 
@@ -107,7 +110,8 @@ components:
 * `types` declares the record types the view's state uses (§3.5). A type used by several views must be declared
   identically in each (§4.7).
 * `state` declares the view's state attributes, each a type or `{ type, default, description }`.
-* `slots` declares each slot with the views it allows, and `many: true` if it holds a list of them.
+* `slots` declares each slot with the views it allows, and `many: true` if it holds a list of them. A slot may allow
+  views not defined yet, or none yet (§4.11).
 * `components` declares each component with optional bindings: `text` (a path), `visible` and `enabled` (predicates),
   per §3.6. Any component can be overridden by a step whether bound or not.
 
@@ -166,7 +170,7 @@ next:                                     # or, for a step that ends the use cas
   - { step: 02a-give-up, label: Give up }
 viewport: tablet
 root: APP
-slots:                                    # VIEW.SLOT → a view, a list of views (many: true), or null
+slots:                                    # VIEW.SLOT → a view, a list of views (many: true), or null; unbound, its placeholder
   APP.MAIN: CARD-MATRIX
   CARD-MATRIX.CARDS: [CARD, CARD]
   CARD#1.BODY: null
@@ -184,6 +188,8 @@ highlight: [CARD#2.OPEN]                  # level 2: description in STEP.md, and
 * `title`, `narrative`, and exactly one of `next` or `end` are the step's story and chain.
 * `viewport`, `root`, `slots`, `state`, `components` and `highlight` are its screen.
 * Views are addressed by instance (§4.6): `CARD` when placed once, `CARD#n` when placed more than once.
+* A slot has three meanings: bound to a view or a list, it shows them; bound to `null`, it is deliberately empty; left
+  unbound, it shows its placeholder (§4.11).
 * An override sets `visible` or `enabled` to `true`/`false`, or `text` to a string.
 * A `describe` or `highlight` entry names a placed view instance, a slot `VIEW.SLOT`, or a component `VIEW.COMPONENT`.
 
@@ -220,7 +226,8 @@ how the UI supports it step by step. "Previous" lists every step whose `next` le
 the choice that leads here; the first step has none, and the section is left out. "Next" lists the step's `next` in its
 order, each with its choice and the title of the step it leads to. A step that ends the use case has `**End:** {end}` in
 place of "Next". "In this step" lists highlighted entries first, then described ones, each in the order the step gives them, and is left out
-when there are none. An entry with no description shows its name alone.
+when there are none. An entry with no description shows its name alone. A slot showing its placeholder adds
+*Not yet defined: shows a placeholder.* to its entry (§4.11).
 
 ### 3.9 The skill's documentation and worked example
 
@@ -248,7 +255,8 @@ The skill's directory carries its full documentation, because the installed copy
   then every `STEP.md` under the configuration that differs from what would be generated.
 * `render --view NAME` does the same for every step that uses the view.
 * `uses NAME` lists the steps that use a view, without rendering.
-* `check` exits non-zero and lists every problem:
+* `check` lists every problem, then everything pending (§4.11), and exits non-zero if there is any problem.
+  `check --complete` also exits non-zero if anything is pending. The problems are:
   * a `VIEW.yaml`, `STEP.yaml` or configuration that breaks its schema;
   * a view problem (§5.1), or a type declared differently by two views (§4.7);
   * an assembly error (§5.2);
@@ -340,7 +348,7 @@ Only `highlight` changes the image, so it is in the input hash and `describe` is
 
 A slot declared `many: true` is bound to a list of views, `CARD-MATRIX.CARDS: [CARD, CARD, CARD]`, placed in order; the
 view's CSS lays them out. A list names at least one view; `null` is the empty binding for any slot. A slot without
-`many` takes one view or `null`. Every view placed in a slot must be one of the views it allows.
+`many` takes one view or `null`. Every view placed in a slot must be one of the views it allows, and defined.
 
 A view may be placed more than once, in a list or in different slots. Each placement is an **instance**:
 
@@ -348,7 +356,7 @@ A view may be placed more than once, in a list or in different slots. Each place
 * A view placed more than once is addressed `CARD#1`, `CARD#2`, … in placement order: depth first from the root,
   through a view's slots in the order its `VIEW.yaml` declares them, and through a list in its order.
 * The address is used everywhere a view is named: slot keys (`CARD#2.BODY`), `state`, `components`, `describe` and
-  `highlight`. Every slot of every instance must be bound.
+  `highlight`. A slot of an instance left unbound shows its placeholder (§4.11).
 * A bare `CARD` when several are placed is an assembly error, as is `CARD#n` when there is no nth `CARD`, and `CARD#1`
   when `CARD` is placed once.
 * A view placed inside an instance of itself is a cycle and is rejected.
@@ -380,6 +388,24 @@ example by changing one file.
 * **Viewport:** the screenshot is exactly the viewport size, not the full page.
 * **Fonts:** the tokens stylesheet must not depend on a system font, or renders drift between machines.
 
+### 4.11 Drawn a use case at a time: pending slots and placeholders
+
+A design is drawn one use case at a time, so a view's slots are declared before the views that fill them exist: a shell's
+navigation, main area and dock in the first increment, and the views that fill them over the increments after. So:
+
+* A slot may allow views not defined yet, or none yet. Neither is a problem; each is **pending**.
+* A step leaves a slot unbound to show its placeholder, the content `VIEW.html` draws inside the slot element. `null`
+  stays the deliberately empty slot, which is a design decision, not a gap. An unbound slot is pending.
+* Binding a slot to a view not defined yet is an assembly error: the step leaves it unbound until the view exists.
+* `STEP.md` never presents a placeholder as designed: a described or highlighted slot showing its placeholder says it is
+  not yet defined.
+* `check` lists what is pending after the problems, and passes while only pending remains. `check --complete` fails on
+  anything pending, so a gate can demand a finished design when it should be one, and a forgotten slot is still caught.
+* The placeholder is drawn one way by every view (§3.3), styled by the skill's own stylesheet in the assembled page, so
+  its colour comes from the tokens stylesheet and its look cannot drift between views.
+
+Whether a slot is bound is part of the step's screen fields, so binding a slot later stales the step's image (§5.4).
+
 ## 5 Algorithm
 
 ### 5.1 Loading views
@@ -390,10 +416,10 @@ Each directory under `{views}` is a view. A view's problems are reported once, n
 * a `VIEW.html` that breaks §3.3: its root, a script, a name used twice or for both a slot and a component;
 * slots or components that differ between `VIEW.yaml` and `VIEW.html`;
 * an unknown type, a record type used before it is declared in the view, a default of the wrong type;
-* a slot allowing an unknown view;
 * a binding that does not parse, names an unknown path, or does not type-check (§3.6).
 
-Then every type name declared by more than one view is compared (§4.7).
+Then every type name declared by more than one view is compared (§4.7). A slot allowing a view not defined yet, or none,
+is pending rather than a problem (§4.11).
 
 ### 5.2 Assembly
 
@@ -406,8 +432,8 @@ components and view roots are marked with their address for the highlight to fin
 Rejected, with an error naming the step and the offender:
 
 * a `STEP.yaml` that breaks its schema, or an unknown viewport;
-* an unknown view, slot or component, or an unbound slot of a placed instance;
-* a view a slot does not allow, a list in a slot without `many`, or an empty list;
+* an unknown view, slot or component;
+* a view a slot does not allow or that is not defined yet, a list in a slot without `many`, or an empty list;
 * an ambiguous or unknown instance address, or a cycle;
 * a state value that does not match its declared type, or an unknown attribute or field;
 * an override of the wrong type;
@@ -450,7 +476,8 @@ From each use case's `STEP.yaml` files, reported by `check`:
 ## 6 Output
 
 `render` writes `STEP.png` and `STEP.md` files and nothing else. `uses` prints step paths, one per line. `check` prints one
-problem per line and exits non-zero if there are any. Nothing writes a copy of any wireframe.
+problem per line, then one line per pending item, each marked `pending:`; it exits non-zero if there are any problems, or
+with `--complete` if anything is pending. Nothing writes a copy of any wireframe.
 
 ## 7 Parked
 
