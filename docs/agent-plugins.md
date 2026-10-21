@@ -59,7 +59,7 @@ built — every other phase but its own (§4.1's cascading-invalidation lookup) 
 * [Specific-Behavior Presenter](claude-skills/specific-behavior-presenter/specific-behavior-presenter-design.md) — standardised, provenance-rich presentation for final human review
 * [Behavior Regeneration Checker](claude-skills/behavior-regeneration-checker/behavior-regeneration-checker-design.md) — §7.2's regenerate-and-compare step, ahead of Specific-Behavior Presenter
 * [Chunk Scope Utility](claude-skills/chunk-scope-utility/chunk-scope-utility-design.md) — shared read/write primitive for a design task's own chunk-scope.yaml
-* [UI Walkthrough](claude-skills/ui-walkthrough/ui-walkthrough-design.md) — assembles wireframe views into rendered use-case walkthroughs: an image and a generated page per step
+* [UI Walkthrough](claude-skills/ui-walkthrough/ui-walkthrough-design.md) — assembles wireframe views into rendered walkthroughs: an image, a generated page and a diagram of the walkthrough per step
 
 ## 6 Sub-Agents
 
