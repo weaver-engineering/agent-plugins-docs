@@ -243,6 +243,8 @@ screens:                                    # screens 2, 3, … in order
 * `slots` merge by key; `state` by instance, then attribute; `components` by key, then property. `viewport` is kept
   unless given.
 * `describe` and `highlight` are never carried over: each screen names what it draws attention to.
+* An inherited slot, state or component entry for a view the screen no longer places is dropped; one the screen gives
+  itself is still an error.
 * An entry giving `root` starts afresh, keeping only the viewport.
 * `caption` reaches only `STEP.md`, like `describe`.
 
@@ -522,7 +524,9 @@ the walkthrough branches it does not have. So a step may show several screens, o
 * **Each screen a change to the one before.** The screens of one step are mostly the same screen, so each later one
   says only what changes, as the step was told in the use case. Changes merge at the level a step writes them: a slot,
   an instance's attribute, a component's property. `describe` and `highlight` are not carried over, since what a
-  screen draws attention to is what changed on it. A new `root` makes every address on the screen before meaningless,
+  screen draws attention to is what changed on it. Rebinding a slot removes the views it showed, so what the screen
+  inherited for them is dropped rather than reported: otherwise every small change that swaps a view would have to be
+  written out whole. Only inherited entries are dropped, so a typo in a screen's own entry is still caught. A new `root` makes every address on the screen before meaningless,
   so a screen giving one starts afresh rather than inheriting entries that would all be errors.
 * **The first screen is the step's own fields.** A step of one screen is unchanged, and its image is still `STEP.png`;
   later screens are `STEP-2.png` on, so the names sort in reading order. Each image carries the hash of its own screen
@@ -576,7 +580,7 @@ A step uses a view if, on any of its screens, the view is the `root` or is bound
 
 One hash per screen. SHA-256 over, in a fixed order and each length-prefixed: the skill's major version; the screen's
 fields (`viewport`, `root`, `slots`, `state`, `components`, `highlight`), after the changes from the screens before it
-(§4.14), as canonical JSON; for each placed instance, sorted
+and without inherited entries it drops (§4.14), as canonical JSON; for each placed instance, sorted
 by address, its resolved state as canonical JSON, its `VIEW.html`, and its `VIEW.yaml` without descriptions as
 canonical JSON; the tokens stylesheet; and the viewport as `WIDTHxHEIGHT`.
 
