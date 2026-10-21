@@ -62,8 +62,9 @@ A viewport is `WIDTHxHEIGHT`, width first.
 | `{views}/{VIEW-NAME}/VIEW.html` | the view's wireframe | the project |
 | `{views}/{VIEW-NAME}/VIEW.yaml` | the view's data model, state, slots, components, bindings, descriptions | an agent or DEM |
 | `{walkthrough}/WALKTHROUGH.yaml` | the walkthrough's outline: its title, and each step's title, narrative and chain | an agent or DEM |
-| `{walkthrough}/{step}/STEP.yaml` | the step's screen: how it is assembled | an agent or DEM |
-| `{step}/STEP.png` | the rendered screen | the skill |
+| `{walkthrough}/{step}/STEP.yaml` | the step's screen, or screens: how each is assembled | an agent or DEM |
+| `{step}/STEP.png` | the rendered screen; the first screen, when there are several | the skill |
+| `{step}/STEP-{n}.png` | the rendered screen `n`, from 2, of a step with several | the skill |
 | `{step}/STEP.md` | the step as a static document in its walkthrough | the skill, entirely |
 | `{step}/FLOW.svg` | the walkthrough as a diagram, this step highlighted | the skill, entirely |
 
@@ -198,7 +199,7 @@ steps:
 
 ### 3.8 STEP.yaml
 
-The step's screen, and nothing else:
+The step's screen, or its screens, and nothing else:
 
 ```yaml
 viewport: tablet
@@ -225,6 +226,25 @@ highlight: [CARD#2.OPEN]                  # level 2: description in STEP.md, and
   unbound, it shows its placeholder (§4.11).
 * An override sets `visible` or `enabled` to `true`/`false`, or `text` to a string.
 * A `describe` or `highlight` entry names a placed view instance, a slot `VIEW.SLOT`, or a component `VIEW.COMPONENT`.
+
+A step whose story takes more than one screen lists the screens after the first under `screens` (§4.14). Each has a
+caption, as the first screen then must, and gives only what changes from the screen before it:
+
+```yaml
+caption: The reviewer reads the spec        # the first screen's caption; required when screens is given
+screens:                                    # screens 2, 3, … in order
+  - caption: The reviewer approves it
+    state: { DOC-REVIEW: { approved: true } }
+    components: { DOC-REVIEW.APPROVE: { text: Approved } }
+    highlight: [DOC-REVIEW.BANNER]
+```
+
+* An entry may give any screen field: `viewport`, `root`, `slots`, `state`, `components`, `describe`, `highlight`.
+* `slots` merge by key; `state` by instance, then attribute; `components` by key, then property. `viewport` is kept
+  unless given.
+* `describe` and `highlight` are never carried over: each screen names what it draws attention to.
+* An entry giving `root` starts afresh, keeping only the viewport.
+* `caption` reaches only `STEP.md`, like `describe`.
 
 ### 3.9 STEP.md and FLOW.svg
 
@@ -263,6 +283,8 @@ The reviewer scans the matrix and picks the spec they were asked to review.
    first step has *Start*. "Next" lists the step's `next` in its order, each with its choice and the step it leads to; a
    step that ends the walkthrough has `**End:** {end}`.
 4. The narrative, then the image, or, for a step with no `STEP.yaml` yet, a line saying its screen is not yet drawn.
+   A step of several screens shows each in order in place of 4's image and 5: a heading `### {n}. {caption}`, the
+   screen's image, and its own entries, listed as in 5.
 5. "In this step" lists highlighted entries first, then described ones, each in the order the step gives them, and is
    left out when there are none. An entry with no description shows its name alone. A slot showing its placeholder adds
    *Not yet defined: shows a placeholder.* to its entry (§4.11).
@@ -284,14 +306,15 @@ The skill's directory carries its full documentation, because the installed copy
   [`VIEW.yaml`](https://github.com/weaver-engineering/agent-plugins/blob/main/claude-skills/ui-walkthrough/schemas/view.schema.json) and [`STEP.yaml`](https://github.com/weaver-engineering/agent-plugins/blob/main/claude-skills/ui-walkthrough/schemas/step.schema.json).
 * [`example/`](https://github.com/weaver-engineering/agent-plugins/tree/main/claude-skills/ui-walkthrough/example): a fully worked walkthrough with its own `ui-walkthrough.yaml`, views, outline, steps and
   the rendered `STEP.png`, `STEP.md` and `FLOW.svg` of every step. It exercises the whole contract: nested slots, a slot holding many views,
-  instance addresses, a record type, bindings, an override, `describe`, `highlight`, an extension and an end. It is also
+  instance addresses, a record type, bindings, an override, `describe`, `highlight`, a step of two screens, an extension and an end. It is also
   the test fixture (§4.9). Its first page is
   [`01-open/STEP.md`](https://github.com/weaver-engineering/agent-plugins/blob/main/claude-skills/ui-walkthrough/example/use-cases/UC-1-review-a-spec/walkthrough/01-open/STEP.md).
 
 ### 3.11 Modes
 
-* `render <step>…` renders the steps named: each one's `STEP.png` if it is stale or missing (`--force` renders it anyway),
-  then every `STEP.md` and `FLOW.svg` under the configuration that differs from what would be generated.
+* `render <step>…` renders the steps named: each screen's image if it is stale or missing (`--force` renders it anyway),
+  removing the image of any screen the step no longer has, then every `STEP.md` and `FLOW.svg` under the configuration
+  that differs from what would be generated.
 * `render --walkthrough DIR` does the same for every step of a walkthrough, so a whole walkthrough is one command.
 * `render --view NAME` does the same for every step that uses the view.
 * `uses NAME` lists the steps that use a view, without rendering.
@@ -301,7 +324,8 @@ The skill's directory carries its full documentation, because the installed copy
   * a `STEP.yaml` in a directory its outline does not name;
   * a view problem (§5.1), or a type declared differently by two views (§4.7);
   * an assembly error (§5.2);
-  * a `STEP.png` that is stale, missing or invalid;
+  * a screen's image that is stale, missing or invalid, or that belongs to a screen the step no longer has;
+  * a step with `screens` whose first screen has no `caption`;
   * a `STEP.md` or `FLOW.svg` that is missing or differs from what would be generated;
   * a chain problem (§5.6).
 
@@ -486,6 +510,27 @@ and out drawn distinctly, then the navigation, and only then the step's own cont
 * The navigation sits between the diagram and the step's content, previous on the left and next on the right, as a
   two-column table, the one layout markdown offers.
 
+### 4.14 Several screens in one step: a straight sequence of changes
+
+Some steps of a use case take more than one screen: a dialog filled in, then the list it adds to, then the dialog that
+completes it. Splitting those into steps sharing a step number misrepresents the use case, whose step is one, and gives
+the walkthrough branches it does not have. So a step may show several screens, on its one page.
+
+* **A straight sequence, never branching.** Branches are steps, in `WALKTHROUGH.yaml`, where the diagram shows them.
+  Within a step the screens are read in order; going back to an earlier screen is told in a caption or the narrative,
+  since a static page has nothing to draw for it.
+* **Each screen a change to the one before.** The screens of one step are mostly the same screen, so each later one
+  says only what changes, as the step was told in the use case. Changes merge at the level a step writes them: a slot,
+  an instance's attribute, a component's property. `describe` and `highlight` are not carried over, since what a
+  screen draws attention to is what changed on it. A new `root` makes every address on the screen before meaningless,
+  so a screen giving one starts afresh rather than inheriting entries that would all be errors.
+* **The first screen is the step's own fields.** A step of one screen is unchanged, and its image is still `STEP.png`;
+  later screens are `STEP-2.png` on, so the names sort in reading order. Each image carries the hash of its own screen
+  (§5.4), so changing screen 3 stales only screens 3 onward. An image left by a screen since removed is reported, and
+  removed by `render`, as the skill owns every image it names.
+* **Captions are required once there are several,** because the page needs a heading for each screen and the reviewer
+  needs to know what changed between them.
+
 ## 5 Algorithm
 
 ### 5.1 Loading views
@@ -524,17 +569,18 @@ The assembled document is the tokens stylesheet plus the nested fragments, held 
 
 ### 5.3 Uses
 
-A step uses a view if the view is its `root` or is bound in its `slots`, alone or in a list. `uses NAME` and
+A step uses a view if, on any of its screens, the view is the `root` or is bound in `slots`, alone or in a list. `uses NAME` and
 `render --view NAME` both use this and need no browser.
 
 ### 5.4 Input hash and staleness of STEP.png
 
-SHA-256 over, in a fixed order and each length-prefixed: the skill's major version; the step's screen fields
-(`viewport`, `root`, `slots`, `state`, `components`, `highlight`) as canonical JSON; for each placed instance, sorted
+One hash per screen. SHA-256 over, in a fixed order and each length-prefixed: the skill's major version; the screen's
+fields (`viewport`, `root`, `slots`, `state`, `components`, `highlight`), after the changes from the screens before it
+(§4.14), as canonical JSON; for each placed instance, sorted
 by address, its resolved state as canonical JSON, its `VIEW.html`, and its `VIEW.yaml` without descriptions as
 canonical JSON; the tokens stylesheet; and the viewport as `WIDTHxHEIGHT`.
 
-So a change to the outline, to a step's `describe`, or to any description, never stales an image; a change to
+So a change to the outline, to a step's `describe` or `caption`, or to any description, never stales an image; a change to
 anything that can move a pixel always does. Only placed views count, so editing an unused view stales nothing. The
 hash is written to a PNG text chunk when rendering. A step is stale when the hash in its `STEP.png` differs from the
 one recomputed now, missing when there is no `STEP.png`, invalid per §4.10.
@@ -556,14 +602,13 @@ From each walkthrough's `WALKTHROUGH.yaml`, reported by `check`:
 
 ## 6 Output
 
-`render` writes `STEP.png`, `STEP.md` and `FLOW.svg` files and nothing else. `uses` prints step paths, one per line. `check` prints one
+`render` writes `STEP.png`, `STEP-{n}.png`, `STEP.md` and `FLOW.svg` files, and removes only a `STEP-{n}.png` of a screen
+a step no longer has. `uses` prints step paths, one per line. `check` prints one
 problem per line, then one line per pending item, each marked `pending:`; it exits non-zero if there are any problems, or
 with `--complete` if anything is pending. Nothing writes a copy of any wireframe.
 
 ## 7 Parked
 
-* Several renderings for one step (frames of a wizard): to be added if DEM's walkthroughs need it. If so, as a straight
-  sequence of frames within a step, each a delta on the step's screen, never branching (branches are steps).
 * Bindings beyond text, visibility and enablement: attributes, images, formatted text, views generated from lists.
 * Checking a stereotyped string, such as that a `card-ref` names a card in the step.
 * Interaction: images only, no clickable prototype.
