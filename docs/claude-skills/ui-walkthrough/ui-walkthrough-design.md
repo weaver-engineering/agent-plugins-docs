@@ -133,9 +133,11 @@ Slots and components must match `VIEW.html`'s `data-slot` and `data-component` n
 | `enum[a, b, c]` | one of the names listed |
 | `string<<stereotype>>`, e.g. `string<<card-ref>>` | a string; the stereotype is carried for the reader and not checked |
 | `list<T>` | a list of `T`; may be declared and given, never read by a binding (§4.4) |
+| `map<K, V>`, e.g. `map<string <<Slug>>, string>` | a mapping of keys to values; `K` is `string` or a stereotyped string, `V` any type; like a list, declared and given, never read by a binding |
 | a record type name, e.g. `Card` | a mapping of the record's fields |
 
-Type names are UpperCamel, attribute and field names lower-kebab. Everything about a view is state, including its
+Types are written as the design writes them: a stereotype is any name, with or without a space before `<<`, and
+types nest. Type names are UpperCamel, attribute and field names lower-kebab. Everything about a view is state, including its
 visual mode, which is an enum attribute such as `mode`.
 
 An attribute's value in a step is the step's value, else its `default`, else **unset**. Values may be partial: a step
@@ -362,8 +364,8 @@ Limits that keep it from becoming a prototyper:
 
 * A predicate reads only its own view's state and literals (§3.6). A card does not work out from its parent whether it
   is selected; the step sets `mode: selected` on it, which is visible and checked.
-* Data never creates views. A list of cards is `[CARD, CARD]` in the step's `slots`; a `list<T>` attribute may be
-  declared, so a view's data model matches the design's, but nothing reads it.
+* Data never creates views. A list of cards is `[CARD, CARD]` in the step's `slots`; a `list<T>` or `map<K, V>`
+  attribute may be declared, so a view's data model matches the design's, but nothing reads it.
 * Nothing carries from one step to the next: each step gives its state in full, falling back only to the declared
   defaults.
 * No formatting in text bindings: a path, shown as its value.
