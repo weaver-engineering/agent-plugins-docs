@@ -69,8 +69,11 @@ A viewport is `WIDTHxHEIGHT`, width first.
 | `{step}/FLOW.svg` | the walkthrough as a diagram, this step highlighted | the skill, entirely |
 | `{walkthrough}/WALKTHROUGH.md` | the walkthrough's overview: its diagram and a link to every step | the skill, entirely |
 | `{walkthrough}/WALKTHROUGH.svg` | the whole walkthrough as a large diagram, every step's narrative in its box | the skill, entirely |
+| `{views}/{VIEW-NAME}/VIEW.png` | the view drawn alone, its slots showing their placeholders | the skill, entirely |
+| `{views}/{VIEW-NAME}/VIEW.md` | the project's page for the view; the skill writes one marked block in it | the project, and the skill its block |
 
-A view's directory may hold other files, such as the project's own `VIEW.md`; the skill ignores them. `VIEW.yaml`,
+A view's directory may hold other files; the skill ignores them. Of the project's own `VIEW.md` it reads only the block
+it writes (§4.16). `VIEW.yaml`,
 `WALKTHROUGH.yaml` and `STEP.yaml` are the persisted data the skill is called with, so any step can be regenerated from
 them alone.
 
@@ -103,8 +106,9 @@ types:                                   # the data model this view uses
     status: enum[draft, locked, archived]
     shared: boolean
 state:
-  mode: { type: "enum[default, selected]", default: default }
-  card: Card
+  mode: { type: "enum[default, selected]", default: default, source: props }
+  card: { type: Card, source: props }
+  changes: { type: number, source: api, description: "From getHistory: the changes since the last review." }
 slots:
   BODY: { views: [DOC-DIFF, FILE-LIST], description: What the card shows when it is opened. }
 components:
@@ -113,18 +117,25 @@ components:
     visible: card.status != archived
     enabled: card.status == draft
     description: Opens the file for review. Only a draft can be opened.
-  SHARE: { description: Shares the file. }   # no bindings: as drawn unless a step overrides it
+  SHARE: { unbound: true, description: Shares the file. }   # as drawn unless a step overrides it
+image: { width: 300, state: { mode: selected } }   # how VIEW.png draws the view alone
 ```
 
 * `description` is optional on the view, each slot and each component. It is what `STEP.md` shows when a step
   describes or highlights the element (§4.5).
 * `types` declares the record types the view's state uses (§3.5). A type used by several views must be declared
   identically in each (§4.7).
-* `state` declares the view's state attributes, each a type or `{ type, default, description }`.
+* `state` declares the view's state attributes, each a type or `{ type, default, source, description }`; the two
+  forms mean the same. `source` says where the value comes from: `props`, given by whatever places the view; `api`,
+  from a call; or `derived`, worked out from other values. `api` and `derived` need a description of which call or
+  how (§4.16).
 * `slots` declares each slot with the views it allows, and `many: true` if it holds a list of them. A slot may allow
   views not defined yet, or none yet (§4.11).
 * `components` declares each component with optional bindings: `text` (a path), `visible` and `enabled` (predicates),
-  per §3.6. Any component can be overridden by a step whether bound or not.
+  per §3.6, or `unbound: true` to say it has none, which is a problem alongside a binding. Any component can be
+  overridden by a step whether bound or not.
+* `image` says how `VIEW.png` draws the view alone: its `viewport`, its `width`, as the slot it sits in would give it,
+  and its `state` (§4.16).
 
 Slots and components must match `VIEW.html`'s `data-slot` and `data-component` names exactly.
 
@@ -328,7 +339,8 @@ The skill's directory carries its full documentation, because the installed copy
   * [bindings](https://github.com/weaver-engineering/agent-plugins/blob/main/claude-skills/ui-walkthrough/reference/bindings.md): paths and predicates;
   * [`WALKTHROUGH.yaml`](https://github.com/weaver-engineering/agent-plugins/blob/main/claude-skills/ui-walkthrough/reference/walkthrough-yaml.md): the outline, the story and the chain;
   * [`STEP.yaml`](https://github.com/weaver-engineering/agent-plugins/blob/main/claude-skills/ui-walkthrough/reference/step-yaml.md): the screen, instance addresses, describe and highlight;
-  * [`STEP.md`, `FLOW.svg` and the overview](https://github.com/weaver-engineering/agent-plugins/blob/main/claude-skills/ui-walkthrough/reference/step-md.md): the pages and diagrams the skill generates.
+  * [`STEP.md`, `FLOW.svg` and the overview](https://github.com/weaver-engineering/agent-plugins/blob/main/claude-skills/ui-walkthrough/reference/step-md.md): the pages and diagrams the skill generates;
+  * [`VIEW.png` and the block in `VIEW.md`](https://github.com/weaver-engineering/agent-plugins/blob/main/claude-skills/ui-walkthrough/reference/view-md.md): each view drawn alone, and what the skill writes on its page.
 * JSON Schemas (§4.8): [`ui-walkthrough.yaml`](https://github.com/weaver-engineering/agent-plugins/blob/main/claude-skills/ui-walkthrough/schemas/ui-walkthrough.schema.json),
   [`WALKTHROUGH.yaml`](https://github.com/weaver-engineering/agent-plugins/blob/main/claude-skills/ui-walkthrough/schemas/walkthrough.schema.json),
   [`VIEW.yaml`](https://github.com/weaver-engineering/agent-plugins/blob/main/claude-skills/ui-walkthrough/schemas/view.schema.json) and [`STEP.yaml`](https://github.com/weaver-engineering/agent-plugins/blob/main/claude-skills/ui-walkthrough/schemas/step.schema.json).
@@ -341,10 +353,12 @@ The skill's directory carries its full documentation, because the installed copy
 ### 3.11 Modes
 
 * `render <step>…` renders the steps named: each screen's image if it is stale or missing (`--force` renders it anyway),
-  removing the image of any screen the step no longer has, then every `STEP.md`, `FLOW.svg`, `WALKTHROUGH.md` and
-  `WALKTHROUGH.svg` under the configuration that differs from what would be generated.
+  removing the image of any screen the step no longer has, and every view's `VIEW.png` that is stale or missing; then
+  every `STEP.md`, `FLOW.svg`, `WALKTHROUGH.md`, `WALKTHROUGH.svg` and `VIEW.md` block under the configuration that
+  differs from what would be generated.
 * `render --walkthrough DIR` does the same for every step of a walkthrough, so a whole walkthrough is one command.
-* `render --view NAME` does the same for every step that uses the view.
+* `render --view NAME` does the same for every step that uses the view; with `--force` it renders the view's own image
+  too.
 * `uses NAME` lists the steps that use a view, without rendering.
 * `check` lists every problem, then everything pending (§4.11), and exits non-zero if there is any problem.
   `check --complete` also exits non-zero if anything is pending. The problems are:
@@ -356,6 +370,10 @@ The skill's directory carries its full documentation, because the installed copy
   * a step with `screens` whose first screen has no `caption`;
   * a `STEP.md`, `FLOW.svg`, `WALKTHROUGH.md` or `WALKTHROUGH.svg` that is missing or differs from what would be
     generated;
+  * a view's `VIEW.png` that is stale, missing or invalid, or whose `image` settings cannot be drawn; a `VIEW.md` that
+    is missing, has no block, or whose block differs from what would be generated; markers that are not one begin
+    followed by one end (§4.16);
+  * a component marked `unbound: true` that gives a binding;
   * a chain problem (§5.6).
 
 ## 4 Decisions
@@ -388,7 +406,8 @@ declare dependencies and must name its install command.
 ### 4.2 The skill reads only its own documents
 
 Reading a project's own documents, such as a view's `VIEW.md` or a hand-written step page, would couple the skill to
-their format and let it drift from what they say elsewhere. So the skill's inputs are `VIEW.yaml`,
+their format and let it drift from what they say elsewhere. The one exception is the block the skill writes into
+`VIEW.md` (§4.16), which it reads only to find its own markers. So the skill's inputs are `VIEW.yaml`,
 `WALKTHROUGH.yaml` and `STEP.yaml`, structured and defined here, and `STEP.md` is an output.
 
 This puts the boundary where DEM already sits. A view's attributes and types are claims in DEM, so DEM can produce
@@ -489,6 +508,8 @@ navigation, main area and dock in the first increment, and the views that fill t
 
 * A slot may allow views not defined yet, or none yet. Neither is a problem; each is **pending**.
 * A step the outline names may have no `STEP.yaml` yet; it is pending, and still gets its page and diagram (§4.12).
+* A component neither bound nor marked `unbound: true`, and a state attribute with no `source`, or from an API or
+  derived with no description, are pending (§4.16).
 * A step leaves a slot unbound to show its placeholder, the content `VIEW.html` draws inside the slot element. `null`
   stays the deliberately empty slot, which is a design decision, not a gap. An unbound slot is pending.
 * Binding a slot to a view not defined yet is an assembly error: the step leaves it unbound until the view exists.
@@ -592,6 +613,31 @@ be read where it is.
 * **It stays an SVG written as text, from the outline alone**, like `FLOW.svg` (§4.13): it is sharp at any size, and
   `check` compares it with no browser. A step's `STEP.yaml` does not reach it.
 
+### 4.16 Each view reviewed on its own: VIEW.png and a block in VIEW.md
+
+A reviewer saw a view only as steps assembled it, filled with other views, so a view on its own could not be reviewed,
+and nothing checked that a view's page said what its wireframe does. So each view gets an image of itself, and its page
+a block generated from `VIEW.html` and `VIEW.yaml`.
+
+* **`VIEW.png` draws the view alone**, every slot showing its placeholder whatever the wireframe draws in it, so each
+  slot can be seen. Drawn at the viewport's width, a view that sits in a narrow slot would be stretched across the
+  screen, and with its state unset it shows none of its states, so `VIEW.yaml` may give `image: { viewport, width,
+  state }`. The image is cropped to the view. Its hash covers what a step's does (§5.4) and the width; `image` reaches
+  no step's image.
+* **A block in the project's `VIEW.md`, not a page of the skill's.** A project's `VIEW.md` carries what the skill
+  cannot derive, in DEM the capabilities a view serves, the calls it makes, what updates it live, so the skill neither
+  owns the page nor adds a second one beside it. It writes one block between markers: the image, the components with
+  their bindings, the state with its sources, the types, the slots linked to the views they hold, and every step that
+  places the view. The block goes wherever the project puts the markers; without them it is added at the end, and
+  without a `VIEW.md` one is written. Markers it cannot read as one block are left for the project to put right.
+* **What a view leaves unsaid is pending.** The block shows what is decided; `check` lists what is not, as it does a
+  slot whose views are not drawn (§4.11): a component neither bound nor marked `unbound: true`, so a component not
+  bound yet is not mistaken for one that needs no binding; and a state attribute with no `source`, or from an API or
+  derived with nothing saying which call or how. `check --complete` fails on them.
+* **Documenting a view moves no pixel.** Sources, `unbound` and descriptions are left out of every hash, and an
+  attribute is hashed by what it means, `{ type, default }`, however it is written, so writing `card: Card` out in
+  full to give it a source stales nothing.
+
 ## 5 Algorithm
 
 ### 5.1 Loading views
@@ -638,8 +684,10 @@ A step uses a view if, on any of its screens, the view is the `root` or is bound
 One hash per screen. SHA-256 over, in a fixed order and each length-prefixed: the skill's major version; the screen's
 fields (`viewport`, `root`, `slots`, `state`, `components`, `highlight`), after the changes from the screens before it
 and without inherited entries it drops (§4.14), as canonical JSON; for each placed instance, sorted
-by address, its resolved state as canonical JSON, its `VIEW.html`, and its `VIEW.yaml` without descriptions as
-canonical JSON; the tokens stylesheet; and the viewport as `WIDTHxHEIGHT`.
+by address, its resolved state as canonical JSON, its `VIEW.html`, and its `VIEW.yaml` without descriptions, sources,
+`unbound` or `image`, each attribute and field in the form `{ type, default }`, as canonical JSON; the tokens
+stylesheet; and the viewport as `WIDTHxHEIGHT`. A view's `VIEW.png` is hashed the same way, its screen being the view as
+root with its `image` state, and its `image` width added (§4.16).
 
 So a change to the outline, to a step's `describe` or `caption`, or to any description, never stales an image; a change to
 anything that can move a pixel always does. Only placed views count, so editing an unused view stales nothing. The
@@ -665,7 +713,8 @@ From each walkthrough's `WALKTHROUGH.yaml`, reported by `check`:
 
 ## 6 Output
 
-`render` writes `STEP.png`, `STEP-{n}.png`, `STEP.md`, `FLOW.svg`, `WALKTHROUGH.md` and `WALKTHROUGH.svg` files, and removes only a `STEP-{n}.png` of a screen
+`render` writes `STEP.png`, `STEP-{n}.png`, `STEP.md`, `FLOW.svg`, `WALKTHROUGH.md`, `WALKTHROUGH.svg` and `VIEW.png`
+files, and the block in each `VIEW.md`, and removes only a `STEP-{n}.png` of a screen
 a step no longer has. `uses` prints step paths, one per line. `check` prints one
 problem per line, then one line per pending item, each marked `pending:`; it exits non-zero if there are any problems, or
 with `--complete` if anything is pending. Nothing writes a copy of any wireframe.
