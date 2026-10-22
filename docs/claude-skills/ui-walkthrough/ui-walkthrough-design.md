@@ -209,6 +209,8 @@ steps:
   choice it stands for) or `end` (how the walkthrough ends there).
 * Step `01` is always a way in, labelled *Start*. Any step may be another, by giving `entry: {label}`, such as
   `entry: Opens a saved project` (§4.13). Every step must be reachable through `next` from step `01` or another entry.
+* A step may be a walkthrough of its own, by giving `walkthrough: {directory}`, the other walkthrough's directory from
+  the project's root, such as `walkthrough: use-cases/UC-2-approve-a-document/walkthrough` (§4.17).
 * A step the outline names with no `STEP.yaml` yet is pending (§4.11): it gets its page and diagram, saying its screen is
   not yet drawn. A `STEP.yaml` in a directory the outline does not name is a problem.
 
@@ -301,7 +303,9 @@ The reviewer scans the matrix and picks the spec they were asked to review.
    "Previous" lists a way in first, *Start* for step `01` or the step's `entry` label, then every step whose `next` leads
    here, ordered by step name, each with the choice that leads here. "Next" lists the step's `next` in its order, each with its choice and the step it leads to; a
    step that ends the walkthrough has `**End:** {end}`.
-4. The narrative, then the image, or, for a step with no `STEP.yaml` yet, a line saying its screen is not yet drawn.
+4. A step that is a walkthrough of its own says so, linked to that walkthrough's page (§4.17). Then the narrative, then
+   the image, or, for a step with no `STEP.yaml` yet, a line saying its screen is not yet drawn, or, for one that is a
+   walkthrough, that walkthrough's overview diagram, linked to its page.
    A step of several screens shows each in order in place of 4's image and 5: a heading `### {n}. {caption}`, the
    screen's image, and its own entries, listed as in 5.
 5. "In this step" lists highlighted entries first, then described ones, each in the order the step gives them, and is
@@ -325,8 +329,10 @@ stylesheet:
 * [03 Review the spec](03-review/STEP.md): ends the walkthrough; *not yet drawn*
 ```
 
-`WALKTHROUGH.svg` first, then a link to each step's page in step order, saying which steps are ways in, which end the
-walkthrough and which have no `STEP.yaml` yet.
+`WALKTHROUGH.svg` first, then a link to each step's page in step order, saying which steps are ways in, which are
+walkthroughs of their own, linked to them, which end the walkthrough and which have no `STEP.yaml` yet. A walkthrough
+that is a step of others links up to each of those steps under its title, as each of its steps' pages does beside the
+link to its overview (§4.17).
 
 ### 3.10 The skill's documentation and worked example
 
@@ -507,7 +513,9 @@ A design is drawn one walkthrough at a time, so a view's slots are declared befo
 navigation, main area and dock in the first increment, and the views that fill them over the increments after. So:
 
 * A slot may allow views not defined yet, or none yet. Neither is a problem; each is **pending**.
-* A step the outline names may have no `STEP.yaml` yet; it is pending, and still gets its page and diagram (§4.12).
+* A step the outline names may have no `STEP.yaml` yet; it is pending, and still gets its page and diagram (§4.12),
+  unless it is a walkthrough of its own, which need draw no screen. A walkthrough a step is, not written yet, is
+  pending (§4.17).
 * A component neither bound nor marked `unbound: true`, and a state attribute with no `source`, or from an API or
   derived with no description, are pending (§4.16).
 * A step leaves a slot unbound to show its placeholder, the content `VIEW.html` draws inside the slot element. `null`
@@ -638,6 +646,31 @@ a block generated from `VIEW.html` and `VIEW.yaml`.
   attribute is hashed by what it means, `{ type, default }`, however it is written, so writing `card: Card` out in
   full to give it a source stales nothing.
 
+### 4.17 Nested walkthroughs: a step that is a walkthrough
+
+Use cases nest: a step of one is often a whole use case of its own, such as browsing for a path while setting up a
+project, or curating a check set from its picker. The step and the walkthrough it is are linked both ways, so a reviewer
+can go down into the detail and come back up to where they were.
+
+* **The step names the walkthrough, not the other way round.** `walkthrough: {directory}` on the step, the directory
+  `render --walkthrough` takes. The step is where the nesting is decided, and a walkthrough may be a step of several
+  others; each finds its parents by every step naming it, so the link up is derived, never written twice.
+* **The step keeps its place in its own chain.** It has its own title, narrative and `next` or `end`: how the outer
+  flow continues is the outer walkthrough's to say. The nested walkthrough's ends are not mapped onto the outer step's
+  `next`; the narrative says how it comes back.
+* **A screen is optional.** With no `STEP.yaml` the step shows the nested walkthrough's overview diagram in place of a
+  screen, and is not pending, since the walkthrough is where its screens are. With one, its screens are drawn as any
+  step's, such as the screen the nested walkthrough starts from.
+* **Links live in the pages.** Down: the step's `STEP.md` and its walkthrough's `WALKTHROUGH.md`. Up: the nested
+  walkthrough's `WALKTHROUGH.md` and every one of its `STEP.md`s name each step it is. In both diagrams the step's box
+  has a second border inside its first, and in `WALKTHROUGH.svg` it names the walkthrough, since a link in an image
+  cannot be followed.
+* **Written one at a time.** A walkthrough named but not found by the configuration's glob is not written yet: pending,
+  named as such on the pages, so an outer walkthrough can be drawn before the ones it nests. A step naming its own
+  walkthrough is a problem.
+* **Only pages change.** Nesting is in the outline, which reaches no image (§5.4), so adding or moving it rewrites
+  pages and diagrams only.
+
 ## 5 Algorithm
 
 ### 5.1 Loading views
@@ -701,7 +734,9 @@ highlighted entries, laid out per §3.9. `FLOW.svg` is a pure function of the ou
 stylesheet's colours (§4.13). `check` generates both in memory and compares; `render` writes each when it differs. A
 step's page is not generated while its `STEP.yaml` has problems; its diagram is, since it needs only the outline.
 `WALKTHROUGH.md` is a pure function of the outline and which steps have a `STEP.yaml`, and `WALKTHROUGH.svg` of the
-outline and the tokens stylesheet's colours (§4.15); both are compared and written the same way.
+outline and the tokens stylesheet's colours (§4.15); both are compared and written the same way. A nested walkthrough's
+title and directory reach the pages and overview of the steps that are it, and the titles of those steps and their
+walkthroughs reach its pages (§4.17).
 
 ### 5.6 The chain
 
@@ -709,7 +744,8 @@ From each walkthrough's `WALKTHROUGH.yaml`, reported by `check`:
 
 * a `next` entry naming a step that is not in the outline;
 * a step reachable from neither step `01` nor any step giving `entry`, or no step `01`;
-* a step with neither `next` nor `end`, or with both.
+* a step with neither `next` nor `end`, or with both;
+* a step naming its own walkthrough as the walkthrough it is.
 
 ## 6 Output
 
