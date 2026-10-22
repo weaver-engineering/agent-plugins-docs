@@ -193,7 +193,9 @@ steps:
 
 * `title` is the walkthrough's, at the top of every page.
 * Each step has a `title`, an optional `narrative`, and exactly one of `next` (the steps it leads to, each with the
-  choice it stands for) or `end` (how the walkthrough ends there). Every step must be reachable from step `01`.
+  choice it stands for) or `end` (how the walkthrough ends there).
+* Step `01` is always a way in, labelled *Start*. Any step may be another, by giving `entry: {label}`, such as
+  `entry: Opens a saved project` (§4.13). Every step must be reachable through `next` from step `01` or another entry.
 * A step the outline names with no `STEP.yaml` yet is pending (§4.11): it gets its page and diagram, saying its screen is
   not yet drawn. A `STEP.yaml` in a directory the outline does not name is a problem.
 
@@ -281,8 +283,8 @@ The reviewer scans the matrix and picks the spec they were asked to review.
 2. `FLOW.svg`: the whole walkthrough as a diagram, the same layout on every page of it, with this step filled and the
    routes into and out of it drawn heavier, each in its own colour.
 3. The navigation, between the diagram and the step's own content: the way back on the left, the ways on on the right.
-   "Previous" lists every step whose `next` leads here, ordered by step name, each with the choice that leads here; the
-   first step has *Start*. "Next" lists the step's `next` in its order, each with its choice and the step it leads to; a
+   "Previous" lists a way in first, *Start* for step `01` or the step's `entry` label, then every step whose `next` leads
+   here, ordered by step name, each with the choice that leads here. "Next" lists the step's `next` in its order, each with its choice and the step it leads to; a
    step that ends the walkthrough has `**End:** {end}`.
 4. The narrative, then the image, or, for a step with no `STEP.yaml` yet, a line saying its screen is not yet drawn.
    A step of several screens shows each in order in place of 4's image and 5: a heading `### {n}. {caption}`, the
@@ -505,6 +507,13 @@ and out drawn distinctly, then the navigation, and only then the step's own cont
   and enter by the left, running straight across to the next column on the same row; back routes leave by the left and
   enter by the right; routes down a column use the gap on its left, and routes up it the gap on its right. Choices label
   their routes, each placed along its route where it overlaps no other label and no box.
+* **A walkthrough may have more than one way in.** A use case can be entered other than at its first step: changing a
+  saved project starts from the projects list, not from starting a new one. Without a second entry the only way to make
+  such a step reachable is an edge from a later step, and the diagram then shows a way in as a branch. So any step may
+  give `entry: {label}`; step `01` is always an entry, as *Start*. Each entry is drawn as an arrow from a dot into its
+  step's left side, on the topmost port there, its label ending at the dot, and the reachability check starts from all
+  of them. The label is a string rather than a flag so that each way in says how the reviewer arrives, as each `next`
+  says its choice.
 * **It is an SVG the skill writes as text**, not a Mermaid block or a rendering through the browser: it shows in any
   markdown viewer, its layout is the skill's to keep fixed, and `check` compares it as text with no browser. An image
   cannot read the tokens stylesheet, so its colours (`--walkthrough-current`, `--walkthrough-in`, `--walkthrough-out`,
@@ -601,7 +610,7 @@ step's page is not generated while its `STEP.yaml` has problems; its diagram is,
 From each walkthrough's `WALKTHROUGH.yaml`, reported by `check`:
 
 * a `next` entry naming a step that is not in the outline;
-* a step not reachable from step `01`, or no step `01`;
+* a step reachable from neither step `01` nor any step giving `entry`, or no step `01`;
 * a step with neither `next` nor `end`, or with both.
 
 ## 6 Output
