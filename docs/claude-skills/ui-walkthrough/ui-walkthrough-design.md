@@ -561,7 +561,16 @@ and out drawn distinctly, then the navigation, and only then the step's own cont
   and enter by the left, running straight across to the next column on the same row; back routes leave by the left and
   enter by the right; routes down a column use the gap on its left, and routes up it, or back to the same step, the gap
   on its right. Each gap widens to hold the lanes run in it. Choices label their routes, each placed along its route
-  where it overlaps no other label and no box.
+  where it overlaps no other label and no box and, where there is such a place, crosses no other route.
+* **A box grows to hold its routes.** A step every other step returns to, such as curate-a-check-set's editor, can have
+  twenty routes on one side, which at a fixed size spilled past its corners into the gaps, where they met other routes.
+  So each box grows across the flow, about the middle of its row, until its outermost port keeps a clearance from its
+  corners: taller in `FLOW.svg`, wider in the overview. Its row widens with it; the other boxes in the row keep their
+  own size, centred.
+* **Facing sides share their ports.** A box's right side and the left side of the box across the gutter from it each
+  had ports spread about the same middle, so the short stretches from each to its gutter lane lay along one another.
+  The two sides' ports are now one set of lanes, so no two stretches in a gutter share a line; a route straight across
+  takes one port at both ends.
 * **A step that repeats is drawn as a route back to itself**, since "this step repeats for each registry" is part of
   the flow a reviewer follows.
 * **A walkthrough may have more than one way in.** A use case can be entered other than at its first step: changing a
