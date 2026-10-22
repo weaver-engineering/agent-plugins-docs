@@ -127,8 +127,8 @@ image: { width: 300, state: { mode: selected } }   # how VIEW.png draws the view
   identically in each (§4.7).
 * `state` declares the view's state attributes, each a type or `{ type, default, source, description }`; the two
   forms mean the same. `source` says where the value comes from: `props`, given by whatever places the view; `api`,
-  from a call; or `derived`, worked out from other values. `api` and `derived` need a description of which call or
-  how (§4.16).
+  from a call; or `derived`, worked out from other values or kept by the view from what the user does, such as which
+  card is picked. `api` and `derived` need a description of which call or how (§4.16).
 * `slots` declares each slot with the views it allows, and `many: true` if it holds a list of them. A slot may allow
   views not defined yet, or none yet (§4.11).
 * `components` declares each component with optional bindings: `text` (a path), `visible` and `enabled` (predicates),
