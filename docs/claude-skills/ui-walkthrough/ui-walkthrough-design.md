@@ -134,8 +134,8 @@ image: { width: 300, state: { mode: selected } }   # how VIEW.png draws the view
   views not defined yet, or none yet (§4.11).
 * `components` declares each component with optional bindings: `text` (a path), `visible` and `enabled` (predicates),
   per §3.6. Any component can be overridden by a step whether bound or not.
-* `image` says how `VIEW.png` draws the view alone: its `viewport`, its `width`, as the slot it sits in would give it,
-  and its `state` (§4.16).
+* `image` says how `VIEW.png` draws the view alone: its `viewport`, its `width`, needed only by a view no screen places
+  yet, since one placed is measured where it sits (§4.19), and its `state` (§4.16).
 
 Slots and components must match `VIEW.html`'s `data-slot` and `data-component` names exactly. A state attribute's
 `source` and a component's `unbound: true`, which §4.16 once asked for, are accepted and ignored (§4.18).
@@ -512,7 +512,8 @@ example by changing one file.
 ### 4.10 Other points
 
 * **Invalid image** means not a PNG, or no hash in its metadata. It never means the pixels look wrong.
-* **Viewport:** the screenshot is exactly the viewport size, not the full page, framed (§4.18).
+* **Viewport:** the screenshot is exactly the viewport size, not the full page, framed (§4.18) and captioned with the
+  viewport (§4.19).
 * **Fonts:** the tokens stylesheet must not depend on a system font, or renders drift between machines.
 
 ### 4.11 Drawn a walkthrough at a time: pending steps, slots and placeholders
@@ -645,7 +646,7 @@ a block generated from `VIEW.html` and `VIEW.yaml`.
 * **`VIEW.png` draws the view alone**, every slot showing its placeholder whatever the wireframe draws in it, so each
   slot can be seen. Drawn at the viewport's width, a view that sits in a narrow slot would be stretched across the
   screen, and with its state unset it shows none of its states, so `VIEW.yaml` may give `image: { viewport, width,
-  state }`. The image is cropped to the view. Its hash covers what a step's does (§5.4) and the width; `image` reaches
+  state }`; §4.19 since measures the width where the view sits. The image is cropped to the view. Its hash covers what a step's does (§5.4) and the width; `image` reaches
   no step's image.
 * **A block in the project's `VIEW.md`, not a page of the skill's.** A project's `VIEW.md` carries what the skill
   cannot derive, in DEM the capabilities a view serves, the calls it makes, what updates it live, so the skill neither
@@ -715,6 +716,30 @@ components and state that a reviewer read as the UI's design (architect, 23 Octo
   its `WALKTHROUGH.md`. It is optional, since a walkthrough can be drawn for any reason, and one-way: the use case may
   link to its walkthrough, as analysis links analysis, but the skill never writes into it.
 
+### 4.19 Images at the size the UI has them: views measured, steps captioned
+
+On a big screen every `VIEW.png` filled the page: drawn at the first viewport's width unless `VIEW.yaml` gave
+`image: width`, DEM's dialogs came out 2560px wide, a short form stretched across a workstation's screen, and a markdown
+viewer shrinks anything wider than its column to fit it. Nor did a step's image say which viewport it was drawn in, and
+a walkthrough may one day be drawn in several (architect, 23 October 2026).
+
+* **A view is as wide as it is in the walkthroughs.** With no `image: width`, the skill lays out the first screen that
+  places the view, in the order of the steps and in the `image` viewport if one is given, measures the view's box there,
+  and draws `VIEW.png` at that width in that screen's viewport. A dialog comes out the dialog's width, a list the slot's.
+  The screen's root is the viewport's width already, so it is not measured, and a view no screen places is drawn in the
+  first viewport, as before. `image: width` still overrides, for a view not placed yet.
+* **The measuring screen is part of the view's hash.** A change to that screen can change the view's width, so it
+  stales the view's image too; changing a card stales the matrix of cards measured in the same screen. While the step
+  holding that screen has problems the view's image waits, not falling back to another width: `check` reports the
+  step's problems once, not the image as well.
+* **Every step image is captioned with its viewport**, as *desk:* 1440 x 900, in a strip under the frame on a
+  transparent background, drawn into the PNG as the frame is. It names the viewport the walkthrough was drawn in, and
+  would tell copies drawn in several apart. A view's image has none: it is not a screen, and a dialog's caption could be
+  wider than the dialog.
+* **A displayed width was not added.** `![](VIEW.png)` already shows an image no wider than it is, so an `<img width>`
+  would change nothing while the skill draws at one device pixel per CSS pixel.
+* The skill's major version was raised, so every image is stale once.
+
 ## 5 Algorithm
 
 ### 5.1 Loading views
@@ -765,7 +790,7 @@ and without inherited entries it drops (§4.14), as canonical JSON; for each pla
 by address, its resolved state as canonical JSON, its `VIEW.html`, and its `VIEW.yaml` without descriptions, sources,
 `unbound` or `image`, each attribute and field in the form `{ type, default }`, as canonical JSON; the tokens
 stylesheet; and the viewport as `WIDTHxHEIGHT`. A view's `VIEW.png` is hashed the same way, its screen being the view as
-root with its `image` state, and its `image` width added (§4.16).
+root with its `image` state, and its `image` width added (§4.16), or the hash of the screen it is measured in (§4.19).
 
 So a change to the outline, to a step's `describe` or `caption`, or to any description, never stales an image; a change to
 anything that can move a pixel always does. Only placed views count, so editing an unused view stales nothing. The
