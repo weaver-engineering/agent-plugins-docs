@@ -655,8 +655,9 @@ a block generated from `VIEW.html` and `VIEW.yaml`.
   without a `VIEW.md` one is written. Markers it cannot read as one block are left for the project to put right.
 * **The page leads with the view** (architect, 23 October 2026). With the image in the one block, at the end of DEM's
   pages, a page all about the view showed it only after four sections of prose. So the image moved to a second, **view
-  block**, which leads the page: what the view is, from `VIEW.yaml`'s `description`, then `VIEW.png`. The project puts
-  its own heading above it, DEM's `## 0 The View`, and the rest of its page explains the view in more detail. The
+  block**, which leads the page: what the view is, from `VIEW.yaml`'s `description`, then `VIEW.png`. The project moves
+  it under a heading of its own, DEM's unnumbered `## The View` between its Context and §1, and the rest of its page
+  explains the view in more detail. The
   description is the one `STEP.md` shows when a step describes the view, so the page cannot say otherwise. A page
   without the view block's markers gets it under its `# ` title, so every existing page gains it on the next render;
   the block of slots and uses stays where it was.
