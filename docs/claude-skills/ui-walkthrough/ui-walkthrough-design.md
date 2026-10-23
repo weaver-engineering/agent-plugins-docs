@@ -267,8 +267,9 @@ screens:                                    # screens 2, 3, … in order
 * `slots` merge by key; `state` by instance, then attribute; `components` by key, then property. `viewport` is kept
   unless given.
 * `describe` and `highlight` are never carried over: each screen names what it draws attention to.
-* An inherited slot, state or component entry for a view the screen no longer places is dropped; one the screen gives
-  itself is still an error.
+* An inherited slot, state or component entry that no longer names exactly one instance the screen places, in its one
+  spelling, is dropped: one for a view the screen no longer places, or for one now placed a different number of times;
+  one the screen gives itself is still an error.
 * An entry giving `root` starts afresh, keeping only the viewport.
 * `caption` reaches only `STEP.md`, like `describe`.
 
@@ -615,7 +616,9 @@ the walkthrough branches it does not have. So a step may show several screens, o
   an instance's attribute, a component's property. `describe` and `highlight` are not carried over, since what a
   screen draws attention to is what changed on it. Rebinding a slot removes the views it showed, so what the screen
   inherited for them is dropped rather than reported: otherwise every small change that swaps a view would have to be
-  written out whole. Only inherited entries are dropped, so a typo in a screen's own entry is still caught. A new `root` makes every address on the screen before meaningless,
+  written out whole. A slot holding many rebound to fewer views renumbers them, `CARD#1` and `CARD#2` becoming `CARD`,
+  so an inherited entry whose address no longer names exactly one placed instance is dropped too, not only one for a
+  view no longer placed (found in DEM, WVR-254, 23 October 2026). Only inherited entries are dropped, so a typo in a screen's own entry is still caught. A new `root` makes every address on the screen before meaningless,
   so a screen giving one starts afresh rather than inheriting entries that would all be errors.
 * **The first screen is the step's own fields.** A step of one screen is unchanged, and its image is still `STEP.png`;
   later screens are `STEP-2.png` on, so the names sort in reading order. Each image carries the hash of its own screen
