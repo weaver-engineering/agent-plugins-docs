@@ -181,6 +181,9 @@ against the view's declared state when the view is loaded. A binding applies onl
 otherwise the component stays as the wireframe draws it. Predicates read only the view's own state and literals: never
 another view's state, never another attribute compared with this one.
 
+A **pick list** is a component bound with `pick`, a path as `text` takes, and optionally `options`, a path to a list of
+strings, numbers or enum values, `open`, a predicate, and `unset`, text (§4.22).
+
 ### 3.7 WALKTHROUGH.yaml
 
 A walkthrough is a directory holding its outline, `WALKTHROUGH.yaml`, and a directory per step beside it, named as the
@@ -780,6 +783,32 @@ WVR-254, 23 October 2026).
 * **One rather than none or one by default**, so a slot is required unless the analysis says it may be empty. DEM
   declares its dialog, alerts and main slots `empty: true`; until it does, its steps binding them to `null` fail.
 * **`empty` stales no image.** It is checked, never drawn, so it is left out of the hash, as a description is.
+
+### 4.22 A pick list is a component bound to state, not a slot of item views
+
+A pick list is a field: its value is chosen from options that are data in the view's state. But a binding could not read
+a list, so DEM drew the options either as numbered components each step overrode, or, after §4.20, as a slot of a
+near-empty item view holding only a label, which each step filled with data the view's state already held. Both were
+workarounds (architect, via WVR-254, 23 October 2026).
+
+* **Bound, not slotted.** A component's `pick` binds the value it shows, `options` the list it offers, `open` when the
+  options show, and `unset` an entry for leaving the value unset. A step sets only the state, never an override per
+  option. Slots holding many views stay for rich items that act on their own and have their own data.
+* **The wireframe draws it; the skill fills it.** `VIEW.html` marks the value `data-pick-value`, and the options
+  `data-pick-options` holding one `data-pick-option` drawn once, which the skill repeats per option, marking the chosen
+  one `data-chosen` for the view's CSS. So a pick list looks like the rest of its view, and the skill draws no
+  control of its own. The markup is checked when the view loads.
+* **Options are a plain path.** A list that depends on another value, such as the models for a runtime, is a list of
+  the view's own the step sets, never a query of another list; the skill stays a renderer, not a prototype (§4.4).
+* **Unset is a value: the empty string.** A value the step does not give leaves the pick list as drawn, as every
+  binding (§3.6): the step does not care. An unset value is one the analysis holds, as DEM's definitions hold `''` for
+  a runtime left to DEM's default, so `unset` applies to a `pick` of a string whose value is `""`, never to a missing
+  one, which would grey a pick list in every step that does not mention it. The component and its unset entry are
+  then marked `data-unset`, so a component of
+  the view's own inside the pick list, bound to state, can show what unset means, such as DEM's default runtime, and
+  the view's CSS can grey it; the skill does not compose that text itself. `VIEW.png` draws it as its `image: state` gives, closed unless that opens it.
+* Bindings move pixels, so they are in the hash as any binding is; no skill version change was needed, since no
+  existing view could use them.
 
 ## 5 Algorithm
 
