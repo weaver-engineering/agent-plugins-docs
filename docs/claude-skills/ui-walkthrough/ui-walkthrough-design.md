@@ -130,8 +130,8 @@ image: { width: 300, state: { mode: selected } }   # how VIEW.png draws the view
   identically in each (§4.7).
 * `state` declares the view's state attributes, each a type or `{ type, default, description }`; the two forms mean
   the same. They are what steps set and bindings read, modelling the wireframe, not the UI (§4.18).
-* `slots` declares each slot with the views it allows, and `many: true` if it holds a list of them. A slot may allow
-  views not defined yet, or none yet (§4.11).
+* `slots` declares each slot with the views it allows, `many: true` if it holds a list of them, and `empty: true` if a
+  step may leave it holding nothing (§4.21). A slot may allow views not defined yet, or none yet (§4.11).
 * `components` declares each component with optional bindings: `text` (a path), `visible` and `enabled` (predicates),
   per §3.6. Any component can be overridden by a step whether bound or not.
 * `image` says how `VIEW.png` draws the view alone: its `viewport`, its `width`, needed only by a view no screen places
@@ -475,8 +475,8 @@ Only `highlight` changes the image, so it is in the input hash and `describe` is
 ### 4.6 Slots holding many views, and instance addresses
 
 A slot declared `many: true` is bound to a list of views, `CARD-MATRIX.CARDS: [CARD, CARD, CARD]`, placed in order; the
-view's CSS lays them out. A list names at least one view; `null` is the empty binding for any slot. A slot without
-`many` takes one view or `null`. Every view placed in a slot must be one of the views it allows, and defined.
+view's CSS lays them out. A list names at least one view; `null` is the empty binding, for a slot declared `many` or
+`empty` (§4.21). A slot without `many` takes one view, or `null` if it is `empty`. Every view placed in a slot must be one of the views it allows, and defined.
 
 A view may be placed more than once, in a list or in different slots. Each placement is an **instance**:
 
@@ -762,7 +762,24 @@ list built properly did not show how it laid out its views (architect, 23 Octobe
   pending.
 * **Only the images of views with such a slot go stale**: the places are in their hash alone, not the skill's version.
 * **Slots stay as they were otherwise.** A slot may be unbound, bound to nothing, to one view, or, if `many`, to a
-  list. Nothing marks a slot as one that must always hold a view; that can be added if a project needs it.
+  list. Nothing marked a slot as one that must always hold a view; §4.21 since does.
+
+### 4.21 A view's slots defined beside it, with how many each holds
+
+`VIEW.png` names every slot, but the page defined them only in its last block, at the end of DEM's pages where it was
+missed, and could not say whether a slot may be empty: `VIEW.yaml` said only whether a slot holds many (architect, via
+WVR-254, 23 October 2026).
+
+* **The slots table moved into the view block**, under the image, so the slots the image names are defined beside it:
+  each with what it is for, the views it may hold linked to their pages, and how many. The other block keeps only the
+  steps that use the view.
+* **How many: one, none or one, or any number.** A slot holds one view unless `VIEW.yaml` says otherwise: `empty: true`
+  lets a step bind it to `null`, and `many: true` a list, which may always be none, so a slot holding many takes no
+  `empty`. A step binding `null` to a slot that allows neither is a problem. Unbound, a slot still shows its
+  placeholder and is pending, whatever it holds.
+* **One rather than none or one by default**, so a slot is required unless the analysis says it may be empty. DEM
+  declares its dialog, alerts and main slots `empty: true`; until it does, its steps binding them to `null` fail.
+* **`empty` stales no image.** It is checked, never drawn, so it is left out of the hash, as a description is.
 
 ## 5 Algorithm
 
@@ -792,6 +809,7 @@ Rejected, with an error naming the step and the offender:
 * a `STEP.yaml` that breaks its schema, or an unknown viewport;
 * an unknown view, slot or component;
 * a view a slot does not allow or that is not defined yet, a list in a slot without `many`, or an empty list;
+* `null` in a slot declared neither `empty` nor `many`;
 * an ambiguous or unknown instance address, or a cycle;
 * a state value that does not match its declared type, or an unknown attribute or field;
 * an override of the wrong type;
