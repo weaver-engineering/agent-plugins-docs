@@ -297,7 +297,11 @@ The reviewer scans the matrix and picks the spec they were asked to review.
 
 ![02 Pick a file](STEP.png)
 
-**Views:** [APP](../../../views/APP/VIEW.md), [CARD-MATRIX](../../../views/CARD-MATRIX/VIEW.md), [CARD](../../../views/CARD/VIEW.md)
+**Views**
+
+* [APP](../../../views/APP/VIEW.md)
+  * *main*: [CARD-MATRIX](../../../views/CARD-MATRIX/VIEW.md)
+    * *cards*: [CARD](../../../views/CARD/VIEW.md) × 3
 
 ## In this step
 
@@ -713,8 +717,12 @@ components and state that a reviewer read as the UI's design (architect, 23 Octo
   into the PNG round the screenshot, so it shows in any markdown viewer; a style on the image would be stripped. The
   image is 4px larger each way than the viewport or view. The skill's major version was raised so every image is
   stale once, and one render draws the frames. The diagrams are not framed: they are the document's, not the UI's.
-* **A step links its views.** Each screen of a `STEP.md` lists the views it places, linked to their `VIEW.md`, so a
-  reviewer can go from a screen to each view on its own.
+* **A step links its views.** Each screen of a `STEP.md` shows the views it places, linked to their `VIEW.md`, so a
+  reviewer can go from a screen to each view on its own. They were first one line, in the order placed; the architect
+  asked for the tree they make (23 October 2026): the root, then under each view each slot it fills, in italics, with
+  the views in it. A slot holding one view names it beside the slot; one holding many lists them beneath, a run of the
+  same view filled alike counted, *× 3*, and a single run with nothing beneath sits beside the slot. Slots left unbound
+  or bound to `null` are left out. The tree comes from the assembly, so it is what the image draws.
 * **A walkthrough may say what it describes.** `describes` links the use case, or any page, a walkthrough describes from
   its `WALKTHROUGH.md`. It is optional, since a walkthrough can be drawn for any reason, and one-way: the use case may
   link to its walkthrough, as analysis links analysis, but the skill never writes into it.
