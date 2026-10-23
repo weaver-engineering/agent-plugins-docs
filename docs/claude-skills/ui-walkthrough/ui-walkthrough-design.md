@@ -13,14 +13,15 @@ markdown page per step that presents it in its walkthrough, under a diagram of t
 highlighted. A project's UI design is then shown as walkthroughs a human reviews as a static document, readable in any
 markdown renderer. It is not a prototyper.
 
-A walkthrough is any sequence of screens a reviewer walks through, with its branches. A use case is one kind, and the
-first consumer's walkthroughs are its use cases, but a walkthrough need not follow a use case's rules, so the skill
-never speaks of use cases.
+A walkthrough is any sequence of screens a reviewer walks through, with its branches. It is analysis: what must be true
+of the UI, not how the UI is built (§4.18). One may describe a use case, and the first consumer's mostly do, but a
+walkthrough need not follow a use case's rules, so the skill never speaks of use cases; it only links to the page a
+walkthrough says it describes.
 
 Three firm requirements shape everything below:
 
 * **The skill reads only its own documents and writes only its own outputs.** Its inputs are files whose format the
-  skill defines (§3). A consuming project's own documents, such as a view's design notes or its data model, are never
+  skill defines (§3). A consuming project's own documents, such as a use case or a view's design, are never
   read; an agent extracts the skill's inputs from them, or a tool such as DEM produces them mechanically from claims.
   Keeping the inputs consistent with the design is the producer's job, not the skill's.
 * **A view's wireframe is written once and never copied.** The assembled HTML exists only in memory while a step
@@ -45,13 +46,15 @@ and walkthrough names passed to `render` are relative to where the skill is run.
 walkthroughs, for instance one per Feature (architect, 20 October 2026):
 
 ```yaml
-views: docs/design/ui/views
-tokens: docs/design/ui/tokens.css
-walkthroughs: docs/analysis/use-cases/*/walkthrough/WALKTHROUGH.yaml
+views: docs/analysis/ui/views
+tokens: docs/analysis/ui/tokens.css
+walkthroughs: docs/analysis/ui/walkthroughs/*/WALKTHROUGH.yaml
 viewports: { desk: 1440x900, tablet: 1024x768, tablet-portrait: 768x1024 }
 ```
 
-A viewport is `WIDTHxHEIGHT`, width first.
+A viewport is `WIDTHxHEIGHT`, width first. Walkthroughs, their views and the tokens are analysis, so they sit together
+under it, a walkthrough describing a use case taking the use case's slug; the UI's design sits elsewhere and links to
+them (§4.18; architect, 23 October 2026).
 
 ### 3.2 Inputs and outputs
 
@@ -60,8 +63,8 @@ A viewport is `WIDTHxHEIGHT`, width first.
 | `ui-walkthrough.yaml` | configuration | the project |
 | tokens stylesheet | shared styling | the project |
 | `{views}/{VIEW-NAME}/VIEW.html` | the view's wireframe | the project |
-| `{views}/{VIEW-NAME}/VIEW.yaml` | the view's data model, state, slots, components, bindings, descriptions | an agent or DEM |
-| `{walkthrough}/WALKTHROUGH.yaml` | the walkthrough's outline: its title, and each step's title, narrative and chain | an agent or DEM |
+| `{views}/{VIEW-NAME}/VIEW.yaml` | what the wireframe needs to be drawn: types, state, slots, components, bindings, descriptions | an agent or DEM |
+| `{walkthrough}/WALKTHROUGH.yaml` | the walkthrough's outline: its title, what it describes, and each step's title, narrative and chain | an agent or DEM |
 | `{walkthrough}/{step}/STEP.yaml` | the step's screen, or screens: how each is assembled | an agent or DEM |
 | `{step}/STEP.png` | the rendered screen; the first screen, when there are several | the skill |
 | `{step}/STEP-{n}.png` | the rendered screen `n`, from 2, of a step with several | the skill |
@@ -100,15 +103,15 @@ An HTML fragment that follows these standards, so the skill can assemble it:
 
 ```yaml
 description: One file, shown as a card in a matrix.
-types:                                   # the data model this view uses
+types:                                   # what the wireframe's state is made of
   Card:
     name: string
     status: enum[draft, locked, archived]
     shared: boolean
 state:
-  mode: { type: "enum[default, selected]", default: default, source: props }
-  card: { type: Card, source: props }
-  changes: { type: number, source: api, description: "From getHistory: the changes since the last review." }
+  mode: { type: "enum[default, selected]", default: default }
+  card: Card
+  changes: { type: number, description: The changes since the last review. }
 slots:
   BODY: { views: [DOC-DIFF, FILE-LIST], description: What the card shows when it is opened. }
 components:
@@ -117,7 +120,7 @@ components:
     visible: card.status != archived
     enabled: card.status == draft
     description: Opens the file for review. Only a draft can be opened.
-  SHARE: { unbound: true, description: Shares the file. }   # as drawn unless a step overrides it
+  SHARE: { description: Shares the file. }   # as drawn unless a step overrides it
 image: { width: 300, state: { mode: selected } }   # how VIEW.png draws the view alone
 ```
 
@@ -125,19 +128,17 @@ image: { width: 300, state: { mode: selected } }   # how VIEW.png draws the view
   describes or highlights the element (§4.5).
 * `types` declares the record types the view's state uses (§3.5). A type used by several views must be declared
   identically in each (§4.7).
-* `state` declares the view's state attributes, each a type or `{ type, default, source, description }`; the two
-  forms mean the same. `source` says where the value comes from: `props`, given by whatever places the view; `api`,
-  from a call; or `derived`, worked out from other values or kept by the view from what the user does, such as which
-  card is picked. `api` and `derived` need a description of which call or how (§4.16).
+* `state` declares the view's state attributes, each a type or `{ type, default, description }`; the two forms mean
+  the same. They are what steps set and bindings read, modelling the wireframe, not the UI (§4.18).
 * `slots` declares each slot with the views it allows, and `many: true` if it holds a list of them. A slot may allow
   views not defined yet, or none yet (§4.11).
 * `components` declares each component with optional bindings: `text` (a path), `visible` and `enabled` (predicates),
-  per §3.6, or `unbound: true` to say it has none, which is a problem alongside a binding. Any component can be
-  overridden by a step whether bound or not.
+  per §3.6. Any component can be overridden by a step whether bound or not.
 * `image` says how `VIEW.png` draws the view alone: its `viewport`, its `width`, as the slot it sits in would give it,
   and its `state` (§4.16).
 
-Slots and components must match `VIEW.html`'s `data-slot` and `data-component` names exactly.
+Slots and components must match `VIEW.html`'s `data-slot` and `data-component` names exactly. A state attribute's
+`source` and a component's `unbound: true`, which §4.16 once asked for, are accepted and ignored (§4.18).
 
 ### 3.5 Types and state
 
@@ -187,6 +188,7 @@ outline keys it: main step 3 is `03-…`, extension 3a is `03a-…`, and the fir
 
 ```yaml
 title: Review a spec
+describes: [{ title: Review a spec, path: docs/analysis/use-cases/review-a-spec/USE-CASE.md }]
 steps:
   01-open:
     title: Open the project
@@ -205,12 +207,14 @@ steps:
 ```
 
 * `title` is the walkthrough's, at the top of every page.
+* `describes`, optional, lists what the walkthrough describes, such as its use case, each a `title` and a `path` from
+  the project's root. `WALKTHROUGH.md` links each under its title; one that does not exist is a problem (§4.18).
 * Each step has a `title`, an optional `narrative`, and exactly one of `next` (the steps it leads to, each with the
   choice it stands for) or `end` (how the walkthrough ends there).
 * Step `01` is always a way in, labelled *Start*. Any step may be another, by giving `entry: {label}`, such as
   `entry: Opens a saved project` (§4.13). Every step must be reachable through `next` from step `01` or another entry.
 * A step may be a walkthrough of its own, by giving `walkthrough: {directory}`, the other walkthrough's directory from
-  the project's root, such as `walkthrough: use-cases/UC-2-approve-a-document/walkthrough` (§4.17).
+  the project's root, such as `walkthrough: docs/analysis/ui/walkthroughs/approve-a-document` (§4.17).
 * A step the outline names with no `STEP.yaml` yet is pending (§4.11): it gets its page and diagram, saying its screen is
   not yet drawn. A `STEP.yaml` in a directory the outline does not name is a problem.
 
@@ -290,6 +294,8 @@ The reviewer scans the matrix and picks the spec they were asked to review.
 
 ![02 Pick a file](STEP.png)
 
+**Views:** [APP](../../../views/APP/VIEW.md), [CARD-MATRIX](../../../views/CARD-MATRIX/VIEW.md), [CARD](../../../views/CARD/VIEW.md)
+
 ## In this step
 
 * **CARD#2.OPEN** (highlighted): Opens the file for review. Only a draft can be opened.
@@ -305,9 +311,10 @@ The reviewer scans the matrix and picks the spec they were asked to review.
    step that ends the walkthrough has `**End:** {end}`.
 4. A step that is a walkthrough of its own says so, linked to that walkthrough's page (§4.17). Then the narrative, then
    the image, or, for a step with no `STEP.yaml` yet, a line saying its screen is not yet drawn, or, for one that is a
-   walkthrough, that walkthrough's overview diagram, linked to its page.
+   walkthrough, that walkthrough's overview diagram, linked to its page. Every image is framed (§4.18). Under it,
+   **Views** links the `VIEW.md` of each view the screen places, once each, in the order placed.
    A step of several screens shows each in order in place of 4's image and 5: a heading `### {n}. {caption}`, the
-   screen's image, and its own entries, listed as in 5.
+   screen's image and views, and its own entries, listed as in 5.
 5. "In this step" lists highlighted entries first, then described ones, each in the order the step gives them, and is
    left out when there are none. An entry with no description shows its name alone. A slot showing its placeholder adds
    *Not yet defined: shows a placeholder.* to its entry (§4.11).
@@ -319,6 +326,8 @@ stylesheet:
 <!-- Generated by ui-walkthrough from WALKTHROUGH.yaml. Do not edit. -->
 # Review a spec
 
+Describes [Review a spec](../../../use-cases/review-a-spec/USE-CASE.md).
+
 ![The whole of Review a spec](WALKTHROUGH.svg)
 
 ## Steps
@@ -329,7 +338,7 @@ stylesheet:
 * [03 Review the spec](03-review/STEP.md): ends the walkthrough; *not yet drawn*
 ```
 
-`WALKTHROUGH.svg` first, then a link to each step's page in step order, saying which steps are ways in, which are
+What the walkthrough describes, if it says, then `WALKTHROUGH.svg`, then a link to each step's page in step order, saying which steps are ways in, which are
 walkthroughs of their own, linked to them, which end the walkthrough and which have no `STEP.yaml` yet. A walkthrough
 that is a step of others links up to each of those steps under its title, as each of its steps' pages does beside the
 link to its overview (§4.17).
@@ -341,7 +350,7 @@ The skill's directory carries its full documentation, because the installed copy
 * [`SKILL.md`](https://github.com/weaver-engineering/agent-plugins/blob/main/claude-skills/ui-walkthrough/SKILL.md): when and how to run it.
 * A complete reference for each of the skill's own files:
   * [`VIEW.html`](https://github.com/weaver-engineering/agent-plugins/blob/main/claude-skills/ui-walkthrough/reference/view-html.md): the standards a wireframe follows;
-  * [`VIEW.yaml`](https://github.com/weaver-engineering/agent-plugins/blob/main/claude-skills/ui-walkthrough/reference/view-yaml.md): the data model, types, state, slots and components;
+  * [`VIEW.yaml`](https://github.com/weaver-engineering/agent-plugins/blob/main/claude-skills/ui-walkthrough/reference/view-yaml.md): the types, state, slots and components that drive the wireframe;
   * [bindings](https://github.com/weaver-engineering/agent-plugins/blob/main/claude-skills/ui-walkthrough/reference/bindings.md): paths and predicates;
   * [`WALKTHROUGH.yaml`](https://github.com/weaver-engineering/agent-plugins/blob/main/claude-skills/ui-walkthrough/reference/walkthrough-yaml.md): the outline, the story and the chain;
   * [`STEP.yaml`](https://github.com/weaver-engineering/agent-plugins/blob/main/claude-skills/ui-walkthrough/reference/step-yaml.md): the screen, instance addresses, describe and highlight;
@@ -354,7 +363,7 @@ The skill's directory carries its full documentation, because the installed copy
   the rendered `STEP.png`, `STEP.md` and `FLOW.svg` of every step, and its overview. It exercises the whole contract: nested slots, a slot holding many views,
   instance addresses, a record type, bindings, an override, `describe`, `highlight`, a step of two screens, an extension and an end. It is also
   the test fixture (§4.9). Its first page is
-  [`01-open/STEP.md`](https://github.com/weaver-engineering/agent-plugins/blob/main/claude-skills/ui-walkthrough/example/use-cases/UC-1-review-a-spec/walkthrough/01-open/STEP.md).
+  [`01-open/STEP.md`](https://github.com/weaver-engineering/agent-plugins/blob/main/claude-skills/ui-walkthrough/example/analysis/ui/walkthroughs/review-a-spec/01-open/STEP.md).
 
 ### 3.11 Modes
 
@@ -379,7 +388,7 @@ The skill's directory carries its full documentation, because the installed copy
   * a view's `VIEW.png` that is stale, missing or invalid, or whose `image` settings cannot be drawn; a `VIEW.md` that
     is missing, has no block, or whose block differs from what would be generated; markers that are not one begin
     followed by one end (§4.16);
-  * a component marked `unbound: true` that gives a binding;
+  * a page a walkthrough `describes` that does not exist;
   * a chain problem (§5.6).
 
 ## 4 Decisions
@@ -411,15 +420,15 @@ declare dependencies and must name its install command.
 
 ### 4.2 The skill reads only its own documents
 
-Reading a project's own documents, such as a view's `VIEW.md` or a hand-written step page, would couple the skill to
+Reading a project's own documents, such as a view's `VIEW.md`, a use case or a hand-written step page, would couple the skill to
 their format and let it drift from what they say elsewhere. The one exception is the block the skill writes into
 `VIEW.md` (§4.16), which it reads only to find its own markers. So the skill's inputs are `VIEW.yaml`,
 `WALKTHROUGH.yaml` and `STEP.yaml`, structured and defined here, and `STEP.md` is an output.
 
-This puts the boundary where DEM already sits. A view's attributes and types are claims in DEM, so DEM can produce
-`VIEW.yaml` mechanically and assert that its data model matches the design's data model documents. Without DEM, an
-agent extracts the same file from the design natively. Either way, the skill checks only what it owns: its schemas,
-its types, and the views and steps against each other.
+This puts the boundary where DEM already sits. DEM can produce `VIEW.yaml` mechanically from its claims, or an agent
+extracts it from the analysis natively. Either way, the skill checks only what it owns: its schemas, its types, and the
+views and steps against each other. Whether the UI's design satisfies the walkthroughs is the design's to show, and the
+project's to check (§4.18).
 
 ### 4.3 Everything is state
 
@@ -443,7 +452,7 @@ Limits that keep it from becoming a prototyper:
 * A predicate reads only its own view's state and literals (§3.6). A card does not work out from its parent whether it
   is selected; the step sets `mode: selected` on it, which is visible and checked.
 * Data never creates views. A list of cards is `[CARD, CARD]` in the step's `slots`; a `list<T>` or `map<K, V>`
-  attribute may be declared, so a view's data model matches the design's, but nothing reads it.
+  attribute may be declared, so the wireframe's state can say what it shows, but nothing reads it.
 * Nothing carries from one step to the next: each step gives its state in full, falling back only to the declared
   defaults.
 * No formatting in text bindings: a path, shown as its value.
@@ -482,10 +491,9 @@ A view may be placed more than once, in a list or in different slots. Each place
 
 ### 4.7 Shared types agree across views
 
-Each `VIEW.yaml` carries the data model it uses, so a type such as `Card` is declared in every view that uses it. The
-skill checks that every declaration of a type name is identical, field for field. DEM checks the views against the
-design; the skill checks the views against each other, which costs it nothing and catches a view left behind when a type
-changes.
+Each `VIEW.yaml` carries the types its wireframe's state uses, so a type such as `Card` is declared in every view that
+uses it. The skill checks that every declaration of a type name is identical, field for field, which costs it nothing
+and catches a view left behind when a type changes.
 
 ### 4.8 The schemas ship with the skill and are what it validates against
 
@@ -504,7 +512,7 @@ example by changing one file.
 ### 4.10 Other points
 
 * **Invalid image** means not a PNG, or no hash in its metadata. It never means the pixels look wrong.
-* **Viewport:** the screenshot is exactly the viewport size, not the full page.
+* **Viewport:** the screenshot is exactly the viewport size, not the full page, framed (§4.18).
 * **Fonts:** the tokens stylesheet must not depend on a system font, or renders drift between machines.
 
 ### 4.11 Drawn a walkthrough at a time: pending steps, slots and placeholders
@@ -516,8 +524,6 @@ navigation, main area and dock in the first increment, and the views that fill t
 * A step the outline names may have no `STEP.yaml` yet; it is pending, and still gets its page and diagram (§4.12),
   unless it is a walkthrough of its own, which need draw no screen. A walkthrough a step is, not written yet, is
   pending (§4.17).
-* A component neither bound nor marked `unbound: true`, and a state attribute with no `source`, or from an API or
-  derived with no description, are pending (§4.16).
 * A step leaves a slot unbound to show its placeholder, the content `VIEW.html` draws inside the slot element. `null`
   stays the deliberately empty slot, which is a design decision, not a gap. An unbound slot is pending.
 * Binding a slot to a view not defined yet is an assembly error: the step leaves it unbound until the view exists.
@@ -643,17 +649,13 @@ a block generated from `VIEW.html` and `VIEW.yaml`.
   no step's image.
 * **A block in the project's `VIEW.md`, not a page of the skill's.** A project's `VIEW.md` carries what the skill
   cannot derive, in DEM the capabilities a view serves, the calls it makes, what updates it live, so the skill neither
-  owns the page nor adds a second one beside it. It writes one block between markers: the image, the components with
-  their bindings, the state with its sources, the types, the slots linked to the views they hold, and every step that
-  places the view. The block goes wherever the project puts the markers; without them it is added at the end, and
+  owns the page nor adds a second one beside it. It writes one block between markers: the image, the slots linked to
+  the views they hold, and every step that places the view. The block first also listed the components, state and
+  types, which §4.18 took out. The block goes wherever the project puts the markers; without them it is added at the end, and
   without a `VIEW.md` one is written. Markers it cannot read as one block are left for the project to put right.
-* **What a view leaves unsaid is pending.** The block shows what is decided; `check` lists what is not, as it does a
-  slot whose views are not drawn (§4.11): a component neither bound nor marked `unbound: true`, so a component not
-  bound yet is not mistaken for one that needs no binding; and a state attribute with no `source`, or from an API or
-  derived with nothing saying which call or how. `check --complete` fails on them.
-* **Documenting a view moves no pixel.** Sources, `unbound` and descriptions are left out of every hash, and an
-  attribute is hashed by what it means, `{ type, default }`, however it is written, so writing `card: Card` out in
-  full to give it a source stales nothing.
+* **Documenting a view moves no pixel.** Descriptions are left out of every hash, as are the sources and `unbound`
+  marks now ignored, and an attribute is hashed by what it means, `{ type, default }`, however it is written, so
+  writing `card: Card` out in full to describe it stales nothing.
 
 ### 4.17 Nested walkthroughs: a step that is a walkthrough
 
@@ -679,6 +681,31 @@ can go down into the detail and come back up to where they were.
   walkthrough is a problem.
 * **Only pages change.** Nesting is in the outline, which reaches no image (§5.4), so adding or moving it rewrites
   pages and diagrams only.
+
+### 4.18 Analysis, not design: the wireframe model, framed images, and what a walkthrough describes
+
+Reviewed on a big screen, a step's image was hard to tell from the page around it, and the view pages listed
+components and state that a reviewer read as the UI's design (architect, 23 October 2026).
+
+* **A walkthrough is analysis.** It says what must be true of the UI; the views it names are views the UI must have.
+  How the UI makes it true, its components, state, types and where each value comes from, is design, written by a
+  design pass of its own in the project's design, which links to the walkthroughs and views it satisfies. Analysis
+  never links to design, and the skill neither reads nor writes it.
+* **`VIEW.yaml` models the wireframe, not the UI.** Its components and state are whatever lets the wireframe behave as
+  the UI must: DEM draws a split button that opens to a second action as two components shown one at a time, which no
+  real UI need have. So the `VIEW.md` block leaves out components, state and types, and the pending items §4.16 added,
+  a component neither bound nor marked `unbound` and a state attribute without a `source`, are dropped: they asked for
+  design in the wrong place. `source` and `unbound` stay valid and do nothing, so a project's existing views keep
+  passing, and are left out of the hash, so removing them stales nothing.
+* **Every image is framed.** `STEP.png`, `STEP-{n}.png` and `VIEW.png` have a 2px grey border with square corners, drawn
+  into the PNG round the screenshot, so it shows in any markdown viewer; a style on the image would be stripped. The
+  image is 4px larger each way than the viewport or view. The skill's major version was raised so every image is
+  stale once, and one render draws the frames. The diagrams are not framed: they are the document's, not the UI's.
+* **A step links its views.** Each screen of a `STEP.md` lists the views it places, linked to their `VIEW.md`, so a
+  reviewer can go from a screen to each view on its own.
+* **A walkthrough may say what it describes.** `describes` links the use case, or any page, a walkthrough describes from
+  its `WALKTHROUGH.md`. It is optional, since a walkthrough can be drawn for any reason, and one-way: the use case may
+  link to its walkthrough, as analysis links analysis, but the skill never writes into it.
 
 ## 5 Algorithm
 
@@ -723,7 +750,8 @@ A step uses a view if, on any of its screens, the view is the `root` or is bound
 
 ### 5.4 Input hash and staleness of STEP.png
 
-One hash per screen. SHA-256 over, in a fixed order and each length-prefixed: the skill's major version; the screen's
+One hash per screen. SHA-256 over, in a fixed order and each length-prefixed: the skill's major version, raised to 2
+when every image was framed (§4.18); the screen's
 fields (`viewport`, `root`, `slots`, `state`, `components`, `highlight`), after the changes from the screens before it
 and without inherited entries it drops (§4.14), as canonical JSON; for each placed instance, sorted
 by address, its resolved state as canonical JSON, its `VIEW.html`, and its `VIEW.yaml` without descriptions, sources,
@@ -742,7 +770,8 @@ one recomputed now, missing when there is no `STEP.png`, invalid per §4.10.
 highlighted entries, laid out per §3.9. `FLOW.svg` is a pure function of the outline, the step and the tokens
 stylesheet's colours (§4.13). `check` generates both in memory and compares; `render` writes each when it differs. A
 step's page is not generated while its `STEP.yaml` has problems; its diagram is, since it needs only the outline.
-`WALKTHROUGH.md` is a pure function of the outline and which steps have a `STEP.yaml`, and `WALKTHROUGH.svg` of the
+A step's page also links the views each screen places. `WALKTHROUGH.md` is a pure function of the outline and which
+steps have a `STEP.yaml`, and `WALKTHROUGH.svg` of the
 outline and the tokens stylesheet's colours (§4.15); both are compared and written the same way. A nested walkthrough's
 title and directory reach the pages and overview of the steps that are it, and the titles of those steps and their
 walkthroughs reach its pages (§4.17).
