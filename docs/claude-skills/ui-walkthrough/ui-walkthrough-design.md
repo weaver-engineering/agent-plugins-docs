@@ -73,9 +73,9 @@ them (§4.18; architect, 23 October 2026).
 | `{walkthrough}/WALKTHROUGH.md` | the walkthrough's overview: its diagram and a link to every step | the skill, entirely |
 | `{walkthrough}/WALKTHROUGH.svg` | the whole walkthrough as a large diagram, every step's narrative in its box | the skill, entirely |
 | `{views}/{VIEW-NAME}/VIEW.png` | the view drawn alone, its slots showing their placeholders | the skill, entirely |
-| `{views}/{VIEW-NAME}/VIEW.md` | the project's page for the view; the skill writes one marked block in it | the project, and the skill its block |
+| `{views}/{VIEW-NAME}/VIEW.md` | the project's page for the view; the skill writes two marked blocks in it | the project, and the skill its blocks |
 
-A view's directory may hold other files; the skill ignores them. Of the project's own `VIEW.md` it reads only the block
+A view's directory may hold other files; the skill ignores them. Of the project's own `VIEW.md` it reads only the blocks
 it writes (§4.16). `VIEW.yaml`,
 `WALKTHROUGH.yaml` and `STEP.yaml` are the persisted data the skill is called with, so any step can be regenerated from
 them alone.
@@ -355,7 +355,7 @@ The skill's directory carries its full documentation, because the installed copy
   * [`WALKTHROUGH.yaml`](https://github.com/weaver-engineering/agent-plugins/blob/main/claude-skills/ui-walkthrough/reference/walkthrough-yaml.md): the outline, the story and the chain;
   * [`STEP.yaml`](https://github.com/weaver-engineering/agent-plugins/blob/main/claude-skills/ui-walkthrough/reference/step-yaml.md): the screen, instance addresses, describe and highlight;
   * [`STEP.md`, `FLOW.svg` and the overview](https://github.com/weaver-engineering/agent-plugins/blob/main/claude-skills/ui-walkthrough/reference/step-md.md): the pages and diagrams the skill generates;
-  * [`VIEW.png` and the block in `VIEW.md`](https://github.com/weaver-engineering/agent-plugins/blob/main/claude-skills/ui-walkthrough/reference/view-md.md): each view drawn alone, and what the skill writes on its page.
+  * [`VIEW.png` and the blocks in `VIEW.md`](https://github.com/weaver-engineering/agent-plugins/blob/main/claude-skills/ui-walkthrough/reference/view-md.md): each view drawn alone, and what the skill writes on its page.
 * JSON Schemas (§4.8): [`ui-walkthrough.yaml`](https://github.com/weaver-engineering/agent-plugins/blob/main/claude-skills/ui-walkthrough/schemas/ui-walkthrough.schema.json),
   [`WALKTHROUGH.yaml`](https://github.com/weaver-engineering/agent-plugins/blob/main/claude-skills/ui-walkthrough/schemas/walkthrough.schema.json),
   [`VIEW.yaml`](https://github.com/weaver-engineering/agent-plugins/blob/main/claude-skills/ui-walkthrough/schemas/view.schema.json) and [`STEP.yaml`](https://github.com/weaver-engineering/agent-plugins/blob/main/claude-skills/ui-walkthrough/schemas/step.schema.json).
@@ -369,8 +369,8 @@ The skill's directory carries its full documentation, because the installed copy
 
 * `render <step>…` renders the steps named: each screen's image if it is stale or missing (`--force` renders it anyway),
   removing the image of any screen the step no longer has, and every view's `VIEW.png` that is stale or missing; then
-  every `STEP.md`, `FLOW.svg`, `WALKTHROUGH.md`, `WALKTHROUGH.svg` and `VIEW.md` block under the configuration that
-  differs from what would be generated.
+  every `STEP.md`, `FLOW.svg`, `WALKTHROUGH.md`, `WALKTHROUGH.svg` and `VIEW.md` block under the configuration
+  that differs from what would be generated.
 * `render --walkthrough DIR` does the same for every step of a walkthrough, so a whole walkthrough is one command.
 * `render --view NAME` does the same for every step that uses the view; with `--force` it renders the view's own image
   too.
@@ -386,7 +386,7 @@ The skill's directory carries its full documentation, because the installed copy
   * a `STEP.md`, `FLOW.svg`, `WALKTHROUGH.md` or `WALKTHROUGH.svg` that is missing or differs from what would be
     generated;
   * a view's `VIEW.png` that is stale, missing or invalid, or whose `image` settings cannot be drawn; a `VIEW.md` that
-    is missing, has no block, or whose block differs from what would be generated; markers that are not one begin
+    is missing, lacks either block, or whose blocks differ from what would be generated; markers that are not one begin
     followed by one end (§4.16);
   * a page a walkthrough `describes` that does not exist;
   * a chain problem (§5.6).
@@ -421,7 +421,7 @@ declare dependencies and must name its install command.
 ### 4.2 The skill reads only its own documents
 
 Reading a project's own documents, such as a view's `VIEW.md`, a use case or a hand-written step page, would couple the skill to
-their format and let it drift from what they say elsewhere. The one exception is the block the skill writes into
+their format and let it drift from what they say elsewhere. The one exception is the blocks the skill writes into
 `VIEW.md` (§4.16), which it reads only to find its own markers. So the skill's inputs are `VIEW.yaml`,
 `WALKTHROUGH.yaml` and `STEP.yaml`, structured and defined here, and `STEP.md` is an output.
 
@@ -636,7 +636,7 @@ be read where it is.
 * **It stays an SVG written as text, from the outline alone**, like `FLOW.svg` (§4.13): it is sharp at any size, and
   `check` compares it with no browser. A step's `STEP.yaml` does not reach it.
 
-### 4.16 Each view reviewed on its own: VIEW.png and a block in VIEW.md
+### 4.16 Each view reviewed on its own: VIEW.png and blocks in VIEW.md
 
 A reviewer saw a view only as steps assembled it, filled with other views, so a view on its own could not be reviewed,
 and nothing checked that a view's page said what its wireframe does. So each view gets an image of itself, and its page
@@ -653,6 +653,13 @@ a block generated from `VIEW.html` and `VIEW.yaml`.
   the views they hold, and every step that places the view. The block first also listed the components, state and
   types, which §4.18 took out. The block goes wherever the project puts the markers; without them it is added at the end, and
   without a `VIEW.md` one is written. Markers it cannot read as one block are left for the project to put right.
+* **The page leads with the view** (architect, 23 October 2026). With the image in the one block, at the end of DEM's
+  pages, a page all about the view showed it only after four sections of prose. So the image moved to a second, **view
+  block**, which leads the page: what the view is, from `VIEW.yaml`'s `description`, then `VIEW.png`. The project puts
+  its own heading above it, DEM's `## 0 The View`, and the rest of its page explains the view in more detail. The
+  description is the one `STEP.md` shows when a step describes the view, so the page cannot say otherwise. A page
+  without the view block's markers gets it under its `# ` title, so every existing page gains it on the next render;
+  the block of slots and uses stays where it was.
 * **Documenting a view moves no pixel.** Descriptions are left out of every hash, as are the sources and `unbound`
   marks now ignored, and an attribute is hashed by what it means, `{ type, default }`, however it is written, so
   writing `card: Card` out in full to describe it stales nothing.
@@ -693,7 +700,7 @@ components and state that a reviewer read as the UI's design (architect, 23 Octo
   never links to design, and the skill neither reads nor writes it.
 * **`VIEW.yaml` models the wireframe, not the UI.** Its components and state are whatever lets the wireframe behave as
   the UI must: DEM draws a split button that opens to a second action as two components shown one at a time, which no
-  real UI need have. So the `VIEW.md` block leaves out components, state and types, and the pending items §4.16 added,
+  real UI need have. So the `VIEW.md` blocks leave out components, state and types, and the pending items §4.16 added,
   a component neither bound nor marked `unbound` and a state attribute without a `source`, are dropped: they asked for
   design in the wrong place. `source` and `unbound` stay valid and do nothing, so a project's existing views keep
   passing, and are left out of the hash, so removing them stales nothing.
@@ -788,7 +795,7 @@ From each walkthrough's `WALKTHROUGH.yaml`, reported by `check`:
 ## 6 Output
 
 `render` writes `STEP.png`, `STEP-{n}.png`, `STEP.md`, `FLOW.svg`, `WALKTHROUGH.md`, `WALKTHROUGH.svg` and `VIEW.png`
-files, and the block in each `VIEW.md`, and removes only a `STEP-{n}.png` of a screen
+files, and the blocks in each `VIEW.md`, and removes only a `STEP-{n}.png` of a screen
 a step no longer has. `uses` prints step paths, one per line. `check` prints one
 problem per line, then one line per pending item, each marked `pending:`; it exits non-zero if there are any problems, or
 with `--complete` if anything is pending. Nothing writes a copy of any wireframe.
