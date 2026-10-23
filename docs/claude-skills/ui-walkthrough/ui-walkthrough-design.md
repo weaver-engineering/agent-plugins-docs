@@ -725,7 +725,7 @@ a walkthrough may one day be drawn in several (architect, 23 October 2026).
 
 * **A view is as wide as it is in the walkthroughs.** With no `image: width`, the skill lays out the first screen that
   places the view, in the order of the steps and in the `image` viewport if one is given, measures the view's box there,
-  and draws `VIEW.png` at that width in that screen's viewport. A dialog comes out the dialog's width, a list the slot's.
+  and draws `VIEW.png` at that width in that screen's viewport. A dialog comes out the dialog's width, a list the slot's. The height is measured too (below).
   The screen's root is the viewport's width already, so it is not measured, and a view no screen places is drawn in the
   first viewport, as before. `image: width` still overrides, for a view not placed yet.
 * **The measuring screen is part of the view's hash.** A change to that screen can change the view's width, so it
@@ -739,6 +739,30 @@ a walkthrough may one day be drawn in several (architect, 23 October 2026).
 * **A displayed width was not added.** `![](VIEW.png)` already shows an image no wider than it is, so an `<img width>`
   would change nothing while the skill draws at one device pixel per CSS pixel.
 * The skill's major version was raised, so every image is stale once.
+* **Height too** (architect, 23 October 2026). A view at `height: 100%`, such as DEM's agent list in the dock, filled
+  the viewport's height when drawn alone. So the screen gives the view's height as well as its width; a view sized by
+  its content is unaffected. The measuring record in the view's hash changed shape, so only measured views' images
+  went stale, not every step's.
+
+### 4.20 Lists: a slot holding many views, drawn as its places
+
+DEM drew its lists of projects, check sets and work scopes as numbered copies of a row's components, `ITEM-1` to
+`ITEM-3`, hidden until a step showed them. Drawn alone, each list was empty: nothing showed where its items would be or
+how it arranged them. And a slot declared `many: true` was drawn alone as one placeholder, like any other slot, so even a
+list built properly did not show how it laid out its views (architect, 23 October 2026).
+
+* **A list is a slot holding many views**, `many: true`, filled with an item view drawn once, with its own state,
+  components and page. Never numbered copies of components: the view alone shows no list, the items have no page, and
+  the wireframe fixes how many a step can show. The rule is in the skill's `VIEW.html` and `VIEW.yaml` references;
+  `check` does not look for numbered components, since any test for them would be a guess.
+* **Drawn alone, such a slot is crossed and named over its whole area, over three places** drawn as transparent dashed
+  boxes, laid out by the slot's own CSS. The places show the arrangement, a column, a row or a grid, without hiding the
+  slot's name. A place is at least 48px each way and shares a flex row or column with the others. Three is enough to
+  show a layout repeat. Only `VIEW.png` draws places: in a step an unbound slot still shows one placeholder and is
+  pending.
+* **Only the images of views with such a slot go stale**: the places are in their hash alone, not the skill's version.
+* **Slots stay as they were otherwise.** A slot may be unbound, bound to nothing, to one view, or, if `many`, to a
+  list. Nothing marks a slot as one that must always hold a view; that can be added if a project needs it.
 
 ## 5 Algorithm
 
