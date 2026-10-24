@@ -853,6 +853,23 @@ tablet, which shows one, needs each step in each viewport, and a reviewer readin
 * Each image is captioned with its viewport (§4.19), and its hash covers its screen, viewport included, so each
   viewport's images stale on their own.
 
+### 4.24 Each image says where it came from
+
+Review through markdown reaches its limits as walkthroughs grow, so a viewer (WVR-257) presents them as an interactive
+page, on GitHub through a Chrome extension and on a tablet through a hosted app. It must find a walkthrough from any
+page it is pointed at, without scraping the rendered markdown (architect, 24 October 2026).
+
+* **Every image and diagram records what it is and where its sources are**: a JSON record, `version`, `kind`, the path
+  to `ui-walkthrough.yaml`, and the walkthrough and step, screen and viewport, or the view and its name, every path
+  relative to the image's own directory. A PNG holds it in a `tEXt` chunk under `ui-walkthrough`, beside its hash; an
+  SVG in a `<metadata>` element. From any image on a page a viewer reaches the walkthrough's YAML, and from there
+  everything is data. The skill's reference `image-metadata.md` gives each record.
+* **YAML stays the data.** No second data file: the viewer reads `WALKTHROUGH.yaml`, `STEP.yaml` and `VIEW.yaml` and
+  shares the skill's own logic to interpret them, so review through it cannot drift from the markdown.
+* **The record reaches no hash.** A PNG whose hash is current but whose record is missing or wrong is *current but for
+  its metadata*: `check` reports it and `render` rewrites only the record, without drawing it again, so adding the
+  record to a project's images is quick and no skill version change was needed.
+
 ## 5 Algorithm
 
 ### 5.1 Loading views
