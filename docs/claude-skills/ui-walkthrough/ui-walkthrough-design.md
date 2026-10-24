@@ -221,9 +221,13 @@ steps:
 * A step the outline names with no `STEP.yaml` yet is pending (§4.11): it gets its page and diagram, saying its screen is
   not yet drawn. A `STEP.yaml` in a directory the outline does not name is a problem.
 
+`viewports: [desk, tablet]`, optional, names the viewports every step is drawn in, each to a page and images of its
+own (§4.23).
+
 ### 3.8 STEP.yaml
 
-The step's screen, or its screens, and nothing else:
+The step's screen, or its screens, and nothing else; where the walkthrough names viewports, no `viewport`, and either
+one drawing for all of them or `variants`, one for each set of viewports drawn differently (§4.23):
 
 ```yaml
 viewport: tablet
@@ -688,9 +692,12 @@ can go down into the detail and come back up to where they were.
 * **The step keeps its place in its own chain.** It has its own title, narrative and `next` or `end`: how the outer
   flow continues is the outer walkthrough's to say. The nested walkthrough's ends are not mapped onto the outer step's
   `next`; the narrative says how it comes back.
-* **A screen is optional.** With no `STEP.yaml` the step shows the nested walkthrough's overview diagram in place of a
-  screen, and is not pending, since the walkthrough is where its screens are. With one, its screens are drawn as any
-  step's, such as the screen the nested walkthrough starts from.
+* **Its screens are drawn as any step's** (architect, 24 October 2026), such as the screen the nested walkthrough
+  starts from; without a `STEP.yaml` it is not yet drawn, and pending, as any step. It first showed the nested
+  walkthrough's `WALKTHROUGH.svg` in place of a screen and was not pending, but a diagram where the UI should be broke
+  the reviewer's picture of what the UI is doing. That walkthrough's diagram, no step highlighted, its `FLOW.svg`
+  written beside its `WALKTHROUGH.md` once it is a step of any walkthrough, now sits under the step's own diagram,
+  linked to its page.
 * **Links live in the pages.** Down: the step's `STEP.md` and its walkthrough's `WALKTHROUGH.md`. Up: the nested
   walkthrough's `WALKTHROUGH.md` and every one of its `STEP.md`s name each step it is. In both diagrams the step's box
   has a second border inside its first, and in `WALKTHROUGH.svg` it names the walkthrough, since a link in an image
@@ -820,6 +827,31 @@ workarounds (architect, via WVR-254, 23 October 2026).
   the view's CSS can grey it; the skill does not compose that text itself. `VIEW.png` draws it as its `image: state` gives, closed unless that opens it.
 * Bindings move pixels, so they are in the hash as any binding is; no skill version change was needed, since no
   existing view could use them.
+
+### 4.23 A walkthrough drawn in several viewports
+
+A walkthrough drawn for a desk and for a phone, or DEM's workstation, which opens nine documents side by side, and its
+tablet, which shows one, needs each step in each viewport, and a reviewer reading one needs to know which, and to switch
+(architect, 24 October 2026).
+
+* **The walkthrough names its viewports**, `viewports: [desk, tablet]`, and every step is drawn in each. A walkthrough
+  naming none is drawn as before, each step in its `STEP.yaml`'s `viewport`.
+* **A page and images per viewport, each named for it**: `STEP.desk.md`, `STEP.desk.png`, `STEP-2.desk.png`, and none
+  without a viewport. No viewport is the default, so none keeps the plain name; `STEP.md` is a walkthrough's that
+  names none.
+* **The same drawing, or variants.** A `STEP.yaml` gives one drawing for every viewport, its state and slots alike in
+  each and the views' CSS laying them out for its size, or `variants`, each naming its viewports and giving its own
+  screens, as the top level would but for `viewport`. Some UIs differ in structure, not just layout: nine document
+  slots or one is a different set of views, which CSS alone cannot draw. Every viewport is in exactly one variant, and
+  the top level gives nothing else, so a step is never drawn from a mixture.
+* **Switching viewport keeps the reader's place.** Under the link to the whole walkthrough, each page names the step's
+  page in each viewport, its own in bold, and every link to a neighbouring step stays in the same viewport. Pages
+  that are one for the walkthrough, `WALKTHROUGH.md` and a view's Used by, link a step's page in each viewport, Used by
+  only those that place the view; the diagrams are one for the walkthrough, since its chain is the same in each.
+* **Pages and images of viewports a step no longer has** are reported by `check` and removed by `render`, as images
+  of screens it no longer has are, so naming a walkthrough's viewports cleans up after its plain pages.
+* Each image is captioned with its viewport (§4.19), and its hash covers its screen, viewport included, so each
+  viewport's images stale on their own.
 
 ## 5 Algorithm
 
